@@ -14,16 +14,16 @@ SRC_CLIENT = $(wildcard src/client/*.c)
 all: server client
 
 server: $(SRC_SERVER)
-	$(CC) $(CFLAGS) -o server -lcsfml-network -lcsfml-system
+	$(CC) $(CFLAGS) $(SRC_SERVER) -o server_wolf3d -lcsfml-network -lcsfml-system
 
 client: $(SRC_CLIENT)
-	$(CC) $(CFLAGS) -o wolf3d -lcsfml-graphics -lcsfml-window -lcsfml-network -lcsfml-system
+	$(CC) $(CFLAGS) $(SRC_CLIENT) -o wolf3d -lcsfml-graphics -lcsfml-window -lcsfml-network -lcsfml-system
 
 clean:
-	rm -f server client
+	rm -f server wolf3d
 
 fclean: clean
-	rm -f server client
+	rm -f server wolf3d
 
 re: fclean all
 

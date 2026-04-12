@@ -5,8 +5,7 @@
 ** server
 */
 
-#include <SFML/Network.h>
-#include <stdio.h>
+#include "network.h"
 
 int main(void)
 {
