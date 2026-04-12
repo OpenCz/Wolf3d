@@ -1,0 +1,32 @@
+# Compiled object files
+*.o
+*.a
+*.so
+*.so.*
+
+# Executable / binary output
+wolf3d
+*.out
+*.exe
+
+# Temporary and editor files
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+#*#
+.#*
+
+# Build directories
+build/
+obj/
+
+# macOS metadata
+.DS_Store
+
+# IDE / editor configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
