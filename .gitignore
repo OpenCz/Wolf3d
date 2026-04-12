@@ -1,0 +1,5 @@
+*.o
+*.a
+wolf3d
+*~
+server_wolf3d
