@@ -3,7 +3,7 @@ NAME		= wolf3d
 CC		= cc
 CFLAGS		= -Wall -Wextra -Werror
 
-SRCS		= $(wildcard src/**/*.c) $(wildcard src/*.c)
+SRCS		= $(shell find src -name '*.c')
 OBJS		= $(SRCS:.c=.o)
 
 INCLUDES	= -I include
@@ -11,7 +11,7 @@ INCLUDES	= -I include
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(INCLUDES) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
