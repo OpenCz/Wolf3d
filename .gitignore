@@ -5,8 +5,8 @@
 *.so.*
 
 # Executable / binary output
-wolf3d
-server
+/wolf3d
+/server
 *.out
 *.exe
 
