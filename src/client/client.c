@@ -13,6 +13,7 @@
 static const unsigned int WINDOW_WIDTH = 800;
 static const unsigned int WINDOW_HEIGHT = 600;
 static const float SQUARE_SIZE = 120.0f;
+static const float CONNECT_TIMEOUT_SEC = 5.0f;
 
 static sfColor random_color(void)
 {
@@ -32,14 +33,22 @@ static void center_square(sfRenderWindow *window, sfRectangleShape *square)
 
 static int init_socket(sfTcpSocket **socket, const char *ip)
 {
+    sfSocketStatus status;
+
     *socket = sfTcpSocket_create();
     if (*socket == NULL)
         return 84;
-    if (sfTcpSocket_connect(*socket, sfIpAddress_fromString(ip),
-            PORT_TCP, sfTime_Zero) == sfSocketDone)
+    status = sfTcpSocket_connect(*socket, sfIpAddress_fromString(ip),
+        PORT_TCP, sfSeconds(CONNECT_TIMEOUT_SEC));
+    if (status == sfSocketDone)
         printf("Connecte au serveur !\n");
-    else
-        printf("Echec de la connexion.\n");
+    else {
+        printf("Echec de la connexion vers %s:%d (code: %d).\n",
+            ip, PORT_TCP, status);
+        sfTcpSocket_destroy(*socket);
+        *socket = NULL;
+        return 84;
+    }
     return 0;
 }
 
