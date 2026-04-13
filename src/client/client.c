@@ -49,7 +49,82 @@ static int init_socket(sfTcpSocket **socket, const char *ip)
         *socket = NULL;
         return 84;
     }
+    sfTcpSocket_setBlocking(*socket, sfFalse);
     return 0;
+}
+
+static sfSocketStatus send_color_update(sfTcpSocket *socket, sfColor color)
+{
+    sfPacket *packet = sfPacket_create();
+    sfSocketStatus status;
+
+    if (packet == NULL)
+        return sfSocketError;
+    sfPacket_writeUint32(packet, MSG_COLOR_UPDATE);
+    sfPacket_writeUint32(packet, color.r);
+    sfPacket_writeUint32(packet, color.g);
+    sfPacket_writeUint32(packet, color.b);
+    status = sfTcpSocket_sendPacket(socket, packet);
+    sfPacket_destroy(packet);
+    return status;
+}
+
+static sfSocketStatus receive_color_update(sfTcpSocket *socket, sfColor *color)
+{
+    sfPacket *packet = sfPacket_create();
+    sfSocketStatus status;
+    sfUint32 type = 0;
+    sfUint32 red = 0;
+    sfUint32 green = 0;
+    sfUint32 blue = 0;
+
+    if (packet == NULL)
+        return sfSocketError;
+    status = sfTcpSocket_receivePacket(socket, packet);
+    if (status != sfSocketDone) {
+        sfPacket_destroy(packet);
+        return status;
+    }
+    type = sfPacket_readUint32(packet);
+    if (!sfPacket_canRead(packet) || type != MSG_COLOR_UPDATE) {
+        sfPacket_destroy(packet);
+        return sfSocketError;
+    }
+    red = sfPacket_readUint32(packet);
+    if (!sfPacket_canRead(packet)) {
+        sfPacket_destroy(packet);
+        return sfSocketError;
+    }
+    green = sfPacket_readUint32(packet);
+    if (!sfPacket_canRead(packet)) {
+        sfPacket_destroy(packet);
+        return sfSocketError;
+    }
+    blue = sfPacket_readUint32(packet);
+    if (!sfPacket_canRead(packet)) {
+        sfPacket_destroy(packet);
+        return sfSocketError;
+    }
+    *color = sfColor_fromRGB((sfUint8)red, (sfUint8)green, (sfUint8)blue);
+    sfPacket_destroy(packet);
+    return sfSocketDone;
+}
+
+static void sync_remote_colors(sfTcpSocket *socket, sfRectangleShape *square,
+    sfRenderWindow *window)
+{
+    sfColor color;
+    sfSocketStatus status = sfSocketDone;
+
+    while (status == sfSocketDone) {
+        status = receive_color_update(socket, &color);
+        if (status == sfSocketDone)
+            sfRectangleShape_setFillColor(square, color);
+        if (status == sfSocketDisconnected) {
+            printf("Serveur deconnecte.\n");
+            sfRenderWindow_close(window);
+        }
+    }
 }
 
 static int init_window(sfRenderWindow **window, sfRectangleShape **square)
@@ -71,9 +146,11 @@ static int init_window(sfRenderWindow **window, sfRectangleShape **square)
 }
 
 static void handle_event(sfRenderWindow *window, sfRectangleShape *square,
-    sfEvent event)
+    sfTcpSocket *socket, sfEvent event)
 {
     sfFloatRect bounds = sfRectangleShape_getGlobalBounds(square);
+    sfColor color;
+    sfSocketStatus status;
 
     if (event.type == sfEvtClosed)
         sfRenderWindow_close(window);
@@ -84,8 +161,15 @@ static void handle_event(sfRenderWindow *window, sfRectangleShape *square,
     if (event.type == sfEvtMouseButtonPressed &&
         event.mouseButton.button == sfMouseLeft &&
         sfFloatRect_contains(&bounds, (float)event.mouseButton.x,
-            (float)event.mouseButton.y))
-        sfRectangleShape_setFillColor(square, random_color());
+            (float)event.mouseButton.y)) {
+        color = random_color();
+        sfRectangleShape_setFillColor(square, color);
+        status = send_color_update(socket, color);
+        if (status == sfSocketDisconnected) {
+            printf("Serveur deconnecte.\n");
+            sfRenderWindow_close(window);
+        }
+    }
 }
 
 static void draw_frame(sfRenderWindow *window, sfRectangleShape *square)
@@ -95,13 +179,15 @@ static void draw_frame(sfRenderWindow *window, sfRectangleShape *square)
     sfRenderWindow_display(window);
 }
 
-static void run_window_loop(sfRenderWindow *window, sfRectangleShape *square)
+static void run_window_loop(sfRenderWindow *window, sfRectangleShape *square,
+    sfTcpSocket *socket)
 {
     sfEvent event;
 
     while (sfRenderWindow_isOpen(window)) {
         while (sfRenderWindow_pollEvent(window, &event))
-            handle_event(window, square, event);
+            handle_event(window, square, socket, event);
+        sync_remote_colors(socket, square, window);
         draw_frame(window, square);
     }
 }
@@ -111,8 +197,10 @@ static void destroy_resources(sfTcpSocket *socket, sfRenderWindow *window,
 {
     sfRectangleShape_destroy(square);
     sfRenderWindow_destroy(window);
-    sfTcpSocket_disconnect(socket);
-    sfTcpSocket_destroy(socket);
+    if (socket != NULL) {
+        sfTcpSocket_disconnect(socket);
+        sfTcpSocket_destroy(socket);
+    }
 }
 
 int main(int argc, char **argv)
@@ -129,7 +217,7 @@ int main(int argc, char **argv)
         sfTcpSocket_destroy(socket);
         return 84;
     }
-    run_window_loop(window, square);
+    run_window_loop(window, square, socket);
     destroy_resources(socket, window, square);
     return 0;
 }

@@ -48,7 +48,8 @@ typedef enum {
     MSG_PLAYER_SHOOT,
     MSG_PLAYER_DEATH,
     MSG_PLAYER_INPUT,
-    MSG_WOLRD_STATE
+    MSG_COLOR_UPDATE,
+    MSG_WORLD_STATE
 } net_status_t;
 
 #endif
