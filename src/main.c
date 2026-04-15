@@ -18,35 +18,53 @@ int map[MAP_HEIGHT][MAP_WIDTH] = {
     {1, 1, 1, 1, 1, 1, 1, 1}
 };
 
-void check_event(sfRenderWindow *window, sfEvent event, player_t *player)
+void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
-    if (event.type == sfEvtClosed)
+    if (event.type == sfEvtClosed || wolf->state == QUIT)
         sfRenderWindow_close(window);
+}
+
+static void stage(sfRenderWindow *window, player_t *player, sfEvent event)
+{
+    sfRectangleShape *wall = sfRectangleShape_create();
+
+    move_player(player, event);
+    sfRenderWindow_clear(window, sfBlack);
+    draw_floor_and_ceiling(window);
+    cast_all_rays(window, player, wall);
+    sfRectangleShape_destroy(wall);
+}
+
+static void check_state(wolf_t *wolf, sfRenderWindow *window, sfEvent event)
+{
+    switch (wolf->state) {
+        case MENU:
+            break;
+        case GAME:
+            stage(window, wolf->player, event);
+            break;
+        default:
+            break;
+    }
 }
 
 int main(void)
 {
     sfRenderWindow *window;
     sfVideoMode mode = {WINDOW_WIDTH, WINDOW_HEIGHT, 32};
-    player_t *player = malloc(sizeof(player_t));
+    wolf_t *wolf = calloc(1, sizeof(wolf_t));
     sfEvent event;
-    sfRectangleShape *wall = sfRectangleShape_create();
 
     window = sfRenderWindow_create(mode, "Wolf3D", sfResize | sfClose, NULL);
     if (!window)
         return 1;
-    init_player(player);
+    init_player(wolf->player);
     while (sfRenderWindow_isOpen(window)) {
-        while (sfRenderWindow_pollEvent(window, &event)) {
-            check_event(window, event, player);
-        }
-        move_player(player, event);
-        sfRenderWindow_clear(window, sfBlack);
-        draw_floor_and_ceiling(window);
-        cast_all_rays(window, player, wall);
+        while (sfRenderWindow_pollEvent(window, &event))
+            check_event(window, event, wolf);
+        check_state(wolf, window, event);
         sfRenderWindow_display(window);
     }
-    sfRectangleShape_destroy(wall);
     sfRenderWindow_destroy(window);
     return 0;
 }

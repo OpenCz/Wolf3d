@@ -27,6 +27,18 @@ typedef struct player_s {
     float angle;
 } player_t;
 
+typedef enum {
+    MENU,
+    GAME,
+    SETTINGS,
+    QUIT,
+} state_t;
+
+typedef struct wolf_s {
+    state_t state;
+    player_t *player;
+} wolf_t;
+
 void init_player(player_t *player);
 int is_wall(int x, int y);
 void draw_floor_and_ceiling(sfRenderWindow *window);
