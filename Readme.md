@@ -1,1 +1,0 @@
-# Wolf3d with networking (multiplayer)
