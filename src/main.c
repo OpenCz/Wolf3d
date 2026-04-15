@@ -7,7 +7,7 @@
 
 #include "../include/wolf3d.h"
 
-int map[MAP_HEIGHT][MAP_WIDTH] = {
+const int map[MAP_HEIGHT][MAP_WIDTH] = {
     {1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 1, 0, 0, 0, 1},
@@ -65,7 +65,7 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 int main(void)
 {
     sfRenderWindow *window = sfRenderWindow_create((sfVideoMode)
-        {1920, 1080, 32}, "Wolf3D", sfResize | sfClose, NULL);
+        {1920, 1080, 32}, "Wolf3D", sfResize, NULL);
     wolf_t *wolf = init_wolf(window);
     sfEvent event;
 
