@@ -52,7 +52,7 @@ static void init_menu_entities(wolf_t *wolf, sfRenderWindow *window)
     push_front(&wolf->list[MENU][SPRITE], create_entity("background",
             "assets/BG_main_menu.png",
             &(sfVector2f){size.x / 2, size.y / 2},
-            &(sfVector2f){1.2 * sx, 1.2 * sy}));
+            &(sfVector2f){1.15 * sx, 1.21 * sy}));
 }
 
 wolf_t *init_wolf(sfRenderWindow *window)
