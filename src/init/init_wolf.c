@@ -46,10 +46,13 @@ static entity_t *create_entity(const char *name,
 static void init_menu_entities(wolf_t *wolf, sfRenderWindow *window)
 {
     sfVector2u size = sfRenderWindow_getSize(window);
+    float sx = (float)size.x / 1920;
+    float sy = (float)size.y / 1080;
 
-    printf("%d %d\n", size.x, size.y);
-    push_front(&wolf->list[MENU][SPRITE], create_entity("play_button",
-            "assets/BG_main_menu.png", &(sfVector2f){size.x / 2, size.y / 2}, &(sfVector2f){1.2 * (size.x / 1920), 1.2 * (size.y / 1080)}));
+    push_front(&wolf->list[MENU][SPRITE], create_entity("background",
+            "assets/BG_main_menu.png",
+            &(sfVector2f){size.x / 2, size.y / 2},
+            &(sfVector2f){1.2 * sx, 1.2 * sy}));
 }
 
 wolf_t *init_wolf(sfRenderWindow *window)
