@@ -5,26 +5,23 @@
 ## makefile
 ##
 
-CC     = epiclang
-CFLAGS = -Wall -Wextra -I./include
+SRC	=	$(shell find . -type f -name "*.c")
 
-SRC_SERVER = $(wildcard src/server/*.c)
-SRC_CLIENT = $(wildcard src/client/*.c)
+OBJ	=	$(SRC:.c=.o)
 
-all: server client
+NAME	=	wolf3d
 
-server: $(SRC_SERVER)
-	$(CC) $(CFLAGS) $(SRC_SERVER) -o server_wolf3d -lcsfml-network -lcsfml-system
+all:	$(NAME)
 
-client: $(SRC_CLIENT)
-	$(CC) $(CFLAGS) $(SRC_CLIENT) -o wolf3d -lcsfml-graphics -lcsfml-window -lcsfml-network -lcsfml-system
+$(NAME):	$(OBJ)
+	epiclang $(SRC) -o $(NAME) -I./include -lcsfml-graphics -lcsfml-window -lcsfml-system -lm 
 
 clean:
-	rm -f server wolf3d
+	rm -f $(OBJ)
 
-fclean: clean
-	rm -f server wolf3d
+fclean:	clean
+	rm -f $(NAME)
 
-re: fclean all
+re:	fclean all
 
-.PHONY: all clean fclean re
+.PHONY:	all clean fclean re
