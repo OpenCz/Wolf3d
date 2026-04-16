@@ -5,15 +5,9 @@
 ** wolf3d
 */
 
-#include <SFML/Graphics.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
 
 #ifndef WOLF_H
     #define WOLF_H
-
     #define STATES 3
     #define TO_DRAW 2
     #define SPRITE 0
@@ -24,9 +18,12 @@
     #define MAP_HEIGHT 8
     #define WINDOW_WIDTH 800
     #define WINDOW_HEIGHT 600
-
     #define FOV (M_PI / 3)
-
+    #include <SFML/Graphics.h>
+    #include <stdlib.h>
+    #include <math.h>
+    #include <string.h>
+    #include <stdio.h>
 typedef struct player_s {
     float x;
     float y;

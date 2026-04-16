@@ -45,14 +45,14 @@ static entity_t *create_entity(const char *name,
 
 static void init_menu_entities(wolf_t *wolf, window_t *window)
 {
-    sfVector2u size = sfRenderWindow_getSize(window->window);
-    float sx = (float)size.x / 1920;
-    float sy = (float)size.y / 1080;
-
+    push_front(&wolf->list[MENU][SPRITE], create_entity("bar_main_menu",
+            "assets/bar_main_menu.png",
+            &(sfVector2f){window->width / 2, window->height / 1.06},
+            &(sfVector2f){1.6, 1.22}));
     push_front(&wolf->list[MENU][SPRITE], create_entity("background",
             "assets/BG_main_menu.png",
-            &(sfVector2f){size.x / 2, size.y / 2},
-            &(sfVector2f){1.15 * sx, 1.21 * sy}));
+            &(sfVector2f){window->width / 2, window->height / 2},
+            &(sfVector2f){1.15, 1.21}));
 }
 
 window_t *init_window_data(void)
