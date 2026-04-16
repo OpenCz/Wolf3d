@@ -23,26 +23,28 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
     if (event.type == sfEvtClosed || wolf->state == QUIT ||
         sfKeyboard_isKeyPressed(sfKeyEscape))
         sfRenderWindow_close(window);
+    if (sfKeyboard_isKeyPressed(sfKeyEnter))
+        wolf->state = GAME;
 }
 
-static void stage(sfRenderWindow *window, player_t *player, sfEvent event)
+static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
     sfRectangleShape *wall = sfRectangleShape_create();
 
     move_player(player, event);
-    sfRenderWindow_clear(window, sfBlack);
-    draw_floor_and_ceiling(window);
-    cast_all_rays(window, player, wall);
+    sfRenderWindow_clear(wolf->window_data->window, sfBlack);
+    draw_floor_and_ceiling(wolf->window_data);
+    cast_all_rays(wolf->window_data, player, wall);
     sfRectangleShape_destroy(wall);
 }
 
-static void check_state(wolf_t *wolf, sfRenderWindow *window, sfEvent event)
+static void check_state(wolf_t *wolf, sfEvent event)
 {
     switch (wolf->state) {
         case MENU:
             break;
         case GAME:
-            stage(window, wolf->player, event);
+            stage(wolf, wolf->player, event);
             break;
         default:
             break;
@@ -54,7 +56,7 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
     while (sfRenderWindow_isOpen(window)) {
         while (sfRenderWindow_pollEvent(window, &event))
             check_event(window, event, wolf);
-        check_state(wolf, window, event);
+        check_state(wolf, event);
         draw_sprite_list(wolf, window);
         sfRenderWindow_display(window);
     }
@@ -64,12 +66,10 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 
 int main(void)
 {
-    sfRenderWindow *window = sfRenderWindow_create((sfVideoMode)
-        {1920, 1080, 32}, "Wolf3D", sfFullscreen, NULL);
-    wolf_t *wolf = init_wolf(window);
+    wolf_t *wolf = init_wolf();
     sfEvent event;
 
     if (!wolf)
         return 84;
-    return program(window, event, wolf);
+    return program(wolf->window_data->window, event, wolf);
 }

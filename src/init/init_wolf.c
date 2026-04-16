@@ -43,9 +43,9 @@ static entity_t *create_entity(const char *name,
     return entity;
 }
 
-static void init_menu_entities(wolf_t *wolf, sfRenderWindow *window)
+static void init_menu_entities(wolf_t *wolf, window_t *window)
 {
-    sfVector2u size = sfRenderWindow_getSize(window);
+    sfVector2u size = sfRenderWindow_getSize(window->window);
     float sx = (float)size.x / 1920;
     float sy = (float)size.y / 1080;
 
@@ -55,7 +55,20 @@ static void init_menu_entities(wolf_t *wolf, sfRenderWindow *window)
             &(sfVector2f){1.15 * sx, 1.21 * sy}));
 }
 
-wolf_t *init_wolf(sfRenderWindow *window)
+window_t *init_window_data(void)
+{
+    window_t *window = calloc(1, sizeof(window_t));
+
+    if (!window)
+        return NULL;
+    window->window = sfRenderWindow_create((sfVideoMode)
+        {1920, 1080, 32}, "Wolf3D", sfClose, NULL);
+    window->width = 1920;
+    window->height = 1080;
+    return window;
+}
+
+wolf_t *init_wolf(void)
 {
     wolf_t *wolf = calloc(1, sizeof(wolf_t));
 
@@ -72,6 +85,7 @@ wolf_t *init_wolf(sfRenderWindow *window)
         for (int j = 0; j < TO_DRAW; j++)
             wolf->list[i][j] = NULL;
     }
-    init_menu_entities(wolf, window);
+    wolf->window_data = init_window_data();
+    init_menu_entities(wolf, wolf->window_data);
     return wolf;
 }
