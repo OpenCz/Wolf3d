@@ -7,21 +7,41 @@
 
 #include "../include/wolf3d.h"
 
-int map[MAP_HEIGHT][MAP_WIDTH] = {
-    {1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 0, 0, 0, 1},
-    {1, 0, 0, 1, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 1, 0, 1},
-    {1, 0, 1, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1}
-};
+int get_map_tile(int tile_x, int tile_y)
+{
+    static const int map_data[MAP_HEIGHT][MAP_WIDTH] = {
+        {1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 1, 0, 0, 0, 1},
+        {1, 0, 0, 1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1}
+    };
+
+    return map_data[tile_y][tile_x];
+}
 
 void check_event(sfRenderWindow *window, sfEvent event, player_t *player)
 {
     if (event.type == sfEvtClosed)
         sfRenderWindow_close(window);
+}
+
+void main_loop(sfRenderWindow *window, player_t *player,
+    sfEvent event, sfRectangleShape *wall)
+{
+    while (sfRenderWindow_isOpen(window)) {
+        while (sfRenderWindow_pollEvent(window, &event)) {
+            check_event(window, event, player);
+        }
+        move_player(player, event);
+        sfRenderWindow_clear(window, sfBlack);
+        draw_floor_and_ceiling(window);
+        cast_all_rays(window, player, wall);
+        sfRenderWindow_display(window);
+    }
 }
 
 int main(void)
@@ -36,16 +56,7 @@ int main(void)
     if (!window)
         return 1;
     init_player(player);
-    while (sfRenderWindow_isOpen(window)) {
-        while (sfRenderWindow_pollEvent(window, &event)) {
-            check_event(window, event, player);
-        }
-        move_player(player, event);
-        sfRenderWindow_clear(window, sfBlack);
-        draw_floor_and_ceiling(window);
-        cast_all_rays(window, player, wall);
-        sfRenderWindow_display(window);
-    }
+    main_loop(window, player, event, wall);
     sfRectangleShape_destroy(wall);
     sfRenderWindow_destroy(window);
     return 0;

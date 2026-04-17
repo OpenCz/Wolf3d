@@ -37,5 +37,5 @@ float cast_single_ray(player_t *player, float ray_angle,
     sfRenderWindow *window);
 
 void move_player(player_t *player, sfEvent event);
-extern int map[MAP_HEIGHT][MAP_WIDTH];
+int get_map_tile(int tile_x, int tile_y);
 #endif
