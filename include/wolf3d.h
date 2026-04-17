@@ -24,6 +24,7 @@
     #include <math.h>
     #include <string.h>
     #include <stdio.h>
+
 typedef struct player_s {
     float x;
     float y;
@@ -37,10 +38,24 @@ typedef enum {
     QUIT,
 } state_t;
 
+typedef enum {
+    NEWGAME,
+    CONTINUE,
+    OPTIONS,
+    LEAVE,
+} menu_t;
+
 typedef struct list_s {
     void *data;
     struct list_s *next;
 } list_t;
+
+typedef struct text_s {
+    char *name;
+    char *content;
+    menu_t state;
+    sfText *text;
+} text_t;
 
 typedef struct entity_s {
     char *name;
@@ -54,23 +69,34 @@ typedef struct window_s {
     int height;
 } window_t;
 
+typedef struct data_s {
+    sfFont *font;
+} data_t;
+
 typedef struct wolf_s {
     state_t state;
+    menu_t menu_state;
     player_t *player;
     window_t *window_data;
+    data_t *data;
     list_t *list[STATES][TO_DRAW];
 } wolf_t;
 
 wolf_t *init_wolf(void);
+void init_menu_text(wolf_t *wolf, window_t *window);
 void init_player(player_t *player);
 int is_wall(int x, int y);
 void draw_floor_and_ceiling(window_t *window_data);
+void init_menu_entities(wolf_t *wolf, window_t *window);
 
-void draw_sprite_list(wolf_t *wolf, sfRenderWindow *window);
+void draw_sprite_list(wolf_t *wolf);
+void draw_text_list(wolf_t *wolf);
 void cast_all_rays(window_t *window_data, player_t *player,
     sfRectangleShape *wall);
 
 void move_player(player_t *player, sfEvent event);
 extern const int map[MAP_HEIGHT][MAP_WIDTH];
 int get_map_tile(int tile_x, int tile_y);
+void push_front(list_t **list, void *data);
+void manage_menu(wolf_t *wolf, sfEvent event);
 #endif

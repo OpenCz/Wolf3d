@@ -28,8 +28,13 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
     if (event.type == sfEvtClosed || wolf->state == QUIT ||
         sfKeyboard_isKeyPressed(sfKeyEscape))
         sfRenderWindow_close(window);
-    if (sfKeyboard_isKeyPressed(sfKeyEnter))
-        wolf->state = GAME;
+    switch (wolf->state) {
+        case MENU:
+            manage_menu(wolf, event);
+            break;
+        default:
+            break;
+    }
 }
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
@@ -59,10 +64,12 @@ static void check_state(wolf_t *wolf, sfEvent event)
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     while (sfRenderWindow_isOpen(window)) {
+        sfRenderWindow_clear(window, sfBlack);
         while (sfRenderWindow_pollEvent(window, &event))
             check_event(window, event, wolf);
         check_state(wolf, event);
-        draw_sprite_list(wolf, window);
+        draw_sprite_list(wolf);
+        draw_text_list(wolf);
         sfRenderWindow_display(window);
     }
     sfRenderWindow_destroy(window);
