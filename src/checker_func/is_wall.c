@@ -20,5 +20,5 @@ int is_wall(int x, int y)
         return 1;
     if (tile_y < 0 || tile_y >= MAP_HEIGHT)
         return 1;
-    return map[tile_y][tile_x] == 1;
+    return get_map_tile(tile_x, tile_y) == 1;
 }

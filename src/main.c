@@ -7,16 +7,21 @@
 
 #include "../include/wolf3d.h"
 
-const int map[MAP_HEIGHT][MAP_WIDTH] = {
-    {1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 0, 0, 0, 1},
-    {1, 0, 0, 1, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 1, 0, 1},
-    {1, 0, 1, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1}
-};
+int get_map_tile(int tile_x, int tile_y)
+{
+    static const int map_data[MAP_HEIGHT][MAP_WIDTH] = {
+        {1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 1, 0, 0, 0, 1},
+        {1, 0, 0, 1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1}
+    };
+
+    return map_data[tile_y][tile_x];
+}
 
 void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {

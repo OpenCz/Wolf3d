@@ -72,4 +72,5 @@ void cast_all_rays(window_t *window_data, player_t *player,
 
 void move_player(player_t *player, sfEvent event);
 extern const int map[MAP_HEIGHT][MAP_WIDTH];
+int get_map_tile(int tile_x, int tile_y);
 #endif
