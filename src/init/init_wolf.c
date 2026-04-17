@@ -45,6 +45,10 @@ static entity_t *create_entity(const char *name,
 
 static void init_menu_entities(wolf_t *wolf, window_t *window)
 {
+    push_front(&wolf->list[MENU][SPRITE], create_entity("eric",
+            "assets/skins/eric.png",
+            &(sfVector2f){window->width / 1.3, window->height / 1.5},
+            &(sfVector2f){0.5, 0.5}));
     push_front(&wolf->list[MENU][SPRITE], create_entity("background",
             "assets/BG_main_menu.png",
             &(sfVector2f){window->width / 2, window->height / 2},
