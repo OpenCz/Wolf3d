@@ -23,41 +23,58 @@ int get_map_tile(int tile_x, int tile_y)
     return map_data[tile_y][tile_x];
 }
 
-void check_event(sfRenderWindow *window, sfEvent event, player_t *player)
+void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
-    if (event.type == sfEvtClosed)
+    if (event.type == sfEvtClosed || wolf->state == QUIT ||
+        sfKeyboard_isKeyPressed(sfKeyEscape))
         sfRenderWindow_close(window);
+    if (sfKeyboard_isKeyPressed(sfKeyEnter))
+        wolf->state = GAME;
 }
 
-void main_loop(sfRenderWindow *window, player_t *player,
-    sfEvent event, sfRectangleShape *wall)
+static void stage(wolf_t *wolf, player_t *player, sfEvent event)
+{
+    sfRectangleShape *wall = sfRectangleShape_create();
+
+    move_player(player, event);
+    sfRenderWindow_clear(wolf->window_data->window, sfBlack);
+    draw_floor_and_ceiling(wolf->window_data);
+    cast_all_rays(wolf->window_data, player, wall);
+    sfRectangleShape_destroy(wall);
+}
+
+static void check_state(wolf_t *wolf, sfEvent event)
+{
+    switch (wolf->state) {
+        case MENU:
+            break;
+        case GAME:
+            stage(wolf, wolf->player, event);
+            break;
+        default:
+            break;
+    }
+}
+
+int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     while (sfRenderWindow_isOpen(window)) {
-        while (sfRenderWindow_pollEvent(window, &event)) {
-            check_event(window, event, player);
-        }
-        move_player(player, event);
-        sfRenderWindow_clear(window, sfBlack);
-        draw_floor_and_ceiling(window);
-        cast_all_rays(window, player, wall);
+        while (sfRenderWindow_pollEvent(window, &event))
+            check_event(window, event, wolf);
+        check_state(wolf, event);
+        draw_sprite_list(wolf, window);
         sfRenderWindow_display(window);
     }
+    sfRenderWindow_destroy(window);
+    return 0;
 }
 
 int main(void)
 {
-    sfRenderWindow *window;
-    sfVideoMode mode = {WINDOW_WIDTH, WINDOW_HEIGHT, 32};
-    player_t *player = malloc(sizeof(player_t));
+    wolf_t *wolf = init_wolf();
     sfEvent event;
-    sfRectangleShape *wall = sfRectangleShape_create();
 
-    window = sfRenderWindow_create(mode, "Wolf3D", sfResize | sfClose, NULL);
-    if (!window)
-        return 1;
-    init_player(player);
-    main_loop(window, player, event, wall);
-    sfRectangleShape_destroy(wall);
-    sfRenderWindow_destroy(window);
-    return 0;
+    if (!wolf)
+        return 84;
+    return program(wolf->window_data->window, event, wolf);
 }
