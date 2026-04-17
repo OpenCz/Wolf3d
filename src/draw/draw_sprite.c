@@ -7,15 +7,6 @@
 
 #include "../../include/wolf3d.h"
 
-void resize_sprite_based_on_window(entity_t *entity)
-{
-    sfVector2u texture_size = sfTexture_getSize(entity->texture);
-    float scale_x = (float)WINDOW_WIDTH / texture_size.x;
-    float scale_y = (float)WINDOW_HEIGHT / texture_size.y;
-
-    sfSprite_setScale(entity->sprite, (sfVector2f){scale_x, scale_y});
-}
-
 void draw_sprite_list(wolf_t *wolf, sfRenderWindow *window)
 {
     entity_t *entity = NULL;

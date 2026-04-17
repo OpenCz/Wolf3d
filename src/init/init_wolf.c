@@ -45,14 +45,10 @@ static entity_t *create_entity(const char *name,
 
 static void init_menu_entities(wolf_t *wolf, window_t *window)
 {
-    push_front(&wolf->list[MENU][SPRITE], create_entity("bar_main_menu",
-            "assets/bar_main_menu.png",
-            &(sfVector2f){window->width / 2, window->height / 1.06},
-            &(sfVector2f){1.6, 1.22}));
     push_front(&wolf->list[MENU][SPRITE], create_entity("background",
             "assets/BG_main_menu.png",
             &(sfVector2f){window->width / 2, window->height / 2},
-            &(sfVector2f){1.15, 1.21}));
+            &(sfVector2f){1, 1}));
 }
 
 window_t *init_window_data(void)
