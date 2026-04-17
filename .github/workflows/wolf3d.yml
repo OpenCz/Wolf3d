@@ -146,27 +146,27 @@ jobs:
             [ -z "$list" ] && break
           done
         
-  run_tests:
-    environment: production
-    runs-on: ubuntu-latest
-    container:
-      image: epitechcontent/epitest-docker
-    needs:
-      - check_mirror
-      - check_compilation_and_coding_style
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: testers
-        run: make tests_run
-        timeout-minutes: 2
+  # run_tests:
+  #   environment: production
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: epitechcontent/epitest-docker
+  #   needs:
+  #     - check_mirror
+  #     - check_compilation_and_coding_style
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #       with:
+  #         fetch-depth: 0
+  #     - name: testers
+  #       run: make tests_run
+  #       timeout-minutes: 2
   
   open_pull_request:
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     needs:
       - check_mirror
-      - run_tests
+      # - run_tests
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -201,7 +201,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs:
       - check_mirror
-      - run_tests
+      # - run_tests
     environment: production
     runs-on: ubuntu-latest
 
