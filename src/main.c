@@ -32,6 +32,8 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
         case MENU:
             manage_menu(wolf, event);
             break;
+        case GAME:
+            break;
         default:
             break;
     }
@@ -41,7 +43,7 @@ static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
     sfRectangleShape *wall = sfRectangleShape_create();
 
-    move_player(player, event);
+    move_player(wolf->player, event);
     sfRenderWindow_clear(wolf->window_data->window, sfBlack);
     draw_floor_and_ceiling(wolf->window_data);
     cast_all_rays(wolf->window_data, player, wall);
