@@ -41,13 +41,10 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
-    sfRectangleShape *wall = sfRectangleShape_create();
-
     move_player(wolf->player, event);
     sfRenderWindow_clear(wolf->window_data->window, sfBlack);
     draw_floor_and_ceiling(wolf->window_data);
-    cast_all_rays(wolf->window_data, player, wall);
-    sfRectangleShape_destroy(wall);
+    cast_all_rays(wolf->window_data, player, wolf->game->wall);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)
@@ -74,7 +71,7 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
         draw_text_list(wolf);
         sfRenderWindow_display(window);
     }
-    sfRenderWindow_destroy(window);
+    free_wolf(wolf);
     return 0;
 }
 

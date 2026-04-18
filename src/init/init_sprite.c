@@ -7,7 +7,7 @@
 
 #include "../../include/wolf3d.h"
 
-static entity_t *create_entity(const char *name,
+static entity_t *create_entity(char *name,
     const char *texture_path, sfVector2f *pos, sfVector2f *scale)
 {
     entity_t *entity = malloc(sizeof(entity_t));
@@ -15,7 +15,7 @@ static entity_t *create_entity(const char *name,
 
     if (!entity)
         return NULL;
-    entity->name = strdup(name);
+    entity->name = name;
     entity->texture = sfTexture_createFromFile(texture_path, NULL);
     if (!entity->name || !entity->texture) {
         if (entity->name)
@@ -34,6 +34,10 @@ static entity_t *create_entity(const char *name,
 
 void init_menu_entities(wolf_t *wolf, window_t *window)
 {
+    for (int i = 0; i < STATES; i++) {
+        for (int j = 0; j < TO_DRAW; j++)
+            wolf->list[i][j] = NULL;
+    }
     push_front(&wolf->list[MENU][SPRITE], create_entity("background",
             "assets/BG_main_menu.png",
             &(sfVector2f){window->width / 2, window->height / 2},

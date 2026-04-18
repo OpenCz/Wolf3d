@@ -63,6 +63,11 @@ typedef struct entity_s {
     sfTexture *texture;
 } entity_t;
 
+typedef struct game_s {
+    sfClock *clock;
+    sfRectangleShape *wall;
+} game_t;
+
 typedef struct window_s {
     sfRenderWindow *window;
     int width;
@@ -79,21 +84,26 @@ typedef struct wolf_s {
     player_t *player;
     window_t *window_data;
     data_t *data;
+    game_t *game;
     list_t *list[STATES][TO_DRAW];
 } wolf_t;
 
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
+game_t *init_game(void);
 void init_player(player_t *player);
+void init_menu_entities(wolf_t *wolf, window_t *window);
+
+void free_wolf(wolf_t *wolf);
 int is_wall(int x, int y);
 void draw_floor_and_ceiling(window_t *window_data);
-void init_menu_entities(wolf_t *wolf, window_t *window);
 
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
 void cast_all_rays(window_t *window_data, player_t *player,
     sfRectangleShape *wall);
 
+void free_wolf(wolf_t *wolf);
 void move_player(player_t *player, sfEvent event);
 extern const int map[MAP_HEIGHT][MAP_WIDTH];
 int get_map_tile(int tile_x, int tile_y);

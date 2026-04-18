@@ -54,13 +54,10 @@ wolf_t *init_wolf(void)
         return NULL;
     }
     init_player(wolf->player);
-    for (int i = 0; i < STATES; i++) {
-        for (int j = 0; j < TO_DRAW; j++)
-            wolf->list[i][j] = NULL;
-    }
     wolf->window_data = init_window_data();
     wolf->data = init_wolf_data();
     init_menu_entities(wolf, wolf->window_data);
     init_menu_text(wolf, wolf->window_data);
+    wolf->game = init_game();
     return wolf;
 }
