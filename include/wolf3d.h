@@ -104,7 +104,7 @@ void cast_all_rays(window_t *window_data, player_t *player,
     sfRectangleShape *wall);
 
 void free_wolf(wolf_t *wolf);
-void move_player(player_t *player, sfEvent event);
+void move_player(player_t *player, sfEvent event, game_t *game);
 extern const int map[MAP_HEIGHT][MAP_WIDTH];
 int get_map_tile(int tile_x, int tile_y);
 void push_front(list_t **list, void *data);
