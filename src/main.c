@@ -28,19 +28,23 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
     if (event.type == sfEvtClosed || wolf->state == QUIT ||
         sfKeyboard_isKeyPressed(sfKeyEscape))
         sfRenderWindow_close(window);
-    if (sfKeyboard_isKeyPressed(sfKeyEnter))
-        wolf->state = GAME;
+    switch (wolf->state) {
+        case MENU:
+            manage_menu(wolf, event);
+            break;
+        case GAME:
+            break;
+        default:
+            break;
+    }
 }
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
-    sfRectangleShape *wall = sfRectangleShape_create();
-
-    move_player(player, event);
+    move_player(wolf->player, event, wolf->game);
     sfRenderWindow_clear(wolf->window_data->window, sfBlack);
     draw_floor_and_ceiling(wolf->window_data);
-    cast_all_rays(wolf->window_data, player, wall);
-    sfRectangleShape_destroy(wall);
+    cast_all_rays(wolf->window_data, player, wolf->game->wall);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)
@@ -59,13 +63,15 @@ static void check_state(wolf_t *wolf, sfEvent event)
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     while (sfRenderWindow_isOpen(window)) {
+        sfRenderWindow_clear(window, sfBlack);
         while (sfRenderWindow_pollEvent(window, &event))
             check_event(window, event, wolf);
         check_state(wolf, event);
-        draw_sprite_list(wolf, window);
+        draw_sprite_list(wolf);
+        draw_text_list(wolf);
         sfRenderWindow_display(window);
     }
-    sfRenderWindow_destroy(window);
+    free_wolf(wolf);
     return 0;
 }
 

@@ -7,12 +7,26 @@
 
 #include "../../include/wolf3d.h"
 
-void draw_sprite_list(wolf_t *wolf, sfRenderWindow *window)
+void draw_sprite_list(wolf_t *wolf)
 {
     entity_t *entity = NULL;
 
     for (list_t *c = wolf->list[wolf->state][SPRITE]; c; c = c->next) {
         entity = (entity_t *)c->data;
-        sfRenderWindow_drawSprite(window, entity->sprite, NULL);
+        sfRenderWindow_drawSprite(wolf->window_data->window,
+            entity->sprite, NULL);
+    }
+}
+
+void draw_text_list(wolf_t *wolf)
+{
+    text_t *text = NULL;
+
+    for (list_t *c = wolf->list[wolf->state][TEXT]; c; c = c->next) {
+        text = (text_t *)c->data;
+        sfText_setColor(text->text, sfWhite);
+        if (wolf->menu_state == text->state)
+            sfText_setColor(text->text, sfRed);
+        sfRenderWindow_drawText(wolf->window_data->window, text->text, NULL);
     }
 }
