@@ -21,7 +21,6 @@ static void free_data(data_t *data)
 
 static void free_game(game_t *game)
 {
-    sfRectangleShape_destroy(game->wall);
     sfClock_destroy(game->clock);
     free(game);
 }

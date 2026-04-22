@@ -44,7 +44,7 @@ static void stage(wolf_t *wolf, player_t *player, sfEvent event)
     move_player(wolf->player, event, wolf->game);
     sfRenderWindow_clear(wolf->window_data->window, sfBlack);
     draw_floor_and_ceiling(wolf->window_data);
-    cast_all_rays(wolf->window_data, player, wolf->game->wall);
+    cast_all_rays(wolf->window_data, player, wolf->game);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)

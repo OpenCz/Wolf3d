@@ -65,7 +65,9 @@ typedef struct entity_s {
 
 typedef struct game_s {
     sfClock *clock;
-    sfRectangleShape *wall;
+    sfUint8 *pixel;
+    sfTexture *texture;
+    sfSprite *sprite;
 } game_t;
 
 typedef struct window_s {
@@ -90,7 +92,7 @@ typedef struct wolf_s {
 
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
-game_t *init_game(void);
+game_t *init_game(window_t *window_data);
 void init_player(player_t *player);
 void init_menu_entities(wolf_t *wolf, window_t *window);
 
@@ -101,7 +103,7 @@ void draw_floor_and_ceiling(window_t *window_data);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
 void cast_all_rays(window_t *window_data, player_t *player,
-    sfRectangleShape *wall);
+    game_t *game);
 
 void free_wolf(wolf_t *wolf);
 void move_player(player_t *player, sfEvent event, game_t *game);
