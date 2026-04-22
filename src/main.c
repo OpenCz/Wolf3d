@@ -25,6 +25,8 @@ int get_map_tile(int tile_x, int tile_y)
 
 void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
+    sfVector2u scale = {0};
+
     if (event.type == sfEvtClosed || wolf->state == QUIT ||
         sfKeyboard_isKeyPressed(sfKeyEscape))
         sfRenderWindow_close(window);
@@ -36,6 +38,12 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
             break;
         default:
             break;
+    }
+    if (event.type == sfEvtResized) {
+        for (list_t *tmp = wolf->list[MENU][SPRITE]; tmp != NULL; tmp = tmp->next) {
+            sfSprite_setPosition(tmp->data, (sfVector2f){scale.x / 2.f, scale.y / 2.f});
+            sfSprite_setScale(tmp->data, (sfVector2f){1 * scale.x / 1920.f, 1 * scale.y / 1080.f});
+        }
     }
 }
 

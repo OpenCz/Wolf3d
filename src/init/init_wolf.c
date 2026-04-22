@@ -25,7 +25,7 @@ window_t *init_window_data(void)
 
     if (!window)
         return NULL;
-    window->window = sfRenderWindow_create(mode, "Wolf3D", sfClose, NULL);
+    window->window = sfRenderWindow_create(mode, "Wolf3D", sfClose | sfResize, NULL);
     window->width = mode.width;
     window->height = mode.height;
     return window;
