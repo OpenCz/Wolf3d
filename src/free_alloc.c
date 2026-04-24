@@ -22,6 +22,10 @@ static void free_data(data_t *data)
 static void free_game(game_t *game)
 {
     sfClock_destroy(game->clock);
+    free(game->pixel);
+    free(game->wall);
+    sfSprite_destroy(game->sprite);
+    sfTexture_destroy(game->texture);
     free(game);
 }
 
@@ -37,12 +41,14 @@ static void free_list(wolf_t *wolf)
         sfSprite_destroy(entity->sprite);
         sfTexture_destroy(entity->texture);
         free(entity);
+        free(curr);
     }
     for (list_t *curr = wolf->list[MENU][TEXT]; curr; curr = next) {
         next = curr->next;
         text = (text_t *)curr->data;
         sfText_destroy(text->text);
         free(text);
+        free(curr);
     }
 }
 

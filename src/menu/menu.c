@@ -7,14 +7,21 @@
 
 #include "../../include/wolf3d.h"
 
+static void move_cloud(wolf_t *wolf)
+{
+    entity_t *cloud = get_entity(wolf->list[MENU][SPRITE], "cloud");
+    sfVector2f pos;
+    float dt = sfTime_asSeconds(sfClock_getElapsedTime(cloud->clock));
+
+    sfClock_restart(cloud->clock);
+    sfSprite_move(cloud->sprite, (sfVector2f){100 * dt, 0});
+    pos = sfSprite_getPosition(cloud->sprite);
+    if (pos.x > wolf->window_data->width)
+        sfSprite_setPosition(cloud->sprite,
+            (sfVector2f){0, wolf->window_data->height / 4});
+}
+
 void menu(wolf_t *wolf)
 {
-    text_t *text;
-
-    for (list_t *c = wolf->list[MENU][TEXT]; c; c = c->next) {
-        text = (text_t *)c->data;
-        sfText_setColor(text->text, sfWhite);
-        if (wolf->menu_state == text->state)
-            sfText_setColor(text->text, sfRed);
-    }
+    move_cloud(wolf);
 }

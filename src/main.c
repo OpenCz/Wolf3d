@@ -51,6 +51,7 @@ static void check_state(wolf_t *wolf, sfEvent event)
 {
     switch (wolf->state) {
         case MENU:
+            menu(wolf);
             break;
         case GAME:
             stage(wolf, wolf->player, event);
