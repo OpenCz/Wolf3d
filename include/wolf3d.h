@@ -7,6 +7,7 @@
 
 
 #ifndef WOLF_H
+    #include <math.h>
     #define WOLF_H
     #define STATES 3
     #define TO_DRAW 2
@@ -19,9 +20,10 @@
     #define WINDOW_WIDTH 800
     #define WINDOW_HEIGHT 600
     #define FOV (M_PI / 3)
+    #define TEX_SIZE 64
+    #define CLOUD_SPEED 20
     #include <SFML/Graphics.h>
     #include <stdlib.h>
-    #include <math.h>
     #include <string.h>
     #include <stdio.h>
 
@@ -59,13 +61,18 @@ typedef struct text_s {
 
 typedef struct entity_s {
     char *name;
+    sfClock *clock;
     sfSprite *sprite;
     sfTexture *texture;
 } entity_t;
 
 typedef struct game_s {
     sfClock *clock;
-    sfRectangleShape *wall;
+    sfUint8 *pixel;
+    sfUint8 *wall;
+    int wall_index;
+    sfTexture *texture;
+    sfSprite *sprite;
 } game_t;
 
 typedef struct window_s {
@@ -88,12 +95,13 @@ typedef struct wolf_s {
     list_t *list[STATES][TO_DRAW];
 } wolf_t;
 
+void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
-game_t *init_game(void);
+game_t *init_game(window_t *window_data);
 void init_player(player_t *player);
 void init_menu_entities(wolf_t *wolf, window_t *window);
-
+entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);
 int is_wall(int x, int y);
 void draw_floor_and_ceiling(window_t *window_data);
@@ -101,7 +109,7 @@ void draw_floor_and_ceiling(window_t *window_data);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
 void cast_all_rays(window_t *window_data, player_t *player,
-    sfRectangleShape *wall);
+    game_t *game);
 
 void free_wolf(wolf_t *wolf);
 void move_player(player_t *player, sfEvent event, game_t *game);
