@@ -59,7 +59,7 @@ wolf_t *init_wolf(void)
     init_menu_entities(wolf, wolf->window_data);
     init_menu_text(wolf, wolf->window_data);
     wolf->game = init_game(wolf->window_data);
-    wolf->game->pixel = malloc(wolf->window_data->height *
+    wolf->game->wall->pixel = malloc(wolf->window_data->height *
         wolf->window_data->width * 4);
-    return wolf->game->pixel ? wolf : NULL;
+    return wolf->game->wall->pixel ? wolf : NULL;
 }

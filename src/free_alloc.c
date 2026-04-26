@@ -22,10 +22,10 @@ static void free_data(data_t *data)
 static void free_game(game_t *game)
 {
     sfClock_destroy(game->clock);
-    free(game->pixel);
-    free(game->wall);
-    sfSprite_destroy(game->sprite);
-    sfTexture_destroy(game->texture);
+    free(game->wall->pixel);
+    free(game->wall->wall);
+    sfSprite_destroy(game->wall->sprite);
+    sfTexture_destroy(game->wall->texture);
     free(game);
 }
 
