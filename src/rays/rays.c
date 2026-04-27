@@ -75,8 +75,6 @@ static float cast_ray(player_t *player, float ray_angle,
 
 float cast_single_ray(player_t *player, float ray_angle, window_t *window_data)
 {
-    float hit_x = 0;
-    float hit_y = 0;
     float raw = 0;
 
     ray_angle = normalize_angle(ray_angle);
@@ -118,8 +116,73 @@ void cast_all_rays(window_t *window_data, player_t *player,
             distance = 0.1f;
         get_wall_index(player, game, ray_angle, distance);
         draw_wall_column(window_data, i, distance, game);
+        game->zbuffer[i] = distance;
     }
+}
+
+void render_pixels(game_t *game, window_t *win)
+{
     sfTexture_updateFromPixels(game->texture, game->pixel,
-        window_data->width, window_data->height, 0, 0);
-    sfRenderWindow_drawSprite(window_data->window, game->sprite, NULL);
+        win->width, win->height, 0, 0);
+    sfRenderWindow_drawSprite(win->window, game->sprite, NULL);
+}
+
+static void draw_player_column(game_t *game, window_t *win,
+    int x, int top, int height)
+{
+    int idx;
+
+    for (int y = top; y < top + height; y++) {
+        if (y < 0 || y >= win->height)
+            continue;
+        idx = (y * win->width + x) * 4;
+        game->pixel[idx + 0] = 255;
+        game->pixel[idx + 1] = 50;
+        game->pixel[idx + 2] = 50;
+        game->pixel[idx + 3] = 255;
+    }
+}
+
+void draw_other_players(wolf_t *wolf)
+{
+    player_t *local = wolf->player;
+    player_t *other;
+    float dx;
+    float dy;
+    float dist;
+    float rel_angle;
+    float proj_dist = (wolf->window_data->width / 2.0f) / tanf(FOV / 2.0f);
+    float sprite_h;
+    int screen_x;
+    int half_w;
+    int top;
+
+    for (int p = 0; p < wolf->nb_others; p++) {
+        other = &wolf->others[p];
+        dx = other->x - local->x;
+        dy = other->y - local->y;
+        dist = sqrtf(dx * dx + dy * dy);
+        if (dist < 1.0f)
+            continue;
+        rel_angle = atan2f(dy, dx) - local->angle;
+        while (rel_angle > M_PI)
+            rel_angle -= 2.0f * M_PI;
+        while (rel_angle < -M_PI)
+            rel_angle += 2.0f * M_PI;
+        if (fabsf(rel_angle) > FOV / 2.0f + 0.1f)
+            continue;
+        sprite_h = (TILE_SIZE / dist) * proj_dist;
+        screen_x = (int)(wolf->window_data->width / 2.0f
+            + tanf(rel_angle) * proj_dist);
+        half_w = (int)(sprite_h / 4.0f);
+        top = (int)((wolf->window_data->height - sprite_h) / 2.0f);
+        for (int x = screen_x - half_w; x < screen_x + half_w; x++) {
+            if (x < 0 || x >= wolf->window_data->width)
+                continue;
+            if (wolf->game->zbuffer[x] < dist)
+                continue;
+            draw_player_column(wolf->game, wolf->window_data,
+                x, top, (int)sprite_h);
+        }
+    }
 }

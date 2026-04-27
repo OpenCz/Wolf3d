@@ -20,7 +20,7 @@ void push_front(list_t **list, void *data)
 
 window_t *init_window_data(void)
 {
-    window_t *window = calloc(1, sizeof(window_t));
+    window_t *window = malloc(sizeof(window_t));
 
     if (!window)
         return NULL;
@@ -33,7 +33,7 @@ window_t *init_window_data(void)
 
 data_t *init_wolf_data(void)
 {
-    data_t *data = calloc(1, sizeof(data_t));
+    data_t *data = malloc(sizeof(data_t));
 
     if (!data)
         return NULL;
@@ -43,12 +43,12 @@ data_t *init_wolf_data(void)
 
 wolf_t *init_wolf(void)
 {
-    wolf_t *wolf = calloc(1, sizeof(wolf_t));
+    wolf_t *wolf = malloc(sizeof(wolf_t));
 
     if (!wolf)
         return NULL;
     wolf->state = MENU;
-    wolf->player = calloc(1, sizeof(player_t));
+    wolf->player = malloc(sizeof(player_t));
     if (!wolf->player) {
         free(wolf);
         return NULL;
@@ -61,5 +61,8 @@ wolf_t *init_wolf(void)
     wolf->game = init_game(wolf->window_data);
     wolf->game->pixel = malloc(wolf->window_data->height *
         wolf->window_data->width * 4);
-    return wolf->game->pixel ? wolf : NULL;
+    wolf->game->zbuffer = malloc(wolf->window_data->width * sizeof(float));
+    if (!wolf->game->pixel || !wolf->game->zbuffer)
+        return NULL;
+    return wolf;
 }

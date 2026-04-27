@@ -9,7 +9,7 @@
 
 game_t *init_game(window_t *window_data)
 {
-    game_t *game = calloc(sizeof(game_t), 1);
+    game_t *game = malloc(sizeof(game_t));
     sfImage *image = NULL;
     const sfUint8 *tmp = NULL;
     int size = TEX_SIZE * TEX_SIZE * 4;

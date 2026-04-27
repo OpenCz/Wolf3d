@@ -26,6 +26,7 @@
     #include <stdlib.h>
     #include <string.h>
     #include <stdio.h>
+    #include "network.h"
 
 typedef struct player_s {
     float x;
@@ -73,6 +74,7 @@ typedef struct game_s {
     int wall_index;
     sfTexture *texture;
     sfSprite *sprite;
+    float *zbuffer;
 } game_t;
 
 typedef struct window_s {
@@ -93,6 +95,10 @@ typedef struct wolf_s {
     data_t *data;
     game_t *game;
     list_t *list[STATES][TO_DRAW];
+    client_t net;
+    int connected;
+    player_t others[MAX_PLAYERS];
+    int nb_others;
 } wolf_t;
 
 void menu(wolf_t *wolf);
@@ -108,8 +114,9 @@ void draw_floor_and_ceiling(window_t *window_data);
 
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
-void cast_all_rays(window_t *window_data, player_t *player,
-    game_t *game);
+void cast_all_rays(window_t *window_data, player_t *player, game_t *game);
+void render_pixels(game_t *game, window_t *win);
+void draw_other_players(wolf_t *wolf);
 
 void free_wolf(wolf_t *wolf);
 void move_player(player_t *player, sfEvent event, game_t *game);

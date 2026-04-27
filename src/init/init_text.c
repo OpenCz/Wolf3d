@@ -10,7 +10,7 @@
 static text_t *create_text(text_t *data,
     sfFont *font, sfVector2f *pos, sfVector2f *scale)
 {
-    text_t *text = calloc(sizeof(text_t), 1);
+    text_t *text = malloc(sizeof(text_t));
     sfFloatRect txt;
 
     if (!text)
