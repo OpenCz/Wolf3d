@@ -76,8 +76,6 @@ static float cast_ray(wall_t *wall, player_t *player, float ray_angle,
 float cast_single_ray(wall_t *wall, player_t *player,
     float ray_angle, window_t *window_data)
 {
-    float hit_x = 0;
-    float hit_y = 0;
     float raw = 0;
 
     ray_angle = normalize_angle(ray_angle);
@@ -123,4 +121,15 @@ void cast_all_rays(window_t *window_data, player_t *player,
     sfTexture_updateFromPixels(game->wall->texture, game->wall->pixel,
         window_data->width, window_data->height, 0, 0);
     sfRenderWindow_drawSprite(window_data->window, game->wall->sprite, NULL);
+        get_wall_index(player, game, ray_angle, distance);
+        draw_wall_column(window_data, i, distance, game);
+        game->zbuffer[i] = distance;
+    }
+}
+
+void render_pixels(game_t *game, window_t *win)
+{
+    sfTexture_updateFromPixels(game->texture, game->pixel,
+        win->width, win->height, 0, 0);
+    sfRenderWindow_drawSprite(win->window, game->sprite, NULL);
 }

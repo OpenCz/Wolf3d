@@ -7,25 +7,21 @@
 
 #include "../include/wolf3d.h"
 
-static void free_window_data(window_t *data)
-{
-    sfRenderWindow_destroy(data->window);
-    free(data);
-}
-
-static void free_data(data_t *data)
-{
-    sfFont_destroy(data->font);
-    free(data);
-}
-
 static void free_game(game_t *game)
 {
     sfClock_destroy(game->clock);
+<<<<<<< feature/texture
     free(game->wall->pixel);
     free(game->wall->wall);
     sfSprite_destroy(game->wall->sprite);
     sfTexture_destroy(game->wall->texture);
+=======
+    free(game->pixel);
+    free(game->wall);
+    free(game->zbuffer);
+    sfSprite_destroy(game->sprite);
+    sfTexture_destroy(game->texture);
+>>>>>>> main
     free(game);
 }
 
@@ -52,8 +48,18 @@ static void free_list(wolf_t *wolf)
     }
 }
 
+static void free_window_data(window_t *window_data)
+{
+    if (window_data) {
+        sfRenderWindow_destroy(window_data->window);
+        free(window_data);
+    }
+}
+
 void free_wolf(wolf_t *wolf)
 {
+    if (wolf->connected)
+        client_close(&wolf->net);
     free_window_data(wolf->window_data);
     free(wolf->player);
     free_game(wolf->game);

@@ -5,23 +5,38 @@
 ## makefile
 ##
 
-SRC	=	$(shell find . -type f -name "*.c")
+CC = epiclang
 
-OBJ	=	$(SRC:.c=.o)
+CFLAGS = -Iinclude -Wall -Wextra -Wno-deprecated-declarations
 
-NAME	=	wolf3d
+LIBS = -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-network -lm
 
-all:	$(NAME)
+SRC_GAME = $(shell find ./src -type f -name "*.c" ! -name "network_*.c" ! -path "*/network/*") \
+           src/network/client/client.c
 
-$(NAME):	$(OBJ)
-	epiclang $(SRC) -o $(NAME) -I./include -lcsfml-graphics -lcsfml-window -lcsfml-system -lm 
+SRC_SERVER = src/network_server.c src/network/server/server.c \
+			 src/network/server/server_close.c src/network/client/client.c
+
+OBJ_GAME = $(SRC_GAME:.c=.o)
+OBJ_SERVER = $(SRC_SERVER:.c=.o)
+
+NAME = wolf3d
+NAME_SERVER = server
+
+all: $(NAME) $(NAME_SERVER)
+
+$(NAME): $(OBJ_GAME)
+	$(CC) $(OBJ_GAME) -o $(NAME) $(CFLAGS) $(LIBS)
+
+$(NAME_SERVER): $(OBJ_SERVER)
+	$(CC) $(OBJ_SERVER) -o $(NAME_SERVER) $(CFLAGS) $(LIBS)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ_GAME) $(OBJ_SERVER)
 
-fclean:	clean
-	rm -f $(NAME)
+fclean: clean
+	rm -f $(NAME) $(NAME_SERVER)
 
-re:	fclean all
+re: fclean all
 
-.PHONY:	all clean fclean re
+.PHONY: all clean fclean re

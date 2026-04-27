@@ -20,7 +20,7 @@ void push_front(list_t **list, void *data)
 
 window_t *init_window_data(void)
 {
-    window_t *window = calloc(1, sizeof(window_t));
+    window_t *window = malloc(sizeof(window_t));
 
     if (!window)
         return NULL;
@@ -33,7 +33,7 @@ window_t *init_window_data(void)
 
 data_t *init_wolf_data(void)
 {
-    data_t *data = calloc(1, sizeof(data_t));
+    data_t *data = malloc(sizeof(data_t));
 
     if (!data)
         return NULL;
@@ -41,25 +41,42 @@ data_t *init_wolf_data(void)
     return data;
 }
 
+static int init_wolf_player_data(wolf_t *wolf)
+{
+    wolf->player = malloc(sizeof(player_t));
+    wolf->window_data = init_window_data();
+    wolf->data = init_wolf_data();
+    if (!wolf->player || !wolf->window_data || !wolf->data)
+        return -1;
+    init_player(wolf->player);
+    return 0;
+}
+
+static int init_wolf_game_data(wolf_t *wolf)
+{
+    init_menu_entities(wolf, wolf->window_data);
+    init_menu_text(wolf, wolf->window_data);
+    wolf->game = init_game(wolf->window_data);
+    if (!wolf->game)
+        return -1;
+    wolf->game->pixel = malloc(wolf->window_data->height *
+        wolf->window_data->width * 4);
+    wolf->game->zbuffer = malloc(wolf->window_data->width * sizeof(float));
+    if (!wolf->game->pixel || !wolf->game->zbuffer)
+        return -1;
+    return 0;
+}
+
 wolf_t *init_wolf(void)
 {
-    wolf_t *wolf = calloc(1, sizeof(wolf_t));
+    wolf_t *wolf = malloc(sizeof(wolf_t));
 
     if (!wolf)
         return NULL;
     wolf->state = MENU;
-    wolf->player = calloc(1, sizeof(player_t));
-    if (!wolf->player) {
-        free(wolf);
+    if (init_wolf_player_data(wolf) < 0)
         return NULL;
-    }
-    init_player(wolf->player);
-    wolf->window_data = init_window_data();
-    wolf->data = init_wolf_data();
-    init_menu_entities(wolf, wolf->window_data);
-    init_menu_text(wolf, wolf->window_data);
-    wolf->game = init_game(wolf->window_data);
-    wolf->game->wall->pixel = malloc(wolf->window_data->height *
-        wolf->window_data->width * 4);
-    return wolf->game->wall->pixel ? wolf : NULL;
+    if (init_wolf_game_data(wolf) < 0)
+        return NULL;
+    return wolf;
 }

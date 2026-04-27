@@ -1,0 +1,56 @@
+rm -f ./src/free_alloc.o ./src/checker_func/is_wall.o ./src/player/mouvement/move.o ./src/init/init_player.o ./src/init/init_text.o ./src/init/init_game.o ./src/init/init_wolf.o ./src/init/init_sprite.o ./src/main.o ./src/draw/draw_sprite.o ./src/draw/draw_decor.o ./src/rays/rays.o ./src/menu/menu.o ./src/menu/manage_menu.o src/network/client/client.o src/network_server.o src/network/server/server.o src/network/client/client.o
+rm -f wolf3d server
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/free_alloc.o src/free_alloc.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/checker_func/is_wall.o src/checker_func/is_wall.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/player/mouvement/move.o src/player/mouvement/move.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/init/init_player.o src/init/init_player.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/init/init_text.o src/init/init_text.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/init/init_game.o src/init/init_game.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/init/init_wolf.o src/init/init_wolf.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/init/init_sprite.o src/init/init_sprite.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/main.o src/main.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/draw/draw_sprite.o src/draw/draw_sprite.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/draw/draw_decor.o src/draw/draw_decor.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/rays/rays.o src/rays/rays.c
+src/rays/rays.c:197:81: warning: [Banana] [Major] 81-character line (C-F3)
+  197 |         if (get_player_projection(wolf, &wolf->others[p], &dist, &rel_angle) < 0)
+      |                                                                                 ^
+src/rays/rays.c:203:81: warning: [Banana] [Major] 81-character line (C-F3)
+  203 |         span = (sfVector2i){(int)((wolf->window_data->height - sprite_h) / 2.0f),
+      |                                                                                 ^
+src/rays/rays.c:180:22: warning: [Banana] [Major] 5th parameter in function (C-F5)
+  180 |     sfVector2i span, float dist)
+      |                      ^
+src/rays/rays.c:131:12: warning: [Banana] [Major] structure received by copy (C-F7)
+  131 |     int x, sfVector2i span)
+      |            ^
+src/rays/rays.c:170:52: warning: [Banana] [Major] structure received by copy (C-F7)
+  170 | static void draw_player_slice(wolf_t *wolf, int x, sfVector2i span, float dist)
+      |                                                    ^
+src/rays/rays.c:180:5: warning: [Banana] [Major] structure received by copy (C-F7)
+  180 |     sfVector2i span, float dist)
+      |     ^
+src/rays/rays.c:155:12: warning: [Banana] [Major] 11th function in the file (C-O3)
+  155 | static int get_player_projection(wolf_t *wolf, player_t *other,
+      |            ^
+src/rays/rays.c:170:13: warning: [Banana] [Major] 12th function in the file (C-O3)
+  170 | static void draw_player_slice(wolf_t *wolf, int x, sfVector2i span, float dist)
+      |             ^
+src/rays/rays.c:179:13: warning: [Banana] [Major] 13th function in the file (C-O3)
+  179 | static void draw_projected_player(wolf_t *wolf, int screen_x, int half_w,
+      |             ^
+src/rays/rays.c:186:6: warning: [Banana] [Major] 14th function in the file (C-O3)
+  186 | void draw_other_players(wolf_t *wolf)
+      |      ^
+10 warnings generated.
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/menu/menu.o src/menu/menu.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/menu/manage_menu.o src/menu/manage_menu.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/network/client/client.o src/network/client/client.c
+epiclang ./src/free_alloc.o ./src/checker_func/is_wall.o ./src/player/mouvement/move.o ./src/init/init_player.o ./src/init/init_text.o ./src/init/init_game.o ./src/init/init_wolf.o ./src/init/init_sprite.o ./src/main.o ./src/draw/draw_sprite.o ./src/draw/draw_decor.o ./src/rays/rays.o ./src/menu/menu.o ./src/menu/manage_menu.o src/network/client/client.o -o wolf3d -Iinclude -Wall -Wextra -Wno-deprecated-declarations -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-network -lm
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/network_server.o src/network_server.c
+epiclang -Iinclude -Wall -Wextra -Wno-deprecated-declarations   -c -o src/network/server/server.o src/network/server/server.c
+epiclang src/network_server.o src/network/server/server.o src/network/client/client.o -o server -Iinclude -Wall -Wextra -Wno-deprecated-declarations -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-network -lm
+/usr/bin/ld: src/network_server.o: in function `main':
+network_server.c:(.text+0x3e): undefined reference to `server_close'
+clang-20: error: linker command failed with exit code 1 (use -v to see invocation)
+make: *** [Makefile:31: server] Error 1
