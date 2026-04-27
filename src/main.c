@@ -44,13 +44,17 @@ static void handle_recv_packet(wolf_t *wolf, network_packet_t *pkt)
 {
     if (pkt->type != PKT_CONNECT)
         return;
-    if (wolf->net.player_id != MAX_PLAYERS)
+    if (wolf->net.player_id == MAX_PLAYERS) {
+        wolf->net.player_id = pkt->player_id;
+        printf("[Network] Connected as player %u\n", pkt->player_id);
+        if (pkt->player_id != 1)
+            return;
+        wolf->player->x = TILE_SIZE * 5.5f;
+        wolf->player->y = TILE_SIZE * 1.5f;
         return;
-    wolf->net.player_id = pkt->player_id;
-    if (pkt->player_id != 1)
-        return;
-    wolf->player->x = TILE_SIZE * 5.5f;
-    wolf->player->y = TILE_SIZE * 1.5f;
+    }
+    if (pkt->player_id != wolf->net.player_id)
+        printf("[Network] Player %u joined the game\n", pkt->player_id);
 }
 
 static void handle_recv_position(wolf_t *wolf, network_packet_t *pkt)
@@ -123,12 +127,18 @@ static void check_state(wolf_t *wolf, sfEvent event)
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     sfClock *send_clock = sfClock_create();
+    const char *server_ip = "10.73.190.19";
 
     if (!send_clock)
         return 84;
+    if (!server_ip || !server_ip[0])
+        server_ip = "127.0.0.1";
     sfRenderWindow_clear(window, sfBlack);
     sfRenderWindow_display(window);
-    wolf->connected = client_init(&wolf->net, "10.73.190.19", PORT) == 0;
+    printf("[Network] Connecting to %s:%d...\n", server_ip, PORT);
+    wolf->connected = client_init(&wolf->net, server_ip, PORT) == 0;
+    if (!wolf->connected)
+        printf("[Network] Connection failed to %s:%d\n", server_ip, PORT);
     while (sfRenderWindow_isOpen(window)) {
         sfRenderWindow_clear(window, sfBlack);
         while (sfRenderWindow_pollEvent(window, &event))

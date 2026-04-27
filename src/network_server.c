@@ -6,6 +6,7 @@
 */
 
 #include <signal.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include "../include/network.h"
@@ -36,6 +37,8 @@ static void handle_new_connection(server_t *server)
     slot = server_accept_client(server);
     if (slot < 0)
         return;
+    printf("[Server] Player %d joined (%d/%d)\n",
+        slot, server->nb_players, MAX_PLAYERS);
     memset(&pkt, 0, sizeof(pkt));
     pkt.type = PKT_CONNECT;
     pkt.player_id = slot;
@@ -83,6 +86,7 @@ int main(void)
     block_sigint();
     if (server_init(&server, PORT) < 0)
         return 1;
+    printf("[Server] Listening on 0.0.0.0:%d\n", PORT);
     run_server_loop(&server);
     server_close(&server);
     return 0;
