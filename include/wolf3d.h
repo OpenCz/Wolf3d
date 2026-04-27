@@ -34,6 +34,7 @@ typedef struct player_s {
     float x;
     float y;
     float angle;
+    int hp;
 } player_t;
 
 typedef enum {
@@ -117,6 +118,7 @@ typedef struct wolf_s {
     int nb_others;
 } wolf_t;
 
+void is_near_monster(wolf_t *wolf, player_t *player);
 void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);

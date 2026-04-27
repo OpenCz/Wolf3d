@@ -19,5 +19,6 @@ player_t *init_player(void)
     player->angle = fmodf(0.0f, 2.0f * M_PI);
     if (player->angle < 0.0f)
         player->angle += 2.0f * M_PI;
+    player->hp = 100;
     return player;
 }
