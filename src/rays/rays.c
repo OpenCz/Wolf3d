@@ -113,8 +113,8 @@ void cast_all_rays(window_t *window_data, player_t *player,
     for (int i = 0; i < window_data->width; i++) {
         ray_angle = normalize_angle(start_angle + (i * step_angle));
         distance = cast_single_ray(game->wall, player, ray_angle, window_data);
-        if (distance < 0.1f)
-            distance = 0.1f;
+        if (distance < 10.f)
+            distance = 10.f;
         get_wall_index(player, game->wall, ray_angle, distance);
         draw_wall_column(window_data, i, distance, game->wall);
         game->zbuffer[i] = distance;

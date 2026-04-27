@@ -9,6 +9,7 @@
 #ifndef WOLF_H
     #include <math.h>
     #define WOLF_H
+    #define WALL_MIN_DISTANCE TILE_SIZE * 0.15
     #define STATES 3
     #define TO_DRAW 3
     #define SPRITE 0
@@ -33,6 +34,7 @@ typedef struct player_s {
     float x;
     float y;
     float angle;
+    int hp;
 } player_t;
 
 typedef enum {
@@ -116,6 +118,7 @@ typedef struct wolf_s {
     int nb_others;
 } wolf_t;
 
+void is_near_monster(wolf_t *wolf, player_t *player);
 void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
@@ -127,6 +130,7 @@ void free_wolf(wolf_t *wolf);
 int is_wall(wall_t *wall, int x, int y);
 void draw_floor_and_ceiling(window_t *window_data);
 
+void check_player_state(wolf_t *wolf);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
 void cast_all_rays(window_t *window_data, player_t *player, game_t *game);
