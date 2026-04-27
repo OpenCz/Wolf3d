@@ -156,9 +156,8 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 
 int main(void)
 {
-    wolf_t *wolf;
+    wolf_t *wolf = init_wolf();
 
-    wolf = init_wolf();
     if (!wolf)
         return 84;
     return program(wolf->window_data->window, (sfEvent){0}, wolf);
