@@ -24,6 +24,22 @@ static void draw_player_column(game_t *game, window_t *win, int x,
     }
 }
 
+static void draw_monster_column(game_t *game, window_t *win, int x,
+    player_draw_t *draw)
+{
+    int idx;
+
+    for (int y = draw->top; y < draw->top + draw->height; y++) {
+        if (y < 0 || y >= win->height)
+            continue;
+        idx = (y * win->width + x) * 4;
+        game->wall->pixel[idx + 0] = 100;
+        game->wall->pixel[idx + 1] = 255;
+        game->wall->pixel[idx + 2] = 55;
+        game->wall->pixel[idx + 3] = 255;
+    }
+}
+
 static float wrap_relative_angle(float angle)
 {
     while (angle > M_PI)
@@ -61,7 +77,8 @@ static int fill_player_draw(wolf_t *wolf, player_t *other, player_draw_t *draw)
     return 0;
 }
 
-static void draw_projected_player(wolf_t *wolf, player_draw_t *draw)
+static void draw_projected_player(wolf_t *wolf, player_draw_t *draw,
+    void (*draw_fct)(game_t *, window_t *, int, player_draw_t *))
 {
     int width = wolf->window_data->width;
 
@@ -69,17 +86,24 @@ static void draw_projected_player(wolf_t *wolf, player_draw_t *draw)
         draw->half_w; x++) {
         if ((x < 0 || x >= width) || wolf->game->zbuffer[x] < draw->dist)
             continue;
-        draw_player_column(wolf->game, wolf->window_data, x, draw);
+        draw_fct(wolf->game, wolf->window_data, x, draw);
     }
 }
 
 void draw_other_players(wolf_t *wolf)
 {
     player_draw_t draw;
+    player_t *player;
 
     for (int p = 0; p < wolf->nb_others; p++) {
         if (fill_player_draw(wolf, &wolf->others[p], &draw) < 0)
             continue;
-        draw_projected_player(wolf, &draw);
+        draw_projected_player(wolf, &draw, draw_player_column);
+    }
+    for (list_t *curr = wolf->list[GAME][MONSTER]; curr; curr = curr->next) {
+        player = (player_t *)curr->data;
+        if (fill_player_draw(wolf, player, &draw) < 0)
+            continue;
+        draw_projected_player(wolf, &draw, draw_monster_column);
     }
 }

@@ -43,12 +43,11 @@ data_t *init_wolf_data(void)
 
 static int init_wolf_player_data(wolf_t *wolf)
 {
-    wolf->player = malloc(sizeof(player_t));
+    wolf->player = init_player();
     wolf->window_data = init_window_data();
     wolf->data = init_wolf_data();
     if (!wolf->player || !wolf->window_data || !wolf->data)
         return -1;
-    init_player(wolf->player);
     return 0;
 }
 
@@ -78,5 +77,6 @@ wolf_t *init_wolf(void)
         return NULL;
     if (init_wolf_game_data(wolf) < 0)
         return NULL;
+    push_front(&wolf->list[GAME][MONSTER], init_player());
     return wolf;
 }
