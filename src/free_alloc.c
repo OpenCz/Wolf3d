@@ -10,11 +10,18 @@
 static void free_game(game_t *game)
 {
     sfClock_destroy(game->clock);
+<<<<<<< feature/texture
+    free(game->wall->pixel);
+    free(game->wall->wall);
+    sfSprite_destroy(game->wall->sprite);
+    sfTexture_destroy(game->wall->texture);
+=======
     free(game->pixel);
     free(game->wall);
     free(game->zbuffer);
     sfSprite_destroy(game->sprite);
     sfTexture_destroy(game->texture);
+>>>>>>> main
     free(game);
 }
 

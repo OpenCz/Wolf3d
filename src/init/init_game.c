@@ -7,23 +7,47 @@
 
 #include "../../include/wolf3d.h"
 
+wall_t *init_texture(wall_t *wall, int size, char *path, int index)
+{
+    sfImage *image = sfImage_createFromFile(path);
+    const sfUint8 *tmp = sfImage_getPixelsPtr(image);
+
+    wall->wall = malloc(size);
+    if (!wall->wall)
+        return NULL;
+    wall->text_arr[index] = malloc(size);
+    if (!wall->text_arr[index])
+        return NULL;
+    memcpy(wall->text_arr[index], tmp, size);
+    sfImage_destroy(image);
+    return wall;
+}
+
+wall_t *init_wall(window_t *window_data)
+{
+    wall_t *wall = malloc(sizeof(wall_t));
+    int size = TEX_SIZE * TEX_SIZE * 4;
+
+    if (!wall)
+        return NULL;
+    wall->texture = sfTexture_create(window_data->width, window_data->height);
+    wall->sprite = sfSprite_create();
+    if (!init_texture(wall, size, "assets/wall.png", 0) ||
+        !init_texture(wall, size, "assets/wall_2.png", 1))
+        return NULL;
+    sfSprite_setTexture(wall->sprite, wall->texture, sfTrue);
+    return wall;
+}
+
 game_t *init_game(window_t *window_data)
 {
-    game_t *game = malloc(sizeof(game_t));
-    sfImage *image = NULL;
-    const sfUint8 *tmp = NULL;
-    int size = TEX_SIZE * TEX_SIZE * 4;
+    game_t *game = calloc(sizeof(game_t), 1);
 
     if (!game)
         return NULL;
     game->clock = sfClock_create();
-    game->texture = sfTexture_create(window_data->width, window_data->height);
-    game->sprite = sfSprite_create();
-    image = sfImage_createFromFile("assets/wall.png");
-    tmp = sfImage_getPixelsPtr(image);
-    game->wall = malloc(size);
-    memcpy(game->wall, tmp, size);
-    sfSprite_setTexture(game->sprite, game->texture, sfTrue);
-    sfImage_destroy(image);
+    game->wall = init_wall(window_data);
+    if (!game->wall)
+        return NULL;
     return game;
 }
