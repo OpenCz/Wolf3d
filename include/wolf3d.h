@@ -130,6 +130,7 @@ void free_wolf(wolf_t *wolf);
 int is_wall(wall_t *wall, int x, int y);
 void draw_floor_and_ceiling(window_t *window_data);
 
+void check_player_state(wolf_t *wolf);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
 void cast_all_rays(window_t *window_data, player_t *player, game_t *game);
