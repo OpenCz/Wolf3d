@@ -48,6 +48,15 @@ typedef enum {
     LEAVE,
 } menu_t;
 
+typedef struct player_draw_s {
+    float dist;
+    float rel_angle;
+    int screen_x;
+    int half_w;
+    int top;
+    int height;
+} player_draw_t;
+
 typedef struct list_s {
     void *data;
     struct list_s *next;

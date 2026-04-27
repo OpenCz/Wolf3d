@@ -21,7 +21,7 @@ int client_init(client_t *client, const char *ip, int port)
     if (!client->socket)
         return -1;
     if (sfTcpSocket_connect(client->socket, address, port, timeout)
-            != sfSocketDone) {
+        != sfSocketDone) {
         sfTcpSocket_destroy(client->socket);
         client->socket = NULL;
         return -1;

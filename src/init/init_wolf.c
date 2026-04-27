@@ -41,6 +41,32 @@ data_t *init_wolf_data(void)
     return data;
 }
 
+static int init_wolf_player_data(wolf_t *wolf)
+{
+    wolf->player = malloc(sizeof(player_t));
+    wolf->window_data = init_window_data();
+    wolf->data = init_wolf_data();
+    if (!wolf->player || !wolf->window_data || !wolf->data)
+        return -1;
+    init_player(wolf->player);
+    return 0;
+}
+
+static int init_wolf_game_data(wolf_t *wolf)
+{
+    init_menu_entities(wolf, wolf->window_data);
+    init_menu_text(wolf, wolf->window_data);
+    wolf->game = init_game(wolf->window_data);
+    if (!wolf->game)
+        return -1;
+    wolf->game->pixel = malloc(wolf->window_data->height *
+        wolf->window_data->width * 4);
+    wolf->game->zbuffer = malloc(wolf->window_data->width * sizeof(float));
+    if (!wolf->game->pixel || !wolf->game->zbuffer)
+        return -1;
+    return 0;
+}
+
 wolf_t *init_wolf(void)
 {
     wolf_t *wolf = malloc(sizeof(wolf_t));
@@ -48,21 +74,9 @@ wolf_t *init_wolf(void)
     if (!wolf)
         return NULL;
     wolf->state = MENU;
-    wolf->player = malloc(sizeof(player_t));
-    if (!wolf->player) {
-        free(wolf);
+    if (init_wolf_player_data(wolf) < 0)
         return NULL;
-    }
-    init_player(wolf->player);
-    wolf->window_data = init_window_data();
-    wolf->data = init_wolf_data();
-    init_menu_entities(wolf, wolf->window_data);
-    init_menu_text(wolf, wolf->window_data);
-    wolf->game = init_game(wolf->window_data);
-    wolf->game->pixel = malloc(wolf->window_data->height *
-        wolf->window_data->width * 4);
-    wolf->game->zbuffer = malloc(wolf->window_data->width * sizeof(float));
-    if (!wolf->game->pixel || !wolf->game->zbuffer)
+    if (init_wolf_game_data(wolf) < 0)
         return NULL;
     return wolf;
 }

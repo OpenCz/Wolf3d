@@ -42,21 +42,22 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 
 static void handle_recv_packet(wolf_t *wolf, network_packet_t *pkt)
 {
-    if (pkt->type == PKT_CONNECT) {
-        if (wolf->net.player_id == MAX_PLAYERS) {
-            wolf->net.player_id = pkt->player_id;
-            if (pkt->player_id == 1) {
-                wolf->player->x = TILE_SIZE * 5.5f;
-                wolf->player->y = TILE_SIZE * 1.5f;
-            }
-        }
+    if (pkt->type != PKT_CONNECT)
         return;
-    }
+    if (wolf->net.player_id != MAX_PLAYERS)
+        return;
+    wolf->net.player_id = pkt->player_id;
+    if (pkt->player_id != 1)
+        return;
+    wolf->player->x = TILE_SIZE * 5.5f;
+    wolf->player->y = TILE_SIZE * 1.5f;
+}
+
+static void handle_recv_position(wolf_t *wolf, network_packet_t *pkt)
+{
     if (pkt->type != PKT_PLAYER_POS)
         return;
-    if (pkt->player_id == wolf->net.player_id)
-        return;
-    if (pkt->player_id >= MAX_PLAYERS)
+    if (pkt->player_id == wolf->net.player_id || pkt->player_id >= MAX_PLAYERS)
         return;
     wolf->others[pkt->player_id].x = pkt->x;
     wolf->others[pkt->player_id].y = pkt->y;
@@ -65,13 +66,10 @@ static void handle_recv_packet(wolf_t *wolf, network_packet_t *pkt)
         wolf->nb_others = (int)pkt->player_id + 1;
 }
 
-static void network_send(wolf_t *wolf)
+static void network_send(wolf_t *wolf, sfClock *send_clock)
 {
-    static sfClock *send_clock = NULL;
     network_packet_t pkt;
 
-    if (!send_clock)
-        send_clock = sfClock_create();
     if (sfTime_asSeconds(sfClock_getElapsedTime(send_clock)) < 0.05f)
         return;
     sfClock_restart(send_clock);
@@ -84,16 +82,18 @@ static void network_send(wolf_t *wolf)
         wolf->connected = 0;
 }
 
-static void network_update(wolf_t *wolf)
+static void network_update(wolf_t *wolf, sfClock *send_clock)
 {
     network_packet_t pkt;
 
     if (!wolf->connected)
         return;
-    while (client_recv_packet(&wolf->net, &pkt) > 0)
+    while (client_recv_packet(&wolf->net, &pkt) > 0) {
         handle_recv_packet(wolf, &pkt);
+        handle_recv_position(wolf, &pkt);
+    }
     if (wolf->state == GAME && wolf->net.player_id != MAX_PLAYERS)
-        network_send(wolf);
+        network_send(wolf, send_clock);
 }
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
@@ -122,22 +122,24 @@ static void check_state(wolf_t *wolf, sfEvent event)
 
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
-    fprintf(stderr, "[DBG] program start\n");
+    sfClock *send_clock = sfClock_create();
+
+    if (!send_clock)
+        return 84;
     sfRenderWindow_clear(window, sfBlack);
     sfRenderWindow_display(window);
-    fprintf(stderr, "[DBG] connecting...\n");
     wolf->connected = client_init(&wolf->net, "127.0.0.1", PORT) == 0;
-    fprintf(stderr, "[DBG] connected=%d, loop start\n", wolf->connected);
     while (sfRenderWindow_isOpen(window)) {
         sfRenderWindow_clear(window, sfBlack);
         while (sfRenderWindow_pollEvent(window, &event))
             check_event(window, event, wolf);
-        network_update(wolf);
+        network_update(wolf, send_clock);
         check_state(wolf, event);
         draw_sprite_list(wolf);
         draw_text_list(wolf);
         sfRenderWindow_display(window);
     }
+    sfClock_destroy(send_clock);
     free_wolf(wolf);
     return 0;
 }
@@ -146,9 +148,7 @@ int main(void)
 {
     wolf_t *wolf;
 
-    fprintf(stderr, "[DBG] main start\n");
     wolf = init_wolf();
-    fprintf(stderr, "[DBG] init_wolf done: wolf=%p\n", (void *)wolf);
     if (!wolf)
         return 84;
     return program(wolf->window_data->window, (sfEvent){0}, wolf);

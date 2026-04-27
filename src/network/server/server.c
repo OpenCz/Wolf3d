@@ -16,7 +16,7 @@ int server_init(server_t *server, int port)
     if (!server->listener)
         return -1;
     if (sfTcpListener_listen(server->listener, port, sfIpAddress_Any)
-            != sfSocketDone) {
+        != sfSocketDone) {
         sfTcpListener_destroy(server->listener);
         return -1;
     }
@@ -86,20 +86,4 @@ int server_broadcast_to_others(server_t *server, network_packet_t *pkt,
         sfTcpSocket_send(server->client_sockets[i], pkt, sizeof(*pkt));
     }
     return 0;
-}
-
-void server_close(server_t *server)
-{
-    if (!server)
-        return;
-    for (int i = 0; i < MAX_PLAYERS; i++) {
-        if (!server->client_sockets[i])
-            continue;
-        sfTcpSocket_disconnect(server->client_sockets[i]);
-        sfTcpSocket_destroy(server->client_sockets[i]);
-    }
-    if (server->selector)
-        sfSocketSelector_destroy(server->selector);
-    if (server->listener)
-        sfTcpListener_destroy(server->listener);
 }
