@@ -10,9 +10,10 @@
     #include <math.h>
     #define WOLF_H
     #define STATES 3
-    #define TO_DRAW 2
+    #define TO_DRAW 3
     #define SPRITE 0
     #define TEXT 1
+    #define MONSTER 2
     #define NUM_RAYS 800
     #define TILE_SIZE 64
     #define MAP_WIDTH 8
@@ -119,7 +120,7 @@ void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
 game_t *init_game(window_t *window_data);
-void init_player(player_t *player);
+player_t *init_player(void);
 void init_menu_entities(wolf_t *wolf, window_t *window);
 entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);
