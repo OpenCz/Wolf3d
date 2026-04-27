@@ -24,20 +24,20 @@ static void move_forward_backward(player_t *player, float dt)
         player->y += sinf(player->angle) * 100 * dt;
     }
     if (sfKeyboard_isKeyPressed(sfKeyS)) {
-        player->x -= cosf(player->angle) * 100 * dt;
-        player->y -= sinf(player->angle) * 100 * dt;
+        player->x -= cosf(player->angle) * 60 * dt;
+        player->y -= sinf(player->angle) * 60 * dt;
     }
 }
 
 static void move_side(player_t *player, float dt)
 {
     if (sfKeyboard_isKeyPressed(sfKeyQ)) {
-        player->x += cosf(player->angle - M_PI / 2) * 100 * dt;
-        player->y += sinf(player->angle - M_PI / 2) * 100 * dt;
+        player->x += cosf(player->angle - M_PI / 2) * 60 * dt;
+        player->y += sinf(player->angle - M_PI / 2) * 60 * dt;
     }
     if (sfKeyboard_isKeyPressed(sfKeyD)) {
-        player->x += cosf(player->angle + M_PI / 2) * 100 * dt;
-        player->y += sinf(player->angle + M_PI / 2) * 100 * dt;
+        player->x += cosf(player->angle + M_PI / 2) * 60 * dt;
+        player->y += sinf(player->angle + M_PI / 2) * 60 * dt;
     }
 }
 
