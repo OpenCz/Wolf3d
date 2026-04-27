@@ -17,10 +17,10 @@ static void draw_player_column(game_t *game, window_t *win, int x,
         if (y < 0 || y >= win->height)
             continue;
         idx = (y * win->width + x) * 4;
-        game->pixel[idx + 0] = 255;
-        game->pixel[idx + 1] = 50;
-        game->pixel[idx + 2] = 50;
-        game->pixel[idx + 3] = 255;
+        game->wall->pixel[idx + 0] = 255;
+        game->wall->pixel[idx + 1] = 50;
+        game->wall->pixel[idx + 2] = 50;
+        game->wall->pixel[idx + 3] = 255;
     }
 }
 
