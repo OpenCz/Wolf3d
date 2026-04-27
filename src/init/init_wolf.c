@@ -59,10 +59,10 @@ static int init_wolf_game_data(wolf_t *wolf)
     wolf->game = init_game(wolf->window_data);
     if (!wolf->game)
         return -1;
-    wolf->game->pixel = malloc(wolf->window_data->height *
+    wolf->game->wall->pixel = malloc(wolf->window_data->height *
         wolf->window_data->width * 4);
     wolf->game->zbuffer = malloc(wolf->window_data->width * sizeof(float));
-    if (!wolf->game->pixel || !wolf->game->zbuffer)
+    if (!wolf->game->wall->pixel || !wolf->game->zbuffer)
         return -1;
     return 0;
 }

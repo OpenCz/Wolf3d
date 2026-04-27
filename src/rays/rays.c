@@ -117,19 +117,13 @@ void cast_all_rays(window_t *window_data, player_t *player,
             distance = 0.1f;
         get_wall_index(player, game->wall, ray_angle, distance);
         draw_wall_column(window_data, i, distance, game->wall);
-    }
-    sfTexture_updateFromPixels(game->wall->texture, game->wall->pixel,
-        window_data->width, window_data->height, 0, 0);
-    sfRenderWindow_drawSprite(window_data->window, game->wall->sprite, NULL);
-        get_wall_index(player, game, ray_angle, distance);
-        draw_wall_column(window_data, i, distance, game);
         game->zbuffer[i] = distance;
     }
 }
 
 void render_pixels(game_t *game, window_t *win)
 {
-    sfTexture_updateFromPixels(game->texture, game->pixel,
+    sfTexture_updateFromPixels(game->wall->texture, game->wall->pixel,
         win->width, win->height, 0, 0);
-    sfRenderWindow_drawSprite(win->window, game->sprite, NULL);
+    sfRenderWindow_drawSprite(win->window, game->wall->sprite, NULL);
 }
