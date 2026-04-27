@@ -128,7 +128,7 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
         return 84;
     sfRenderWindow_clear(window, sfBlack);
     sfRenderWindow_display(window);
-    wolf->connected = client_init(&wolf->net, "127.0.0.1", PORT) == 0;
+    wolf->connected = client_init(&wolf->net, "10.73.190.19", PORT) == 0;
     while (sfRenderWindow_isOpen(window)) {
         sfRenderWindow_clear(window, sfBlack);
         while (sfRenderWindow_pollEvent(window, &event))

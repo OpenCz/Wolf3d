@@ -87,7 +87,7 @@ int main(void)
     float angle = 0.0f;
 
     signal(SIGINT, signal_handler);
-    if (client_init(&client, "127.0.0.1", PORT) < 0)
+    if (client_init(&client, "10.73.190.19", PORT) < 0)
         return 1;
     if (launch_game() < 0) {
         client_close(&client);
