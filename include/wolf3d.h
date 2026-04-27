@@ -9,6 +9,7 @@
 #ifndef WOLF_H
     #include <math.h>
     #define WOLF_H
+    #define WALL_MIN_DISTANCE TILE_SIZE * 0.15
     #define STATES 3
     #define TO_DRAW 3
     #define SPRITE 0
