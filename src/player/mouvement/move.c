@@ -22,9 +22,9 @@ static int check_collision(wall_t *wall, float x, float y)
     float min = WALL_MIN_DISTANCE;
 
     return is_wall(wall, (int)(x - min), (int)(y - min)) ||
-           is_wall(wall, (int)(x + min), (int)(y - min)) ||
-           is_wall(wall, (int)(x - min), (int)(y + min)) ||
-           is_wall(wall, (int)(x + min), (int)(y + min));
+        is_wall(wall, (int)(x + min), (int)(y - min)) ||
+        is_wall(wall, (int)(x - min), (int)(y + min)) ||
+        is_wall(wall, (int)(x + min), (int)(y + min));
 }
 
 static void move_forward_backward(wall_t *wall, player_t *player, float dt)

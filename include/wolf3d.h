@@ -128,7 +128,6 @@ void init_menu_entities(wolf_t *wolf, window_t *window);
 entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);
 int is_wall(wall_t *wall, int x, int y);
-void draw_floor_and_ceiling(window_t *window_data);
 
 void check_player_state(wolf_t *wolf);
 void draw_sprite_list(wolf_t *wolf);

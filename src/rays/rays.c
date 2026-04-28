@@ -17,33 +17,22 @@ static float normalize_angle(float angle)
 }
 
 static void create_pixel(wall_t *wall, int color,
-    sfVector2f *size, window_t *win)
+    int index)
 {
-    int index = 0;
-
-    if (size->x < 0 || size->x >= win->width ||
-        size->y < 0 || size->y >= win->height)
-        return;
-    index = ((int)size->y * win->width + (int)size->x) * 4;
     wall->pixel[index + 0] = wall->wall[color];
     wall->pixel[index + 1] = wall->wall[color + 1];
     wall->pixel[index + 2] = wall->wall[color + 2];
     wall->pixel[index + 3] = wall->wall[color + 3];
 }
 
-static void draw_wall_column(window_t *win,
-    int column, float distance, wall_t *wall)
+void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
 {
-    float proj_dist = (win->width / 2.0f) / tanf(FOV / 2.0f);
-    float wall_height = (TILE_SIZE / distance) * proj_dist;
     float top = (win->height - wall_height) / 2.0f;
     int screen_y = 0;
     int text_y = 0;
     int color = 0;
+    int index = 0;
 
-    wall->wall_index = (wall->wall_index < 0) ? 0 : wall->wall_index;
-    wall->wall_index = (wall->wall_index > TEX_SIZE - 1) ?
-        TEX_SIZE - 1 : wall->wall_index;
     for (int y = 0; y < (int)wall_height; y++) {
         screen_y = (int)top + y;
         if (screen_y < 0 || screen_y >= win->height)
@@ -52,8 +41,37 @@ static void draw_wall_column(window_t *win,
         text_y = (text_y < 0) ? 0 : text_y;
         text_y = (text_y > TEX_SIZE - 1) ? TEX_SIZE - 1 : text_y;
         color = (text_y * TEX_SIZE + wall->wall_index) * 4;
-        create_pixel(wall, color, &(sfVector2f){column, screen_y}, win);
+        index = ((int)screen_y * win->width + (int)column) * 4;
+        if (!(index < 0 || index >= win->width * win->height * 4))
+            create_pixel(wall, color, index);
     }
+}
+
+static void draw_ceiling(wall_t *wall, float wall_height,
+    int column, window_t *win)
+{
+    int top = (int)((win->height - wall_height) / 2.0f);
+    int index = 0;
+
+    for (int y = 0; y < top; y++) {
+        if (y < 0 || y >= win->height)
+            continue;
+        index = (y * win->width + column) * 4;
+        create_pixel(wall, 50, index);
+    }
+}
+
+static void draw_wall_column(window_t *win,
+    int column, float distance, wall_t *wall)
+{
+    float proj_dist = (win->width / 2.0f) / tanf(FOV / 2.0f);
+    float wall_height = (TILE_SIZE / distance) * proj_dist;
+
+    wall->wall_index = (wall->wall_index < 0) ? 0 : wall->wall_index;
+    wall->wall_index = (wall->wall_index > TEX_SIZE - 1) ?
+        TEX_SIZE - 1 : wall->wall_index;
+    draw_wall(wall, wall_height, win, column);
+    draw_ceiling(wall, wall_height, column, win);
 }
 
 static float cast_ray(wall_t *wall, player_t *player, float ray_angle,
