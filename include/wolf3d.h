@@ -24,6 +24,8 @@
     #define FOV (M_PI / 3)
     #define TEX_SIZE 64
     #define CLOUD_SPEED 20
+    #define CEILING 0
+    #define FLOOR 1
     #include <SFML/Graphics.h>
     #include <stdlib.h>
     #include <string.h>
@@ -86,6 +88,7 @@ typedef struct wall_s {
     sfSprite *sprite;
     sfUint8 *pixel;
     sfUint8 *text_arr[2];
+    sfUint8 *decor_arr[2];
 } wall_t;
 
 typedef struct game_s {

@@ -17,12 +17,12 @@ static float normalize_angle(float angle)
 }
 
 static void create_pixel(wall_t *wall, int color,
-    int index)
+    int index, sfUint8 *pixel)
 {
-    wall->pixel[index + 0] = wall->wall[color];
-    wall->pixel[index + 1] = wall->wall[color + 1];
-    wall->pixel[index + 2] = wall->wall[color + 2];
-    wall->pixel[index + 3] = wall->wall[color + 3];
+    wall->pixel[index + 0] = pixel[color];
+    wall->pixel[index + 1] = pixel[color + 1];
+    wall->pixel[index + 2] = pixel[color + 2];
+    wall->pixel[index + 3] = pixel[color + 3];
 }
 
 void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
@@ -43,7 +43,7 @@ void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
         color = (text_y * TEX_SIZE + wall->wall_index) * 4;
         index = ((int)screen_y * win->width + (int)column) * 4;
         if (!(index < 0 || index >= win->width * win->height * 4))
-            create_pixel(wall, color, index);
+            create_pixel(wall, color, index, wall->wall);
     }
 }
 
@@ -52,12 +52,18 @@ static void draw_ceiling(wall_t *wall, float wall_height,
 {
     int top = (int)((win->height - wall_height) / 2.0f);
     int index = 0;
+    int color = 0;
+    int text_y = 0;
 
     for (int y = 0; y < top; y++) {
         if (y < 0 || y >= win->height)
             continue;
+        text_y = (int)(((float)y / wall_height) * TEX_SIZE);
+        text_y = (text_y < 0) ? 0 : text_y;
+        text_y = (text_y > TEX_SIZE - 1) ? TEX_SIZE - 1 : text_y;
+        color = (text_y * TEX_SIZE + wall->wall_index) * 4;
         index = (y * win->width + column) * 4;
-        create_pixel(wall, 50, index);
+        create_pixel(wall, color, index, wall->decor_arr[CEILING]);
     }
 }
 
