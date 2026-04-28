@@ -8,7 +8,7 @@
 #include "../include/wolf3d.h"
 #include <time.h>
 
-static const char *const SERVER_IP = "10.73.190.12";
+static const char *const SERVER_IP = "10.73.190.141";
 
 int get_map_tile(int tile_x, int tile_y)
 {
