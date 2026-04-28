@@ -8,6 +8,8 @@
 #include "../include/wolf3d.h"
 #include <time.h>
 
+static const char *const SERVER_IP = "10.73.190.141";
+
 int get_map_tile(int tile_x, int tile_y)
 {
     static const int map_data[MAP_HEIGHT][MAP_WIDTH] = {
@@ -129,18 +131,15 @@ static void check_state(wolf_t *wolf, sfEvent event)
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     sfClock *send_clock = sfClock_create();
-    const char *server_ip = "10.73.190.19";
 
     if (!send_clock)
         return 84;
-    if (!server_ip || !server_ip[0])
-        server_ip = "127.0.0.1";
     sfRenderWindow_clear(window, sfBlack);
     sfRenderWindow_display(window);
-    printf("[Network] Connecting to %s:%d...\n", server_ip, PORT);
-    wolf->connected = client_init(&wolf->net, server_ip, PORT) == 0;
+    printf("[Network] Connecting to %s:%d...\n", SERVER_IP, PORT);
+    wolf->connected = client_init(&wolf->net, SERVER_IP, PORT) == 0;
     if (!wolf->connected)
-        printf("[Network] Connection failed to %s:%d\n", server_ip, PORT);
+        printf("[Network] Connection failed to %s:%d\n", SERVER_IP, PORT);
     while (sfRenderWindow_isOpen(window)) {
         sfRenderWindow_clear(window, sfBlack);
         while (sfRenderWindow_pollEvent(window, &event))

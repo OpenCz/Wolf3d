@@ -12,7 +12,7 @@
     #include <stdlib.h>
 
     #define MAX_PLAYERS 4
-    #define PORT 8080
+    #define PORT 6767
 
 typedef enum packet_type_e {
     PKT_CONNECT,
