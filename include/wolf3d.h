@@ -135,10 +135,14 @@ int is_wall(wall_t *wall, int x, int y);
 void check_player_state(wolf_t *wolf);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
-void cast_all_rays(window_t *window_data, player_t *player, game_t *game);
+void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
+    game_t *game);
 void render_pixels(game_t *game, window_t *win);
 void draw_other_players(wolf_t *wolf);
 
+void draw_ceiling(wolf_t *wolf, int column, float wall_height);
+void create_pixel(wall_t *wall, int color,
+    int index, sfUint8 *pixel);
 void free_wolf(wolf_t *wolf);
 void move_player(player_t *player, sfEvent event, game_t *game);
 extern const int map[MAP_HEIGHT][MAP_WIDTH];

@@ -16,15 +16,6 @@ static float normalize_angle(float angle)
     return angle;
 }
 
-static void create_pixel(wall_t *wall, int color,
-    int index, sfUint8 *pixel)
-{
-    wall->pixel[index + 0] = pixel[color];
-    wall->pixel[index + 1] = pixel[color + 1];
-    wall->pixel[index + 2] = pixel[color + 2];
-    wall->pixel[index + 3] = pixel[color + 3];
-}
-
 void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
 {
     float top = (win->height - wall_height) / 2.0f;
@@ -47,28 +38,8 @@ void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
     }
 }
 
-static void draw_ceiling(wall_t *wall, float wall_height,
-    int column, window_t *win)
-{
-    int top = (int)((win->height - wall_height) / 2.0f);
-    int index = 0;
-    int color = 0;
-    int text_y = 0;
-
-    for (int y = 0; y < top; y++) {
-        if (y < 0 || y >= win->height)
-            continue;
-        text_y = (int)(((float)y / wall_height) * TEX_SIZE);
-        text_y = (text_y < 0) ? 0 : text_y;
-        text_y = (text_y > TEX_SIZE - 1) ? TEX_SIZE - 1 : text_y;
-        color = (text_y * TEX_SIZE + wall->wall_index) * 4;
-        index = (y * win->width + column) * 4;
-        create_pixel(wall, color, index, wall->decor_arr[CEILING]);
-    }
-}
-
 static void draw_wall_column(window_t *win,
-    int column, float distance, wall_t *wall)
+    int column, float distance, wall_t *wall, wolf_t *wolf)
 {
     float proj_dist = (win->width / 2.0f) / tanf(FOV / 2.0f);
     float wall_height = (TILE_SIZE / distance) * proj_dist;
@@ -77,7 +48,7 @@ static void draw_wall_column(window_t *win,
     wall->wall_index = (wall->wall_index > TEX_SIZE - 1) ?
         TEX_SIZE - 1 : wall->wall_index;
     draw_wall(wall, wall_height, win, column);
-    draw_ceiling(wall, wall_height, column, win);
+    draw_ceiling(wolf, column, wall_height);
 }
 
 static float cast_ray(wall_t *wall, player_t *player, float ray_angle,
@@ -125,7 +96,7 @@ static void get_wall_index(player_t *player,
         wall->wall_index = TEX_SIZE - 1;
 }
 
-void cast_all_rays(window_t *window_data, player_t *player,
+void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
     game_t *game)
 {
     float start_angle = player->angle - (FOV / 2.0f);
@@ -140,7 +111,7 @@ void cast_all_rays(window_t *window_data, player_t *player,
         if (distance < 10.f)
             distance = 10.f;
         get_wall_index(player, game->wall, ray_angle, distance);
-        draw_wall_column(window_data, i, distance, game->wall);
+        draw_wall_column(window_data, i, distance, game->wall, wolf);
         game->zbuffer[i] = distance;
     }
 }
