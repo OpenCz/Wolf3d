@@ -107,6 +107,14 @@ typedef struct data_s {
     sfFont *font;
 } data_t;
 
+typedef struct decor_s {
+    sfVector2i t;
+    sfVector2f floor;
+    sfVector2f floorStep;
+    sfVector2f rd0;
+    sfVector2f rd1;
+} decor_t;
+
 typedef struct wolf_s {
     state_t state;
     menu_t menu_state;

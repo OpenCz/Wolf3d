@@ -38,16 +38,16 @@ void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
     }
 }
 
-static void draw_wall_column(window_t *win,
-    int column, float distance, wall_t *wall, wolf_t *wolf)
+static void draw_wall_column(wolf_t *wolf,
+    int column, float distance, wall_t *wall)
 {
-    float proj_dist = (win->width / 2.0f) / tanf(FOV / 2.0f);
+    float proj_dist = (wolf->window_data->width / 2.0f) / tanf(FOV / 2.0f);
     float wall_height = (TILE_SIZE / distance) * proj_dist;
 
     wall->wall_index = (wall->wall_index < 0) ? 0 : wall->wall_index;
     wall->wall_index = (wall->wall_index > TEX_SIZE - 1) ?
         TEX_SIZE - 1 : wall->wall_index;
-    draw_wall(wall, wall_height, win, column);
+    draw_wall(wall, wall_height, wolf->window_data, column);
     draw_ceiling(wolf, column, wall_height);
 }
 
@@ -111,7 +111,7 @@ void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
         if (distance < 10.f)
             distance = 10.f;
         get_wall_index(player, game->wall, ray_angle, distance);
-        draw_wall_column(window_data, i, distance, game->wall, wolf);
+        draw_wall_column(wolf, i, distance, game->wall);
         game->zbuffer[i] = distance;
     }
 }

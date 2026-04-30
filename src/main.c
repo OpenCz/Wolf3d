@@ -132,7 +132,6 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 
     if (!send_clock)
         return 84;
-    sfRenderWindow_display(window);
     printf("[Network] Connecting to %s:%d...\n", SERVER_IP, PORT);
     wolf->connected = client_init(&wolf->net, SERVER_IP, PORT) == 0;
     if (!wolf->connected)
@@ -148,15 +147,17 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
         sfRenderWindow_display(window);
     }
     sfClock_destroy(send_clock);
-    free_wolf(wolf);
     return 0;
 }
 
 int main(void)
 {
     wolf_t *wolf = init_wolf();
+    int status = 0;
 
     if (!wolf)
         return 84;
-    return program(wolf->window_data->window, (sfEvent){0}, wolf);
+    status = program(wolf->window_data->window, (sfEvent){0}, wolf);
+    free_wolf(wolf);
+    return status;
 }
