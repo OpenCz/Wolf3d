@@ -8,14 +8,6 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-static float normalize_angle(float angle)
-{
-    angle = fmodf(angle, 2.0f * M_PI);
-    if (angle < 0.0f)
-        angle += 2.0f * M_PI;
-    return angle;
-}
-
 void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
 {
     float top = (win->height - wall_height) / 2.0f;
@@ -42,7 +34,7 @@ static void draw_wall_column(wolf_t *wolf,
     int column, float distance, wall_t *wall)
 {
     float proj_dist = (wolf->window_data->width / 2.0f) / tanf(FOV / 2.0f);
-    float wall_height = (TILE_SIZE / distance) * proj_dist;
+    float wall_height = (1.0f / distance) * proj_dist;
 
     wall->wall_index = (wall->wall_index < 0) ? 0 : wall->wall_index;
     wall->wall_index = (wall->wall_index > TEX_SIZE - 1) ?
@@ -51,43 +43,15 @@ static void draw_wall_column(wolf_t *wolf,
     draw_ceiling(wolf, column, wall_height);
 }
 
-static float cast_ray(wall_t *wall, player_t *player, float ray_angle,
-    window_t *window_data)
+static void get_wall_index(wall_t *wall, player_t *player,
+    sfVector2f *ray_dir, float distance)
 {
-    float ray_x = player->x;
-    float ray_y = player->y;
-    float delta_x = cosf(ray_angle) * 0.3f;
-    float delta_y = sinf(ray_angle) * 0.3f;
-    float distance = 0;
-
-    for (; !is_wall(wall, (int)ray_x, (int)ray_y) &&
-        distance < window_data->width * TILE_SIZE; distance += 0.3f) {
-        ray_x += delta_x;
-        ray_y += delta_y;
-    }
-    return distance;
-}
-
-float cast_single_ray(wall_t *wall, player_t *player,
-    float ray_angle, window_t *window_data)
-{
-    float raw = 0;
-
-    ray_angle = normalize_angle(ray_angle);
-    raw = cast_ray(wall, player, ray_angle, window_data);
-    return raw * cosf(player->angle - ray_angle);
-}
-
-static void get_wall_index(player_t *player,
-    wall_t *wall, float ray_angle, float distance)
-{
-    float raw = distance / cosf(player->angle - ray_angle);
-    float hx = player->x + cosf(ray_angle) * raw;
-    float hy = player->y + sinf(ray_angle) * raw;
-    float fx = fmodf(hx, TILE_SIZE);
-    float fy = fmodf(hy, TILE_SIZE);
-    float wall_frac = (fminf(fx, TILE_SIZE - fx) < fminf(fy, TILE_SIZE - fy))
-        ? fy / TILE_SIZE : fx / TILE_SIZE;
+    float hx = player->x + ray_dir->x * distance;
+    float hy = player->y + ray_dir->y * distance;
+    float fx = fmodf(hx, 1.0f);
+    float fy = fmodf(hy, 1.0f);
+    float wall_frac = (fminf(fx, 1.0f - fx) < fminf(fy, 1.0f - fy))
+        ? fy : fx;
 
     wall->wall_index = (int)(wall_frac * TEX_SIZE);
     if (wall->wall_index < 0)
@@ -99,18 +63,23 @@ static void get_wall_index(player_t *player,
 void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
     game_t *game)
 {
-    float start_angle = player->angle - (FOV / 2.0f);
-    float step_angle = FOV / window_data->width;
-    float ray_angle = 0;
+    sfVector2f dir = {cosf(player->angle), sinf(player->angle)};
+    float plane_len = tanf(FOV / 2.0f);
+    float pl_x = -sinf(player->angle) * plane_len;
+    float pl_y = cosf(player->angle) * plane_len;
+    float camera_x = 0;
     float distance = 0;
+    sfVector2f raydir = {dir.x + pl_x * camera_x, dir.y + pl_y * camera_x};
 
     memset(game->wall->pixel, 0, window_data->height * window_data->width * 4);
     for (int i = 0; i < window_data->width; i++) {
-        ray_angle = normalize_angle(start_angle + (i * step_angle));
-        distance = cast_single_ray(game->wall, player, ray_angle, window_data);
-        if (distance < 10.f)
-            distance = 10.f;
-        get_wall_index(player, game->wall, ray_angle, distance);
+        camera_x = 2.0f * i / window_data->width - 1.0f;
+        raydir.x = dir.x + pl_x * camera_x;
+        raydir.y = dir.y + pl_y * camera_x;
+        distance = cast_ray(game->wall, player, raydir.x, raydir.y);
+        if (distance < 0.1f)
+            distance = 0.1f;
+        get_wall_index(game->wall, player, &raydir, distance);
         draw_wall_column(wolf, i, distance, game->wall);
         game->zbuffer[i] = distance;
     }

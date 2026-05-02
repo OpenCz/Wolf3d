@@ -95,6 +95,7 @@ void draw_other_players(wolf_t *wolf)
     player_draw_t draw;
     player_t *player;
 
+    return;
     for (int p = 0; p < wolf->nb_others; p++) {
         if (fill_player_draw(wolf, &wolf->others[p], &draw) < 0)
             continue;
