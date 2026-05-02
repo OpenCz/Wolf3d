@@ -9,7 +9,7 @@
 #ifndef WOLF_H
     #include <math.h>
     #define WOLF_H
-    #define WALL_MIN_DISTANCE TILE_SIZE * 0.15
+    #define WALL_MIN_DISTANCE 0.15
     #define STATES 3
     #define TO_DRAW 3
     #define SPRITE 0
@@ -115,6 +115,13 @@ typedef struct decor_s {
     sfVector2f rd1;
 } decor_t;
 
+typedef struct ray_s {
+    sfVector2i map;
+    sfVector2f delta_dist;
+    sfVector2f side_dist;
+    sfVector2i step;
+} ray_t;
+
 typedef struct wolf_s {
     state_t state;
     menu_t menu_state;
@@ -147,6 +154,9 @@ void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
     game_t *game);
 void render_pixels(game_t *game, window_t *win);
 void draw_other_players(wolf_t *wolf);
+
+float cast_ray(wall_t *wall, player_t *player,
+    float ray_dir_x, float ray_dir_y);
 
 void draw_ceiling(wolf_t *wolf, int column, float wall_height);
 void create_pixel(wall_t *wall, int color,
