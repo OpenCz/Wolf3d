@@ -34,7 +34,8 @@ wall_t *init_wall(window_t *window_data)
     wall->sprite = sfSprite_create();
     if (!init_texture(wall, size, "assets/wall.png", &wall->text_arr[0]) ||
         !init_texture(wall, size, "assets/wall_2.png", &wall->text_arr[1]) ||
-        !init_texture(wall, size, "assets/ceiling.png", &wall->decor_arr[0]))
+        !init_texture(wall, size, "assets/ceiling.png", &wall->decor_arr[0]) ||
+        !init_texture(wall, size, "assets/floor.png", &wall->decor_arr[1]))
         return NULL;
     sfSprite_setTexture(wall->sprite, wall->texture, sfTrue);
     return wall;
