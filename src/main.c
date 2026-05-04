@@ -37,6 +37,9 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
             break;
         case GAME:
             break;
+        case SETTINGS:
+            manage_settings(wolf, event);
+            break;
         default:
             break;
     }
@@ -122,6 +125,9 @@ static void check_state(wolf_t *wolf, sfEvent event)
             break;
         case GAME:
             stage(wolf, wolf->player, event);
+            break;
+        case SETTINGS:
+            settings(wolf);
             break;
         default:
             break;

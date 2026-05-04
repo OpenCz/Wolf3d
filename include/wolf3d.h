@@ -143,4 +143,6 @@ extern const int map[MAP_HEIGHT][MAP_WIDTH];
 int get_map_tile(int tile_x, int tile_y);
 void push_front(list_t **list, void *data);
 void manage_menu(wolf_t *wolf, sfEvent event);
+void settings(wolf_t *wolf);
+void manage_settings(wolf_t *wolf, sfEvent event);
 #endif
