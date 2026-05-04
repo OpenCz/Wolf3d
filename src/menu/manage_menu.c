@@ -16,7 +16,7 @@ void manage_menu(wolf_t *wolf, sfEvent event)
 {
     if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == NEWGAME)
         wolf->state = GAME;
-    if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == SETTINGS)
+    if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == OPTIONS)
         wolf->state = SETTINGS;
     if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == LEAVE)
         sfRenderWindow_close(wolf->window_data->window);

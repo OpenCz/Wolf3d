@@ -30,3 +30,13 @@ void draw_text_list(wolf_t *wolf)
         sfRenderWindow_drawText(wolf->window_data->window, text->text, NULL);
     }
 }
+
+void draw_rect_list(wolf_t *wolf)
+{
+    rect_t *rect = NULL;
+
+    for (list_t *c = wolf->list[wolf->state][RECT]; c; c = c->next) {
+        rect = (rect_t *)c->data;
+        sfRenderWindow_drawRectangleShape(wolf->window_data->window, rect->rect, NULL);
+    }
+}

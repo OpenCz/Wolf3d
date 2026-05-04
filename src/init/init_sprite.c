@@ -61,3 +61,19 @@ void init_menu_entities(wolf_t *wolf, window_t *window)
             &(sfVector2f){1, 1}));
     get_entity(wolf->list[MENU][SPRITE], "cloud")->clock = sfClock_create();
 }
+
+void init_settings_entities(wolf_t *wolf, window_t *window)
+{
+    push_front(&wolf->list[SETTINGS][SPRITE], create_entity("menu",
+            "assets/menu_settings.png",
+            &(sfVector2f){window->width / 2, window->height / 2},
+            &(sfVector2f){0.8, 0.8}));
+    push_front(&wolf->list[SETTINGS][SPRITE], create_entity("background",
+            "assets/BG_main_menu.png",
+            &(sfVector2f){window->width / 2, window->height / 2},
+            &(sfVector2f){1, 1}));
+    push_front(&wolf->list[SETTINGS][SPRITE], create_entity("cloud",
+            "assets/BG_cloud.png",
+            &(sfVector2f){0, window->height / 4},
+            &(sfVector2f){1, 1}));
+}

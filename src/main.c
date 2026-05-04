@@ -150,6 +150,7 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
         check_state(wolf, event);
         draw_sprite_list(wolf);
         draw_text_list(wolf);
+        draw_rect_list(wolf);
         sfRenderWindow_display(window);
     }
     sfClock_destroy(send_clock);

@@ -11,10 +11,11 @@
     #define WOLF_H
     #define WALL_MIN_DISTANCE 0.15
     #define STATES 3
-    #define TO_DRAW 3
+    #define TO_DRAW 4
     #define SPRITE 0
     #define TEXT 1
     #define MONSTER 2
+    #define RECT 3
     #define NUM_RAYS 800
     #define TILE_SIZE 64
     #define MAP_WIDTH 8
@@ -53,6 +54,14 @@ typedef enum {
     LEAVE,
 } menu_t;
 
+typedef enum {
+    GRAPHICS,
+    AUDIO,
+    GAMEPLAY,
+    CONTROLS,
+    ACCESSIBILITY,
+} settings_t;
+
 typedef struct player_draw_s {
     float dist;
     float rel_angle;
@@ -66,6 +75,13 @@ typedef struct list_s {
     void *data;
     struct list_s *next;
 } list_t;
+
+typedef struct rect_s {
+    char *name;
+    settings_t state;
+    sfRectangleShape *rect;
+    sfTexture *texture;
+} rect_t;
 
 typedef struct text_s {
     char *name;
@@ -169,4 +185,7 @@ void push_front(list_t **list, void *data);
 void manage_menu(wolf_t *wolf, sfEvent event);
 void settings(wolf_t *wolf);
 void manage_settings(wolf_t *wolf, sfEvent event);
+void init_settings_entities(wolf_t *wolf, window_t *window);
+void init_settings_rect(wolf_t *wolf, window_t *window);
+void draw_rect_list(wolf_t *wolf);
 #endif
