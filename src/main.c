@@ -110,9 +110,7 @@ static void stage(wolf_t *wolf, player_t *player, sfEvent event)
     move_player(wolf->player, event, wolf->game);
     is_near_monster(wolf, player);
     check_player_state(wolf);
-    sfRenderWindow_clear(wolf->window_data->window, sfBlack);
-    draw_floor_and_ceiling(wolf->window_data);
-    cast_all_rays(wolf->window_data, player, wolf->game);
+    cast_all_rays(wolf, wolf->window_data, player, wolf->game);
     draw_other_players(wolf);
     render_pixels(wolf->game, wolf->window_data);
 }
@@ -140,8 +138,6 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 
     if (!send_clock)
         return 84;
-    sfRenderWindow_clear(window, sfBlack);
-    sfRenderWindow_display(window);
     printf("[Network] Connecting to %s:%d...\n", SERVER_IP, PORT);
     wolf->connected = client_init(&wolf->net, SERVER_IP, PORT) == 0;
     if (!wolf->connected)
@@ -157,15 +153,17 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
         sfRenderWindow_display(window);
     }
     sfClock_destroy(send_clock);
-    free_wolf(wolf);
     return 0;
 }
 
 int main(void)
 {
     wolf_t *wolf = init_wolf();
+    int status = 0;
 
     if (!wolf)
         return 84;
-    return program(wolf->window_data->window, (sfEvent){0}, wolf);
+    status = program(wolf->window_data->window, (sfEvent){0}, wolf);
+    free_wolf(wolf);
+    return status;
 }

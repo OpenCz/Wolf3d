@@ -9,8 +9,8 @@
 
 int is_in_range(player_t *player, player_t *monster)
 {
-    return player->x > monster->x - 30 && player->x < monster->x + 30 &&
-        player->y > monster->y - 30 && player->y < monster->y + 30;
+    return player->x > monster->x - 1 && player->x < monster->x + 1 &&
+        player->y > monster->y - 1 && player->y < monster->y + 1;
 }
 
 void is_near_monster(wolf_t *wolf, player_t *player)

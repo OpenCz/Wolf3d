@@ -14,8 +14,8 @@ player_t *init_player(void)
 
     if (!player)
         return NULL;
-    player->x = TILE_SIZE * 1.5;
-    player->y = TILE_SIZE * 1.5;
+    player->x = 1.5;
+    player->y = 1.5;
     player->angle = fmodf(0.0f, 2.0f * M_PI);
     if (player->angle < 0.0f)
         player->angle += 2.0f * M_PI;

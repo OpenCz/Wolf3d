@@ -9,7 +9,7 @@
 #ifndef WOLF_H
     #include <math.h>
     #define WOLF_H
-    #define WALL_MIN_DISTANCE TILE_SIZE * 0.15
+    #define WALL_MIN_DISTANCE 0.15
     #define STATES 3
     #define TO_DRAW 3
     #define SPRITE 0
@@ -24,6 +24,8 @@
     #define FOV (M_PI / 3)
     #define TEX_SIZE 64
     #define CLOUD_SPEED 20
+    #define CEILING 0
+    #define FLOOR 1
     #include <SFML/Graphics.h>
     #include <stdlib.h>
     #include <string.h>
@@ -86,6 +88,7 @@ typedef struct wall_s {
     sfSprite *sprite;
     sfUint8 *pixel;
     sfUint8 *text_arr[2];
+    sfUint8 *decor_arr[2];
 } wall_t;
 
 typedef struct game_s {
@@ -103,6 +106,21 @@ typedef struct window_s {
 typedef struct data_s {
     sfFont *font;
 } data_t;
+
+typedef struct decor_s {
+    sfVector2i t;
+    sfVector2f floor;
+    sfVector2f floorStep;
+    sfVector2f rd0;
+    sfVector2f rd1;
+} decor_t;
+
+typedef struct ray_s {
+    sfVector2i map;
+    sfVector2f delta_dist;
+    sfVector2f side_dist;
+    sfVector2i step;
+} ray_t;
 
 typedef struct wolf_s {
     state_t state;
@@ -128,15 +146,21 @@ void init_menu_entities(wolf_t *wolf, window_t *window);
 entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);
 int is_wall(wall_t *wall, int x, int y);
-void draw_floor_and_ceiling(window_t *window_data);
 
 void check_player_state(wolf_t *wolf);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
-void cast_all_rays(window_t *window_data, player_t *player, game_t *game);
+void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
+    game_t *game);
 void render_pixels(game_t *game, window_t *win);
 void draw_other_players(wolf_t *wolf);
 
+float cast_ray(wall_t *wall, player_t *player,
+    float ray_dir_x, float ray_dir_y);
+
+void draw_ceiling(wolf_t *wolf, int column, float wall_height);
+void create_pixel(wall_t *wall, int color,
+    int index, sfUint8 *pixel);
 void free_wolf(wolf_t *wolf);
 void move_player(player_t *player, sfEvent event, game_t *game);
 extern const int map[MAP_HEIGHT][MAP_WIDTH];
