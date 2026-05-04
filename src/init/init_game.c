@@ -7,18 +7,15 @@
 
 #include "../../include/wolf3d.h"
 
-wall_t *init_texture(wall_t *wall, int size, char *path, int index)
+wall_t *init_texture(wall_t *wall, int size, char *path, sfUint8 **pixel)
 {
     sfImage *image = sfImage_createFromFile(path);
     const sfUint8 *tmp = sfImage_getPixelsPtr(image);
 
-    wall->wall = malloc(size);
-    if (!wall->wall)
+    *pixel = malloc(size);
+    if (!*pixel)
         return NULL;
-    wall->text_arr[index] = malloc(size);
-    if (!wall->text_arr[index])
-        return NULL;
-    memcpy(wall->text_arr[index], tmp, size);
+    memcpy(*pixel, tmp, size);
     sfImage_destroy(image);
     return wall;
 }
@@ -30,10 +27,14 @@ wall_t *init_wall(window_t *window_data)
 
     if (!wall)
         return NULL;
+    wall->wall = malloc(size);
+    if (!wall->wall)
+        return NULL;
     wall->texture = sfTexture_create(window_data->width, window_data->height);
     wall->sprite = sfSprite_create();
-    if (!init_texture(wall, size, "assets/wall.png", 0) ||
-        !init_texture(wall, size, "assets/wall_2.png", 1))
+    if (!init_texture(wall, size, "assets/wall.png", &wall->text_arr[0]) ||
+        !init_texture(wall, size, "assets/wall_2.png", &wall->text_arr[1]) ||
+        !init_texture(wall, size, "assets/ceiling.png", &wall->decor_arr[0]))
         return NULL;
     sfSprite_setTexture(wall->sprite, wall->texture, sfTrue);
     return wall;

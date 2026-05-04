@@ -15,8 +15,8 @@ int is_wall(wall_t *wall, int x, int y)
 
     if (x < 0 || y < 0)
         return 1;
-    tile_x = x / TILE_SIZE;
-    tile_y = y / TILE_SIZE;
+    tile_x = x;
+    tile_y = y;
     if (tile_x < 0 || tile_x >= MAP_WIDTH)
         return 1;
     if (tile_y < 0 || tile_y >= MAP_HEIGHT)
