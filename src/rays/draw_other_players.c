@@ -8,6 +8,30 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
+static void verif_distance(int i, int num, int spriteOrder[],
+    double spriteDistance[])
+{
+    double tmpA;
+    int tmpB;
+
+    for (int j = 0; j < num - i - 1; j++) {
+        if (spriteDistance[j] < spriteDistance[j + 1]) {
+            tmpA = spriteDistance[j];
+            spriteDistance[j] = spriteDistance[j + 1];
+            spriteDistance[j + 1] = tmpA;
+            tmpB = spriteOrder[j];
+            spriteOrder[j] = spriteOrder[j + 1];
+            spriteOrder[j + 1] = tmpB;
+        }
+    }
+}
+
+static void sort_based_on_dist(int num, int spriteOrder[], double spriteDistance[])
+{
+    for (int i = 0; i < num - 1; i++)
+        verif_distance(i, num, spriteOrder, spriteDistance);
+}
+
 static void sort_far_to_close(wolf_t *wolf, player_t *p,
     int spriteOrder[], double spriteDistance[])
 {
@@ -19,6 +43,7 @@ static void sort_far_to_close(wolf_t *wolf, player_t *p,
         spriteDistance[i] = ((p->x - sprite[i].x) * (p->x - sprite[i].x) +
             (p->y - sprite[i].y) * (p->y - sprite[i].y));
     }
+    sort_based_on_dist(num, spriteOrder, spriteDistance);
 }
 
 static void get_sprite_height(wolf_t *wolf, player_draw_t *draw,
