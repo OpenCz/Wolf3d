@@ -108,7 +108,7 @@ static void stage(wolf_t *wolf, player_t *player, sfEvent event)
     is_near_monster(wolf, player);
     check_player_state(wolf);
     cast_all_rays(wolf, wolf->window_data, player, wolf->game);
-    draw_other_players(wolf);
+    draw_other_entities(wolf, player);
     render_pixels(wolf->game, wolf->window_data);
 }
 

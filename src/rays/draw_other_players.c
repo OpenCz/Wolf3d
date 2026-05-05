@@ -8,103 +8,81 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-static void draw_player_column(game_t *game, window_t *win, int x,
-    player_draw_t *draw)
+static void sort_far_to_close(wolf_t *wolf, player_t *p,
+    int spriteOrder[], double spriteDistance[])
 {
-    int idx;
+    int num = wolf->game->numSprites;
+    player_t *sprite = wolf->game->entities;
 
-    for (int y = draw->top; y < draw->top + draw->height; y++) {
-        if (y < 0 || y >= win->height)
-            continue;
-        idx = (y * win->width + x) * 4;
-        game->wall->pixel[idx + 0] = 255;
-        game->wall->pixel[idx + 1] = 50;
-        game->wall->pixel[idx + 2] = 50;
-        game->wall->pixel[idx + 3] = 255;
+    for (int i = 0; i < num; i++) {
+        spriteOrder[i] = i;
+        spriteDistance[i] = ((p->x - sprite[i].x) * (p->x - sprite[i].x) +
+            (p->y - sprite[i].y) * (p->y - sprite[i].y));
     }
 }
 
-static void draw_monster_column(game_t *game, window_t *win, int x,
-    player_draw_t *draw)
+static void get_sprite_height(wolf_t *wolf, player_draw_t *draw,
+    sfVector2f *dir, int *spriteScreenX)
 {
-    int idx;
+    double i = 0;
+    int h = wolf->window_data->height;
+    int w = wolf->window_data->width;
 
-    for (int y = draw->top; y < draw->top + draw->height; y++) {
-        if (y < 0 || y >= win->height)
-            continue;
-        idx = (y * win->width + x) * 4;
-        game->wall->pixel[idx + 0] = 100;
-        game->wall->pixel[idx + 1] = 255;
-        game->wall->pixel[idx + 2] = 55;
-        game->wall->pixel[idx + 3] = 255;
+    i = 1.0 / (draw->plane.x * dir->y - dir->x * draw->plane.y);
+    draw->transform.x = i * (dir->y * draw->sprite.x - dir->x * draw->sprite.y);
+    draw->transform.y = i * (-draw->plane.y * draw->sprite.x +
+        draw->plane.x * draw->sprite.y);
+    *spriteScreenX = (int)((w / 2) * (1 + draw->transform.x /
+            draw->transform.y));
+    draw->sprite_height = abs((int)(h / (draw->transform.y)));
+    draw->drawStart.y = -draw->sprite_height / 2 + h / 2;
+    if (draw->drawStart.y < 0)
+        draw->drawStart.y = 0;
+    draw->drawEnd.y = draw->sprite_height / 2 + h / 2;
+    if (draw->drawEnd.y >= h)
+        draw->drawEnd.y = h - 1;
+}
+
+static void get_sprite_width(wolf_t *wolf,
+    player_draw_t *draw, int spriteScreenX)
+{
+    int w = wolf->window_data->width;
+    int h = wolf->window_data->height;
+
+    draw->sprite_width = abs((int)(h / (draw->transform.y)));
+    draw->drawStart.x = -draw->sprite_width / 2 + spriteScreenX;
+    if (draw->drawStart.x < 0)
+        draw->drawStart.x = 0;
+    draw->drawEnd.x = draw->sprite_width / 2 + spriteScreenX;
+    if (draw->drawEnd.x >= w)
+        draw->drawEnd.x = w - 1;
+}
+
+static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
+    int spriteOrder[])
+{
+    player_t *p = wolf->player;
+    player_t *sprite = wolf->game->entities;
+    sfVector2f dir = {cosf(p->angle), sinf(p->angle)};
+    int spriteScreenX = 0;
+
+    draw->plane.x = -sin(wolf->player->angle) * tan(FOV / 2.0f);
+    draw->plane.y = cos(wolf->player->angle) * tan(FOV / 2.0f);;
+    for (int i = 0; i < draw->num; i++) {
+        draw->sprite.x = sprite[spriteOrder[i]].x - p->x;
+        draw->sprite.y = sprite[spriteOrder[i]].y - p->y;
+        get_sprite_height(wolf, draw, &dir, &spriteScreenX);
+        get_sprite_width(wolf, draw, spriteScreenX);
     }
 }
 
-static float wrap_relative_angle(float angle)
-{
-    while (angle > M_PI)
-        angle -= 2.0f * M_PI;
-    while (angle < -M_PI)
-        angle += 2.0f * M_PI;
-    return angle;
-}
-
-static void set_player_screen_data(wolf_t *wolf, player_draw_t *draw)
-{
-    float proj_dist = (wolf->window_data->width / 2.0f) / tanf(FOV / 2.0f);
-    float sprite_h = (TILE_SIZE / draw->dist) * proj_dist;
-
-    draw->screen_x = (int)(wolf->window_data->width / 2.0f +
-        tanf(draw->rel_angle) * proj_dist);
-    draw->height = (int)sprite_h;
-    draw->half_w = draw->height / 4;
-    draw->top = (wolf->window_data->height - draw->height) / 2;
-}
-
-static int fill_player_draw(wolf_t *wolf, player_t *other, player_draw_t *draw)
-{
-    float dx = other->x - wolf->player->x;
-    float dy = other->y - wolf->player->y;
-
-    draw->dist = sqrtf(dx * dx + dy * dy);
-    if (draw->dist < 1.0f)
-        return -1;
-    draw->rel_angle = wrap_relative_angle(
-        atan2f(dy, dx) - wolf->player->angle);
-    if (fabsf(draw->rel_angle) > FOV / 2.0f + 0.1f)
-        return -1;
-    set_player_screen_data(wolf, draw);
-    return 0;
-}
-
-static void draw_projected_player(wolf_t *wolf, player_draw_t *draw,
-    void (*draw_fct)(game_t *, window_t *, int, player_draw_t *))
-{
-    int width = wolf->window_data->width;
-
-    for (int x = draw->screen_x - draw->half_w; x < draw->screen_x +
-        draw->half_w; x++) {
-        if ((x < 0 || x >= width) || wolf->game->zbuffer[x] < draw->dist)
-            continue;
-        draw_fct(wolf->game, wolf->window_data, x, draw);
-    }
-}
-
-void draw_other_players(wolf_t *wolf)
+void draw_other_entities(wolf_t *wolf, player_t *p)
 {
     player_draw_t draw;
-    player_t *player;
+    int spriteOrder[wolf->game->numSprites];
+    double spriteDistance[wolf->game->numSprites];
 
-    return;
-    for (int p = 0; p < wolf->nb_others; p++) {
-        if (fill_player_draw(wolf, &wolf->others[p], &draw) < 0)
-            continue;
-        draw_projected_player(wolf, &draw, draw_player_column);
-    }
-    for (list_t *curr = wolf->list[GAME][MONSTER]; curr; curr = curr->next) {
-        player = (player_t *)curr->data;
-        if (fill_player_draw(wolf, player, &draw) < 0)
-            continue;
-        draw_projected_player(wolf, &draw, draw_monster_column);
-    }
+    draw.num = wolf->game->numSprites;
+    sort_far_to_close(wolf, p, spriteOrder, spriteDistance);
+    draw_sprite(wolf, &draw, spriteOrder);
 }
