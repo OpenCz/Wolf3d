@@ -62,21 +62,68 @@ void init_menu_text(wolf_t *wolf, window_t *window)
             &(sfVector2f){1.5f, 1.5f}));
 }
 
-void init_graphics_text(wolf_t *wolf, window_t *window)
+void init_graphics(wolf_t *wolf, window_t *window)
 {
-    char *names[] = {"resolution", "fullscreen", "vsync", "fov", "brightness", "max_fps"};
-    char *contents[] = {"RESOLUTION", "FULLSCREEN", "V-SYNC", "FOV", "BRIGHTNESS", "MAX FPS"};
-    int states[] = {GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS};
+    char *names[] = {"resolution", "fullscreen", "vsync", "fov", "brightness",
+        "max_fps"};
+    char *contents[] = {"RESOLUTION", "FULLSCREEN", "V-SYNC", "FOV",
+        "BRIGHTNESS", "MAX FPS"};
+    int states[] = {GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS,
+        GRAPHICS};
 
     for (int i = 0; i < 6; i++) {
         push_front(&wolf->list[SETTINGS][TEXT],
-            create_text(&(text_t){names[i], contents[i], states[i], TYPE_SETTINGS, NULL},
-                wolf->data->font,
-                &(sfVector2f){window->width / 7, window->height / 2.9f + 80 * i},
+            create_text(&(text_t){names[i], contents[i], states[i],
+                    TYPE_SETTINGS, NULL}, wolf->data->font,
+                &(sfVector2f){window->width / 7,
+                    window->height / 2.9f + 80 * i},
                 &(sfVector2f){1.1f, 1.1f}));
         push_front(&wolf->list[SETTINGS][LINE],
-            create_line(&(rect_t){names[i], states[i], NULL, NULL, NULL, TYPE_SETTINGS},
-                &(sfVector2f){window->width / 7 - 11, window->height / 2.9f + 80 * i + 40},
+            create_line(&(rect_t){names[i], states[i], NULL, NULL, NULL,
+                    TYPE_SETTINGS}, &(sfVector2f){window->width / 7 - 11,
+                    window->height / 2.9f + 80 * i + 40},
+                &(sfVector2f){window->width / 1.5f, 1.0f}));
+    }
+}
+
+void init_audio(wolf_t *wolf, window_t *window)
+{
+    char *names[] = {"master_volume", "music_volume", "sfx_volume", "ambient_volume"};
+    char *contents[] = {"MASTER VOLUME", "MUSIC VOLUME", "SFX VOLUME", "AMBIENT VOLUME"};
+    int states[] = {AUDIO, AUDIO, AUDIO, AUDIO};
+
+    for (int i = 0; i < 4; i++) {
+        push_front(&wolf->list[SETTINGS][TEXT],
+            create_text(&(text_t){names[i], contents[i], states[i],
+                    TYPE_SETTINGS, NULL}, wolf->data->font,
+                &(sfVector2f){window->width / 7,
+                    window->height / 2.9f + 80 * i},
+                &(sfVector2f){1.1f, 1.1f}));
+        push_front(&wolf->list[SETTINGS][LINE],
+            create_line(&(rect_t){names[i], states[i], NULL, NULL, NULL,
+                    TYPE_SETTINGS}, &(sfVector2f){window->width / 7 - 11,
+                    window->height / 2.9f + 80 * i + 40},
+                &(sfVector2f){window->width / 1.5f, 1.0f}));
+    }
+}
+
+void init_gameplay(wolf_t *wolf, window_t *window)
+{
+    char *names[] = {"mouse_sensitivity", "invert_mouse", "show_hud", "show_fps", "show_minimap", "crosshair"};
+    char *contents[] = {"MOUSE SENSITIVITY", "INVERT MOUSE", "SHOW HUD", "SHOW FPS", "SHOW MINIMAP", "CROSSHAIR"};
+    int states[] = {GAMEPLAY, GAMEPLAY, GAMEPLAY, GAMEPLAY, GAMEPLAY, GAMEPLAY};
+
+    for (int i = 0; i < 6; i++) {
+        push_front(&wolf->list[SETTINGS][TEXT],
+            create_text(&(text_t){names[i], contents[i], states[i],
+                    TYPE_SETTINGS, NULL}, wolf->data->font,
+                &(sfVector2f){window->width / 7,
+                    window->height / 2.9f + 80 * i},
+                &(sfVector2f){1.1f, 1.1f}));
+        push_front(&wolf->list[SETTINGS][LINE],
+            create_line(&(rect_t){names[i], states[i], NULL, NULL, NULL,
+                    TYPE_SETTINGS}, &(sfVector2f){window->width / 7 - 11,
+                    window->height / 2.9f + 80 * i + 40},
                 &(sfVector2f){window->width / 1.5f, 1.0f}));
     }
 }

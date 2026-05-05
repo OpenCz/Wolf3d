@@ -43,9 +43,9 @@ rect_t *create_rectangles(rect_t *data, const char *texture_path,
     rect->name = data->name;
     rect->state = data->state;
     rect->type = data->type;
-    rect->texture = sfTexture_createFromFile(texture_path, NULL);
+    rect->texture = sfTexture_createFromFile("assets/settings_button.png", NULL);
     rect->click_texture
-    = sfTexture_createFromFile("assets/settings_button_click.png", NULL);
+    = sfTexture_createFromFile(texture_path, NULL);
     if (!rect->name || !rect->texture || !rect->click_texture) {
         free_rect(rect);
         return NULL;

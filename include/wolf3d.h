@@ -63,6 +63,25 @@ typedef enum {
     ACCESSIBILITY,
 } settings_t;
 
+typedef struct settings_game_s {
+    sfVideoMode resolution;
+    sfBool fullscreen;
+    sfBool vsync;
+    int fov;
+    int brightness;
+    int max_fps;
+    int master_volume;
+    int music_volume;
+    int sfx_volume;
+    int ambient_volume;
+    int mouse_sensitivity;
+    sfBool invert_mouse;
+    sfBool show_hud;
+    sfBool show_fps;
+    sfBool show_minimap;
+    sfBool crosshair;
+} settings_game_t;
+
 typedef struct player_draw_s {
     float dist;
     float rel_angle;
@@ -208,7 +227,11 @@ text_t *create_text(text_t *data,
 rect_t *create_rectangles(rect_t *data, const char *texture_path,
     sfVector2f *pos, sfVector2f *scale);
 void draw_rect_list(wolf_t *wolf);
-void init_graphics_text(wolf_t *wolf, window_t *window);
+void init_graphics(wolf_t *wolf, window_t *window);
 rect_t *create_line(rect_t *data, sfVector2f *pos, sfVector2f *scale);
 void draw_line_list(wolf_t *wolf);
+int in_list_top(char *name);
+int in_list_bottom(char *name);
+void init_audio(wolf_t *wolf, window_t *window);
+void init_gameplay(wolf_t *wolf, window_t *window);
 #endif

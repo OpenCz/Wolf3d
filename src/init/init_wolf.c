@@ -20,14 +20,14 @@ void push_front(list_t **list, void *data)
 
 window_t *init_window_data(void)
 {
+    sfVideoMode mode = sfVideoMode_getDesktopMode();
     window_t *window = malloc(sizeof(window_t));
 
     if (!window)
         return NULL;
-    window->window = sfRenderWindow_create((sfVideoMode)
-        {1920, 1080, 32}, "Wolf3D", sfClose, NULL);
-    window->width = 1920;
-    window->height = 1080;
+    window->window = sfRenderWindow_create(mode, "Wolf3D", sfClose, NULL);
+    window->width = mode.width;
+    window->height = mode.height;
     return window;
 }
 
@@ -55,7 +55,9 @@ static void init_settings(wolf_t *wolf)
 {
     init_settings_entities(wolf, wolf->window_data);
     init_settings_buttons(wolf, wolf->window_data);
-    init_graphics_text(wolf, wolf->window_data);
+    init_graphics(wolf, wolf->window_data);
+    init_audio(wolf, wolf->window_data);
+    init_gameplay(wolf, wolf->window_data);
 }
 
 static int init_wolf_game_data(wolf_t *wolf)
