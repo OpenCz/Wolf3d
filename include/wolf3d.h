@@ -76,17 +76,26 @@ typedef struct list_s {
     struct list_s *next;
 } list_t;
 
+typedef enum {
+    TYPE_MENU,
+    TYPE_SETTINGS
+} type_t;
+
 typedef struct rect_s {
     char *name;
-    settings_t state;
+    int state;
     sfRectangleShape *rect;
     sfTexture *texture;
+    sfTexture *click_texture;
+    type_t type;
 } rect_t;
+
 
 typedef struct text_s {
     char *name;
     char *content;
-    menu_t state;
+    int state;
+    type_t type;
     sfText *text;
 } text_t;
 
@@ -140,7 +149,8 @@ typedef struct ray_s {
 
 typedef struct wolf_s {
     state_t state;
-    menu_t menu_state;
+    int menu_state;
+    int settings_state;
     player_t *player;
     window_t *window_data;
     data_t *data;
@@ -173,7 +183,7 @@ void draw_other_players(wolf_t *wolf);
 
 float cast_ray(wall_t *wall, player_t *player,
     float ray_dir_x, float ray_dir_y);
-
+sfBool iskeypressed(int key, sfEvent event);
 void draw_ceiling(wolf_t *wolf, int column, float wall_height);
 void create_pixel(wall_t *wall, int color,
     int index, sfUint8 *pixel);
@@ -186,6 +196,10 @@ void manage_menu(wolf_t *wolf, sfEvent event);
 void settings(wolf_t *wolf);
 void manage_settings(wolf_t *wolf, sfEvent event);
 void init_settings_entities(wolf_t *wolf, window_t *window);
-void init_settings_rect(wolf_t *wolf, window_t *window);
+void init_settings_buttons(wolf_t *wolf, window_t *window);
+text_t *create_text(text_t *data,
+    sfFont *font, sfVector2f *pos, sfVector2f *scale);
+rect_t *create_rectangles(rect_t *data, const char *texture_path,
+    sfVector2f *pos, sfVector2f *scale);
 void draw_rect_list(wolf_t *wolf);
 #endif

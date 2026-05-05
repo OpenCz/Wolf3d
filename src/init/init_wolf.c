@@ -56,7 +56,7 @@ static int init_wolf_game_data(wolf_t *wolf)
     init_menu_entities(wolf, wolf->window_data);
     init_menu_text(wolf, wolf->window_data);
     init_settings_entities(wolf, wolf->window_data);
-    init_settings_rect(wolf, wolf->window_data);
+    init_settings_buttons(wolf, wolf->window_data);
     wolf->game = init_game(wolf->window_data);
     if (!wolf->game)
         return -1;
@@ -75,6 +75,8 @@ wolf_t *init_wolf(void)
     if (!wolf)
         return NULL;
     wolf->state = MENU;
+    wolf->menu_state = NEWGAME;
+    wolf->settings_state = GRAPHICS;
     if (init_wolf_player_data(wolf) < 0)
         return NULL;
     if (init_wolf_game_data(wolf) < 0)

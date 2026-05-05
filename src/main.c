@@ -10,26 +10,9 @@
 
 static const char *const SERVER_IP = "10.73.190.141";
 
-int get_map_tile(int tile_x, int tile_y)
-{
-    static const int map_data[MAP_HEIGHT][MAP_WIDTH] = {
-        {1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 2, 0, 0, 0, 1},
-        {1, 0, 0, 2, 0, 2, 0, 1},
-        {1, 0, 0, 0, 0, 2, 0, 1},
-        {1, 0, 2, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1}
-    };
-
-    return map_data[tile_y][tile_x];
-}
-
 void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
-    if (event.type == sfEvtClosed || wolf->state == QUIT ||
-        sfKeyboard_isKeyPressed(sfKeyEscape))
+    if (event.type == sfEvtClosed || wolf->state == QUIT)
         sfRenderWindow_close(window);
     switch (wolf->state) {
         case MENU:
@@ -132,6 +115,13 @@ static void check_state(wolf_t *wolf, sfEvent event)
     }
 }
 
+static void manage_draw(wolf_t *wolf)
+{
+    draw_sprite_list(wolf);
+    draw_rect_list(wolf);
+    draw_text_list(wolf);
+}
+
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     sfClock *send_clock = sfClock_create();
@@ -148,9 +138,7 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
             check_event(window, event, wolf);
         network_update(wolf, send_clock);
         check_state(wolf, event);
-        draw_sprite_list(wolf);
-        draw_text_list(wolf);
-        draw_rect_list(wolf);
+        manage_draw(wolf);
         sfRenderWindow_display(window);
     }
     sfClock_destroy(send_clock);
