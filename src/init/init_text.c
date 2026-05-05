@@ -62,6 +62,19 @@ void init_menu_text(wolf_t *wolf, window_t *window)
             &(sfVector2f){1.5f, 1.5f}));
 }
 
+void init_settings_text(wolf_t *wolf, window_t *window)
+{
+    text_t *t = NULL;
+
+    push_front(&wolf->list[SETTINGS][TEXT],
+        create_text(&(text_t){"settings_title", "SETTINGS", -1, TYPE_SETTINGS,
+                NULL}, wolf->data->font,
+            &(sfVector2f){window->width / 2, window->height / 4},
+            &(sfVector2f){5.0f, 5.0f}));
+    t = (text_t *)wolf->list[SETTINGS][TEXT]->data;
+        sfText_setColor(t->text, sfColor_fromRGB(255, 200, 0));
+}
+
 void init_graphics(wolf_t *wolf, window_t *window)
 {
     char *names[] = {"resolution", "fullscreen", "vsync", "fov", "brightness",

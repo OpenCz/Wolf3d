@@ -54,7 +54,7 @@ void draw_text_list(wolf_t *wolf)
             sfRenderWindow_drawText(wolf->window_data->window, text->text,
                 NULL);
         if (text->type == TYPE_SETTINGS && (in_list_top(text->name) == 0
-             || in_list_bottom(text->name) == 0))
+             || in_list_bottom(text->name) == 0 || strcmp(text->name, "settings_title") == 0))
             sfRenderWindow_drawText(wolf->window_data->window, text->text,
                 NULL);
         if (wolf->settings_state == text->state

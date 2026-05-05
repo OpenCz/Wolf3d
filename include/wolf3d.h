@@ -234,4 +234,5 @@ int in_list_top(char *name);
 int in_list_bottom(char *name);
 void init_audio(wolf_t *wolf, window_t *window);
 void init_gameplay(wolf_t *wolf, window_t *window);
+void init_settings_text(wolf_t *wolf, window_t *window);
 #endif
