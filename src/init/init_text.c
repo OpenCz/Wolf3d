@@ -61,3 +61,22 @@ void init_menu_text(wolf_t *wolf, window_t *window)
             &(sfVector2f){window->width / 10, window->height / 2.2 + 90 * 3},
             &(sfVector2f){1.5f, 1.5f}));
 }
+
+void init_graphics_text(wolf_t *wolf, window_t *window)
+{
+    char *names[] = {"resolution", "fullscreen", "vsync", "fov", "brightness", "max_fps"};
+    char *contents[] = {"RESOLUTION", "FULLSCREEN", "V-SYNC", "FOV", "BRIGHTNESS", "MAX FPS"};
+    int states[] = {GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS, GRAPHICS};
+
+    for (int i = 0; i < 6; i++) {
+        push_front(&wolf->list[SETTINGS][TEXT],
+            create_text(&(text_t){names[i], contents[i], states[i], TYPE_SETTINGS, NULL},
+                wolf->data->font,
+                &(sfVector2f){window->width / 7, window->height / 2.9f + 80 * i},
+                &(sfVector2f){1.1f, 1.1f}));
+        push_front(&wolf->list[SETTINGS][LINE],
+            create_line(&(rect_t){names[i], states[i], NULL, NULL, NULL, TYPE_SETTINGS},
+                &(sfVector2f){window->width / 7 - 11, window->height / 2.9f + 80 * i + 40},
+                &(sfVector2f){window->width / 1.5f, 1.0f}));
+    }
+}

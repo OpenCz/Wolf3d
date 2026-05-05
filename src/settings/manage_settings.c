@@ -66,6 +66,22 @@ void init_settings_buttons(wolf_t *wolf, window_t *window)
         create_settings_button(wolf, start_x + i * 300.0f, y, &infos[i]);
 }
 
+static void click_button(wolf_t *wolf, sfEvent event)
+{
+    rect_t *rect = NULL;
+    sfFloatRect bounds;
+
+    for (list_t *c = wolf->list[SETTINGS][RECT]; c; c = c->next) {
+        rect = (rect_t *)c->data;
+        bounds = sfRectangleShape_getGlobalBounds(rect->rect);
+        if (sfFloatRect_contains(&bounds, event.mouseButton.x,
+                event.mouseButton.y)) {
+            wolf->settings_state = rect->state;
+            break;
+        }
+    }
+}
+
 void manage_settings(wolf_t *wolf, sfEvent event)
 {
     if (iskeypressed(sfKeyEscape, event))
@@ -74,4 +90,7 @@ void manage_settings(wolf_t *wolf, sfEvent event)
         wolf->settings_state++;
     if (iskeypressed(sfKeyLeft, event) && wolf->settings_state > GRAPHICS)
         wolf->settings_state--;
+    if (event.type == sfEvtMouseButtonPressed
+        && event.mouseButton.button == sfMouseLeft)
+        click_button(wolf, event);
 }

@@ -120,6 +120,7 @@ static void manage_draw(wolf_t *wolf)
     draw_sprite_list(wolf);
     draw_rect_list(wolf);
     draw_text_list(wolf);
+    draw_line_list(wolf);
 }
 
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)

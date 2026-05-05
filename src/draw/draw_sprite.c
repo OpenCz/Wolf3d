@@ -18,6 +18,18 @@ void draw_sprite_list(wolf_t *wolf)
     }
 }
 
+static int in_list(char *name)
+{
+    char *names[] = {"graphics", "audio", "gameplay", "controls",
+        "accessibility"};
+    
+    for (int i = 0; i < 5; i++) {
+        if (strcmp(name, names[i]) == 0)
+            return 0;
+    }
+    return 84;
+}
+
 void draw_text_list(wolf_t *wolf)
 {
     text_t *text = NULL;
@@ -27,7 +39,12 @@ void draw_text_list(wolf_t *wolf)
         sfText_setColor(text->text, sfWhite);
         if (wolf->menu_state == text->state && text->type == TYPE_MENU)
             sfText_setColor(text->text, sfRed);
-        sfRenderWindow_drawText(wolf->window_data->window, text->text, NULL);
+        if (text->type == TYPE_MENU)
+            sfRenderWindow_drawText(wolf->window_data->window, text->text, NULL);
+        if (text->type == TYPE_SETTINGS && in_list(text->name) == 0)
+             sfRenderWindow_drawText(wolf->window_data->window, text->text, NULL);
+        if (wolf->settings_state == text->state && text->state == wolf->settings_state)
+            sfRenderWindow_drawText(wolf->window_data->window, text->text, NULL);
     }
 }
 
@@ -47,5 +64,16 @@ void draw_rect_list(wolf_t *wolf)
             sfRectangleShape_setTexture(rect->rect, rect->texture, sfTrue);
         sfRenderWindow_drawRectangleShape(wolf->window_data->window,
             rect->rect, NULL);
+    }
+}
+
+void draw_line_list(wolf_t *wolf)
+{
+    rect_t *line = NULL;
+
+    for (list_t *c = wolf->list[wolf->state][LINE]; c; c = c->next) {
+        line = (rect_t *)c->data;
+        sfRenderWindow_drawRectangleShape(wolf->window_data->window,
+            line->rect, NULL);
     }
 }

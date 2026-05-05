@@ -11,11 +11,12 @@
     #define WOLF_H
     #define WALL_MIN_DISTANCE 0.15
     #define STATES 3
-    #define TO_DRAW 4
+    #define TO_DRAW 5
     #define SPRITE 0
     #define TEXT 1
     #define MONSTER 2
     #define RECT 3
+    #define LINE 4
     #define NUM_RAYS 800
     #define TILE_SIZE 64
     #define MAP_WIDTH 8
@@ -81,6 +82,12 @@ typedef enum {
     TYPE_SETTINGS
 } type_t;
 
+typedef struct vertex_s {
+    sfVector2f start;
+    sfVector2f end;
+    sfVertex vertex;
+} vertex_t;
+
 typedef struct rect_s {
     char *name;
     int state;
@@ -89,7 +96,6 @@ typedef struct rect_s {
     sfTexture *click_texture;
     type_t type;
 } rect_t;
-
 
 typedef struct text_s {
     char *name;
@@ -202,4 +208,7 @@ text_t *create_text(text_t *data,
 rect_t *create_rectangles(rect_t *data, const char *texture_path,
     sfVector2f *pos, sfVector2f *scale);
 void draw_rect_list(wolf_t *wolf);
+void init_graphics_text(wolf_t *wolf, window_t *window);
+rect_t *create_line(rect_t *data, sfVector2f *pos, sfVector2f *scale);
+void draw_line_list(wolf_t *wolf);
 #endif

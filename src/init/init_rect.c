@@ -53,3 +53,24 @@ rect_t *create_rectangles(rect_t *data, const char *texture_path,
     set_param(rect, scale, pos);
     return rect;
 }
+
+rect_t *create_line(rect_t *data, sfVector2f *pos, sfVector2f *scale)
+{
+    rect_t *line = malloc(sizeof(rect_t));
+
+    if (!line)
+        return NULL;
+    line->rect = sfRectangleShape_create();
+    line->name = data->name;
+    line->state = data->state;
+    line->type = data->type;
+    if (!line->name || !line->rect) {
+        free_rect(line);
+        return NULL;
+    }
+    sfRectangleShape_setSize(line->rect, (sfVector2f){1.0f, 1.0f});
+    sfRectangleShape_setPosition(line->rect, *pos);
+    sfRectangleShape_setFillColor(line->rect, sfColor_fromRGB(90, 75, 60));
+    sfRectangleShape_setSize(line->rect, *scale);
+    return line;
+}

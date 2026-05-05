@@ -51,12 +51,18 @@ static int init_wolf_player_data(wolf_t *wolf)
     return 0;
 }
 
+static void init_settings(wolf_t *wolf)
+{
+    init_settings_entities(wolf, wolf->window_data);
+    init_settings_buttons(wolf, wolf->window_data);
+    init_graphics_text(wolf, wolf->window_data);
+}
+
 static int init_wolf_game_data(wolf_t *wolf)
 {
     init_menu_entities(wolf, wolf->window_data);
     init_menu_text(wolf, wolf->window_data);
-    init_settings_entities(wolf, wolf->window_data);
-    init_settings_buttons(wolf, wolf->window_data);
+    init_settings(wolf);
     wolf->game = init_game(wolf->window_data);
     if (!wolf->game)
         return -1;
