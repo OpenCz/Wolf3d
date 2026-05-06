@@ -24,6 +24,7 @@ wall_t *init_wall(window_t *window_data)
 {
     wall_t *wall = malloc(sizeof(wall_t));
     int size = TEX_SIZE * TEX_SIZE * 4;
+    int psize = TEX_PLAYER_W * TEX_PLAYER_H * 4;
 
     if (!wall)
         return NULL;
@@ -34,7 +35,9 @@ wall_t *init_wall(window_t *window_data)
     wall->sprite = sfSprite_create();
     if (!init_texture(wall, size, "assets/wall.png", &wall->text_arr[0]) ||
         !init_texture(wall, size, "assets/wall_2.png", &wall->text_arr[1]) ||
-        !init_texture(wall, size, "assets/ceiling.png", &wall->decor_arr[0]))
+        !init_texture(wall, size, "assets/ceiling.png", &wall->decor_arr[0]) ||
+        !init_texture(wall, size, "assets/floor.png", &wall->decor_arr[1]) ||
+        !init_texture(wall, psize, "assets/player.png", &wall->decor_arr[2]))
         return NULL;
     sfSprite_setTexture(wall->sprite, wall->texture, sfTrue);
     return wall;

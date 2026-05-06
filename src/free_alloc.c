@@ -13,8 +13,6 @@ static void free_game(game_t *game)
     free(game->wall->pixel);
     free(game->wall);
     free(game->zbuffer);
-    sfSprite_destroy(game->wall->sprite);
-    sfTexture_destroy(game->wall->texture);
     free(game);
 }
 

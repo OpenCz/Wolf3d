@@ -23,9 +23,12 @@
     #define WINDOW_HEIGHT 600
     #define FOV (M_PI / 3)
     #define TEX_SIZE 64
+    #define TEX_PLAYER_W 50
+    #define TEX_PLAYER_H 100
     #define CLOUD_SPEED 20
     #define CEILING 0
     #define FLOOR 1
+    #define MAX_ENTITY 50
     #include <SFML/Graphics.h>
     #include <stdlib.h>
     #include <string.h>
@@ -37,6 +40,7 @@ typedef struct player_s {
     float y;
     float angle;
     int hp;
+    sfBool alive;
 } player_t;
 
 typedef enum {
@@ -54,12 +58,15 @@ typedef enum {
 } menu_t;
 
 typedef struct player_draw_s {
-    float dist;
-    float rel_angle;
-    int screen_x;
-    int half_w;
-    int top;
-    int height;
+    int num;
+    sfVector2f sprite;
+    sfVector2f plane;
+    sfVector2f transform;
+    int sprite_height;
+    int sprite_width;
+    sfVector2f drawStart;
+    sfVector2f drawEnd;
+    int offset;
 } player_draw_t;
 
 typedef struct list_s {
@@ -73,6 +80,7 @@ typedef struct text_s {
     menu_t state;
     sfText *text;
 } text_t;
+
 
 typedef struct entity_s {
     char *name;
@@ -88,11 +96,13 @@ typedef struct wall_s {
     sfSprite *sprite;
     sfUint8 *pixel;
     sfUint8 *text_arr[2];
-    sfUint8 *decor_arr[2];
+    sfUint8 *decor_arr[3];
 } wall_t;
 
 typedef struct game_s {
     sfClock *clock;
+    player_t entities[MAX_ENTITY];
+    int numSprites;
     wall_t *wall;
     float *zbuffer;
 } game_t;
@@ -153,7 +163,7 @@ void draw_text_list(wolf_t *wolf);
 void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
     game_t *game);
 void render_pixels(game_t *game, window_t *win);
-void draw_other_players(wolf_t *wolf);
+void draw_other_entities(wolf_t *wolf, player_t *p);
 
 float cast_ray(wall_t *wall, player_t *player,
     float ray_dir_x, float ray_dir_y);
