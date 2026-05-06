@@ -23,9 +23,12 @@
     #define WINDOW_HEIGHT 600
     #define FOV (M_PI / 3)
     #define TEX_SIZE 64
+    #define TEX_PLAYER_W 50
+    #define TEX_PLAYER_H 100
     #define CLOUD_SPEED 20
     #define CEILING 0
     #define FLOOR 1
+    #define MAX_ENTITY 50
     #include <SFML/Graphics.h>
     #include <stdlib.h>
     #include <string.h>
@@ -63,6 +66,7 @@ typedef struct player_draw_s {
     int sprite_width;
     sfVector2f drawStart;
     sfVector2f drawEnd;
+    int offset;
 } player_draw_t;
 
 typedef struct list_s {
@@ -92,12 +96,12 @@ typedef struct wall_s {
     sfSprite *sprite;
     sfUint8 *pixel;
     sfUint8 *text_arr[2];
-    sfUint8 *decor_arr[2];
+    sfUint8 *decor_arr[3];
 } wall_t;
 
 typedef struct game_s {
     sfClock *clock;
-    player_t *entities;
+    player_t entities[MAX_ENTITY];
     int numSprites;
     wall_t *wall;
     float *zbuffer;
