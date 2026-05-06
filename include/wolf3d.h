@@ -115,10 +115,11 @@ typedef struct wall_s {
 
 typedef struct game_s {
     sfClock *clock;
-    player_t entities[MAX_ENTITY];
+    player_t *entities[MAX_ENTITY];
     int numSprites;
     wall_t *wall;
     float *zbuffer;
+    int has_shot;
 } game_t;
 
 typedef struct window_s {
@@ -181,10 +182,11 @@ void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
     game_t *game);
 void render_pixels(game_t *game, window_t *win);
 void draw_other_entities(wolf_t *wolf, player_t *p);
-
+void use_weapon(game_t *game, weapon_t *weapon);
 float cast_ray(wall_t *wall, player_t *player,
     float ray_dir_x, float ray_dir_y);
-
+void damage_monster(weapon_t *weapon, window_t *win,
+    player_draw_t *draw, player_t *monster);
 void draw_ceiling(wolf_t *wolf, int column, float wall_height);
 void create_pixel(wall_t *wall, int color,
     int index, sfUint8 *pixel);
