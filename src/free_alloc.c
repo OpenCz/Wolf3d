@@ -108,5 +108,6 @@ void free_wolf(wolf_t *wolf)
     free_list(wolf);
     free_settings(wolf);
     free(wolf->data);
+    free(wolf->settings);
     free(wolf);
 }
