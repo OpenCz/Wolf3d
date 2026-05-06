@@ -114,6 +114,7 @@ typedef struct rect_s {
     sfTexture *texture;
     sfTexture *click_texture;
     type_t type;
+    sfBool always_display;
 } rect_t;
 
 typedef struct text_s {
@@ -122,6 +123,7 @@ typedef struct text_s {
     int state;
     type_t type;
     sfText *text;
+    sfBool always_display;
 } text_t;
 
 typedef struct entity_s {
@@ -173,6 +175,7 @@ typedef struct ray_s {
 } ray_t;
 
 typedef struct wolf_s {
+    settings_game_t *settings;
     state_t state;
     int menu_state;
     int settings_state;
@@ -234,5 +237,4 @@ int in_list_top(char *name);
 int in_list_bottom(char *name);
 void init_audio(wolf_t *wolf, window_t *window);
 void init_gameplay(wolf_t *wolf, window_t *window);
-void init_settings_text(wolf_t *wolf, window_t *window);
 #endif

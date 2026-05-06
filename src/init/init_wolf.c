@@ -18,16 +18,15 @@ void push_front(list_t **list, void *data)
     *list = new_node;
 }
 
-window_t *init_window_data(void)
+window_t *init_window_data(wolf_t *wolf)
 {
-    sfVideoMode mode = sfVideoMode_getDesktopMode();
     window_t *window = malloc(sizeof(window_t));
 
     if (!window)
         return NULL;
-    window->window = sfRenderWindow_create(mode, "Wolf3D", sfClose, NULL);
-    window->width = mode.width;
-    window->height = mode.height;
+    window->window = sfRenderWindow_create(wolf->settings->resolution, "Wolf3D", sfClose, NULL);
+    window->width = wolf->settings->resolution.width;
+    window->height = wolf->settings->resolution.height;
     return window;
 }
 
@@ -44,7 +43,7 @@ data_t *init_wolf_data(void)
 static int init_wolf_player_data(wolf_t *wolf)
 {
     wolf->player = init_player();
-    wolf->window_data = init_window_data();
+    wolf->window_data = init_window_data(wolf);
     wolf->data = init_wolf_data();
     if (!wolf->player || !wolf->window_data || !wolf->data)
         return -1;
@@ -58,7 +57,6 @@ static void init_settings(wolf_t *wolf)
     init_graphics(wolf, wolf->window_data);
     init_audio(wolf, wolf->window_data);
     init_gameplay(wolf, wolf->window_data);
-    init_settings_text(wolf, wolf->window_data);
 }
 
 static int init_wolf_game_data(wolf_t *wolf)
@@ -77,12 +75,43 @@ static int init_wolf_game_data(wolf_t *wolf)
     return 0;
 }
 
+static settings_game_t *init_settings_params(void)
+{
+    settings_game_t *settings = malloc(sizeof(settings_game_t));
+
+    if (!settings)
+        return NULL;
+    settings->resolution = sfVideoMode_getDesktopMode();
+    settings->fullscreen = sfFalse;
+    settings->vsync = sfTrue;
+    settings->fov = 66;
+    settings->brightness = 50;
+    settings->max_fps = 144;
+    settings->master_volume = 80;
+    settings->music_volume = 60;
+    settings->sfx_volume = 90;
+    settings->ambient_volume = 70;
+    settings->mouse_sensitivity = 50;
+    settings->invert_mouse = sfFalse;
+    settings->show_hud = sfTrue;
+    settings->show_fps = sfFalse;
+    settings->show_minimap = sfTrue;
+    settings->crosshair = sfTrue;
+    return settings;
+}
+
 wolf_t *init_wolf(void)
 {
     wolf_t *wolf = malloc(sizeof(wolf_t));
 
     if (!wolf)
         return NULL;
+    memset(wolf->list, 0, sizeof(wolf->list));
+    wolf->settings = init_settings_params();
+    if (!wolf->settings) {
+        free(wolf);
+        return NULL;
+    }
     wolf->state = MENU;
     wolf->menu_state = NEWGAME;
     wolf->settings_state = GRAPHICS;

@@ -30,11 +30,11 @@ static void create_settings_action(wolf_t *wolf, float x, float y,
 
     pos = (sfVector2f){x, y};
     size = (sfVector2f){380.0f, 70.0f};
-    rect = create_rectangles(&(rect_t){(char *)info->name, info->state, NULL,
+        rect = create_rectangles(&(rect_t){(char *)info->name, info->state, NULL,
             NULL, NULL,
-            TYPE_SETTINGS}, "assets/settings_button.png", &pos, &size);
-    text = create_text(&(text_t){(char *)info->name, (char *)info->content,
-            info->state, TYPE_SETTINGS, NULL},
+            TYPE_SETTINGS, sfFalse}, "assets/settings_button.png", &pos, &size);
+        text = create_text(&(text_t){(char *)info->name, (char *)info->content,
+            info->state, TYPE_SETTINGS, NULL, sfFalse},
         wolf->data->font, &pos, &(sfVector2f){1.0f, 1.0f});
     if (!rect || !text)
         return;
@@ -54,11 +54,11 @@ static void create_settings_button(wolf_t *wolf, float x, float y,
 
     pos = (sfVector2f){x, y};
     size = (sfVector2f){280.0f, 70.0f};
-    rect = create_rectangles(&(rect_t){(char *)info->name, info->state, NULL,
+        rect = create_rectangles(&(rect_t){(char *)info->name, info->state, NULL,
             NULL, NULL,
-            TYPE_SETTINGS}, "assets/settings_button_click.png", &pos, &size);
-    text = create_text(&(text_t){(char *)info->name, (char *)info->content,
-            info->state, TYPE_SETTINGS, NULL},
+            TYPE_SETTINGS, sfFalse}, "assets/settings_button_click.png", &pos, &size);
+        text = create_text(&(text_t){(char *)info->name, (char *)info->content,
+            info->state, TYPE_SETTINGS, NULL, sfFalse},
         wolf->data->font, &pos, &(sfVector2f){1.0f, 1.0f});
     if (!rect || !text)
         return;
@@ -68,29 +68,51 @@ static void create_settings_button(wolf_t *wolf, float x, float y,
     push_front(&wolf->list[SETTINGS][TEXT], text);
 }
 
+static void create_settings_title(wolf_t *wolf, float x, float y, text_t *info)
+{
+    sfVector2f pos;
+    sfVector2f size;
+    text_t *text;
+
+    pos = (sfVector2f){x, y};
+    size = (sfVector2f){380.0f, 70.0f};
+    text = create_text(&(text_t){"settings_title", (char *)info->content,
+        info->state, TYPE_SETTINGS, NULL, sfFalse},
+        wolf->data->font, &pos, &(sfVector2f){3.0f, 3.0f});
+    if (!text)
+        return;
+    sfText_setColor(text->text, sfColor_fromRGB(255, 250, 0));
+    push_front(&wolf->list[SETTINGS][TEXT], text);
+}
+
 void init_settings_buttons(wolf_t *wolf, window_t *window)
 {
     float start_x = (window->width - (5 * 300.0f)) / 2.0f + 300.0f / 2.0f;
     float y = window->height / 4.8f;
     float second_y = window->height / 1.25f;
     char *names[] = {"graphics", "audio", "gameplay", "controls",
-        "accessibility", "reset", "back", "apply"};
+        "accessibility", "reset", "back", "apply", "settings"};
     char *contents[] = {"GRAPHICS", "AUDIO", "GAMEPLAY", "CONTROLS",
-        "ACCESSIBILITY" , "RESET TO DEFAULT", "BACK", "APPLY"};
+        "ACCESSIBILITY" , "RESET TO DEFAULT", "BACK", "APPLY", "SETTINGS"};
     int states[] = {GRAPHICS, AUDIO, GAMEPLAY, CONTROLS, ACCESSIBILITY};
     int i;
     text_t infos[] = {
-        {names[0], contents[0], states[0], TYPE_SETTINGS, NULL},
-        {names[1], contents[1], states[1], TYPE_SETTINGS, NULL},
-        {names[2], contents[2], states[2], TYPE_SETTINGS, NULL},
-        {names[3], contents[3], states[3], TYPE_SETTINGS, NULL},
-        {names[4], contents[4], states[4], TYPE_SETTINGS, NULL},
-        {names[5], contents[5], -1, TYPE_SETTINGS, NULL},
-        {names[6], contents[6], -1, TYPE_SETTINGS, NULL},
-        {names[7], contents[7], -1, TYPE_SETTINGS, NULL}
+        {names[0], contents[0], states[0], TYPE_SETTINGS, NULL, sfTrue},
+        {names[1], contents[1], states[1], TYPE_SETTINGS, NULL, sfTrue},
+        {names[2], contents[2], states[2], TYPE_SETTINGS, NULL, sfTrue},
+        {names[3], contents[3], states[3], TYPE_SETTINGS, NULL, sfTrue},
+        {names[4], contents[4], states[4], TYPE_SETTINGS, NULL, sfTrue},
+        {names[5], contents[5], -1, TYPE_SETTINGS, NULL, sfTrue},
+        {names[6], contents[6], -1, TYPE_SETTINGS, NULL, sfTrue},
+        {names[7], contents[7], -1, TYPE_SETTINGS, NULL, sfTrue},
+        {names[8], contents[8], -1, TYPE_SETTINGS, NULL, sfTrue}
     };
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 9; i++) {
+        if (i == 8) {
+            create_settings_title(wolf, window->width / 2.5f, window->height / 3.7f, &infos[i]);
+            continue;
+        }
         if (i < 5)
             create_settings_button(wolf, start_x + i * 300.0f, y, &infos[i]);
         else

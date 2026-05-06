@@ -43,6 +43,7 @@ rect_t *create_rectangles(rect_t *data, const char *texture_path,
     rect->name = data->name;
     rect->state = data->state;
     rect->type = data->type;
+    rect->always_display = data->always_display;
     rect->texture = sfTexture_createFromFile("assets/settings_button.png", NULL);
     rect->click_texture
     = sfTexture_createFromFile(texture_path, NULL);
@@ -64,6 +65,7 @@ rect_t *create_line(rect_t *data, sfVector2f *pos, sfVector2f *scale)
     line->name = data->name;
     line->state = data->state;
     line->type = data->type;
+    line->always_display = data->always_display;
     if (!line->name || !line->rect) {
         free_rect(line);
         return NULL;
