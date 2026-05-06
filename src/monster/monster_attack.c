@@ -19,6 +19,8 @@ void is_near_monster(wolf_t *wolf, player_t *player)
 
     for (list_t *curr = wolf->list[GAME][MONSTER]; curr; curr = curr->next) {
         monster = (player_t *)curr->data;
+        if (monster->alive == sfFalse)
+            continue;
         if (is_in_range(player, monster)) {
             player->hp -= 1;
         }
