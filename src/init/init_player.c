@@ -25,7 +25,7 @@ static weapon_t *init_weapon(wp_type_t type, int damage,
     return weapon;
 }
 
-player_t *init_player(window_t *win)
+player_t *init_player(window_t *win, p_type_t type)
 {
     player_t *player = calloc(1, sizeof(player_t));
 
@@ -37,6 +37,7 @@ player_t *init_player(window_t *win)
     if (player->angle < 0.0f)
         player->angle += 2.0f * M_PI;
     player->hp = 100;
+    player->type = type;
     player->alive = sfTrue;
     player->weapon = init_weapon(GUN, 34, 30, create_entity("gun",
             "assets/gun.png", &(sfVector2f){win->width / 2, win->height / 1.85},

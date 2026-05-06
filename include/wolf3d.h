@@ -43,6 +43,11 @@ typedef struct entity_s {
 } entity_t;
 
 typedef enum {
+    PLAYER,
+    ENNEMY,
+} p_type_t;
+
+typedef enum {
     GUN,
 } wp_type_t;
 
@@ -61,6 +66,7 @@ typedef struct player_s {
     float y;
     float angle;
     int hp;
+    p_type_t type;
     weapon_t *weapon;
     sfBool alive;
 } player_t;
@@ -166,7 +172,7 @@ void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
 game_t *init_game(window_t *window_data);
-player_t *init_player(window_t *win);
+player_t *init_player(window_t *win, p_type_t type);
 void init_menu_entities(wolf_t *wolf, window_t *window);
 entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);

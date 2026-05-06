@@ -45,7 +45,7 @@ static int init_wolf_player_data(wolf_t *wolf)
 {
     wolf->window_data = init_window_data();
     wolf->data = init_wolf_data();
-    wolf->player = init_player(wolf->window_data);
+    wolf->player = init_player(wolf->window_data, PLAYER);
     if (!wolf->player || !wolf->window_data || !wolf->data)
         return -1;
     return 0;
@@ -77,6 +77,7 @@ wolf_t *init_wolf(void)
     wolf->state = MENU;
     if (init_wolf_game_data(wolf) < 0)
         return NULL;
-    push_front(&wolf->list[GAME][MONSTER], init_player(wolf->window_data));
+    push_front(&wolf->list[GAME][MONSTER],
+        init_player(wolf->window_data, ENNEMY));
     return wolf;
 }
