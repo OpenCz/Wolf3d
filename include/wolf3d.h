@@ -170,6 +170,7 @@ void init_menu_entities(wolf_t *wolf, window_t *window);
 entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);
 int is_wall(wall_t *wall, int x, int y);
+void draw_weapon(window_t *win, weapon_t *weapon);
 
 entity_t *create_entity(char *name,
     const char *texture_path, sfVector2f *pos, sfVector2f *scale);

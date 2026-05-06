@@ -13,7 +13,7 @@ static weapon_t *init_weapon(wp_type_t type, int damage,
 {
     weapon_t *weapon = calloc(1, sizeof(weapon_t));
 
-    if (weapon)
+    if (!weapon)
         return NULL;
     weapon->type = type;
     weapon->attack_speed = 1;
@@ -39,7 +39,7 @@ player_t *init_player(window_t *win)
     player->hp = 100;
     player->alive = sfTrue;
     player->weapon = init_weapon(GUN, 100, 30, create_entity("gun",
-            "assets/gun.png", &(sfVector2f){win->width, win->height},
-            &(sfVector2f){1, 1}));
+            "assets/gun.png", &(sfVector2f){win->width / 2, win->height / 1.85},
+            &(sfVector2f){1.7, 1.7}));
     return player;
 }

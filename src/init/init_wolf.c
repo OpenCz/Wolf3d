@@ -72,7 +72,7 @@ wolf_t *init_wolf(void)
 
     if (!wolf)
         return NULL;
-   if (init_wolf_player_data(wolf) < 0)
+    if (init_wolf_player_data(wolf) < 0)
         return NULL;
     wolf->state = MENU;
     if (init_wolf_game_data(wolf) < 0)
