@@ -35,11 +35,33 @@
     #include <stdio.h>
     #include "network.h"
 
+typedef struct entity_s {
+    char *name;
+    sfClock *clock;
+    sfSprite *sprite;
+    sfTexture *texture;
+} entity_t;
+
+typedef enum {
+    GUN,
+} wp_type_t;
+
+typedef struct weapon_s {
+    sfClock *cd;
+    wp_type_t type;
+    int max_ammo;
+    int current_ammo;
+    int damage;
+    int attack_speed;
+    entity_t *entity;
+} weapon_t;
+
 typedef struct player_s {
     float x;
     float y;
     float angle;
     int hp;
+    weapon_t *weapon;
     sfBool alive;
 } player_t;
 
@@ -80,14 +102,6 @@ typedef struct text_s {
     menu_t state;
     sfText *text;
 } text_t;
-
-
-typedef struct entity_s {
-    char *name;
-    sfClock *clock;
-    sfSprite *sprite;
-    sfTexture *texture;
-} entity_t;
 
 typedef struct wall_s {
     sfUint8 *wall;
@@ -151,12 +165,14 @@ void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
 game_t *init_game(window_t *window_data);
-player_t *init_player(void);
+player_t *init_player(window_t *win);
 void init_menu_entities(wolf_t *wolf, window_t *window);
 entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);
 int is_wall(wall_t *wall, int x, int y);
 
+entity_t *create_entity(char *name,
+    const char *texture_path, sfVector2f *pos, sfVector2f *scale);
 void check_player_state(wolf_t *wolf);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
