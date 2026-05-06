@@ -8,6 +8,20 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
+static void add_entity_to_array(wolf_t *wolf)
+{
+    player_t *player = NULL;
+
+    wolf->game->numSprites = 0;
+    for (list_t *curr = wolf->list[GAME][MONSTER]; curr; curr = curr->next) {
+        player = (player_t *)curr->data;
+        if (player->alive != sfTrue)
+            continue;
+        wolf->game->entities[wolf->game->numSprites] = *player;
+        wolf->game->numSprites++;
+    }
+}
+
 static void verif_distance(int i, int num, int spriteOrder[],
     double spriteDistance[])
 {
@@ -26,7 +40,8 @@ static void verif_distance(int i, int num, int spriteOrder[],
     }
 }
 
-static void sort_based_on_dist(int num, int spriteOrder[], double spriteDistance[])
+static void sort_based_on_dist(int num,
+    int spriteOrder[], double spriteDistance[])
 {
     for (int i = 0; i < num - 1; i++)
         verif_distance(i, num, spriteOrder, spriteDistance);
@@ -60,10 +75,11 @@ static void get_sprite_height(wolf_t *wolf, player_draw_t *draw,
     *spriteScreenX = (int)((w / 2) * (1 + draw->transform.x /
             draw->transform.y));
     draw->sprite_height = abs((int)(h / (draw->transform.y)));
-    draw->drawStart.y = -draw->sprite_height / 2 + h / 2;
+    draw->offset = draw->sprite_height / 4;
+    draw->drawStart.y = -draw->sprite_height / 2 + h / 2 + draw->offset;
     if (draw->drawStart.y < 0)
         draw->drawStart.y = 0;
-    draw->drawEnd.y = draw->sprite_height / 2 + h / 2;
+    draw->drawEnd.y = draw->sprite_height / 2 + h / 2 + draw->offset;
     if (draw->drawEnd.y >= h)
         draw->drawEnd.y = h - 1;
 }
@@ -74,13 +90,46 @@ static void get_sprite_width(wolf_t *wolf,
     int w = wolf->window_data->width;
     int h = wolf->window_data->height;
 
-    draw->sprite_width = abs((int)(h / (draw->transform.y)));
+    draw->sprite_width = abs((int)(h / (draw->transform.y)
+            * TEX_PLAYER_W / TEX_PLAYER_H));
     draw->drawStart.x = -draw->sprite_width / 2 + spriteScreenX;
     if (draw->drawStart.x < 0)
         draw->drawStart.x = 0;
     draw->drawEnd.x = draw->sprite_width / 2 + spriteScreenX;
     if (draw->drawEnd.x >= w)
         draw->drawEnd.x = w - 1;
+}
+
+static void draw_player_pixel(wolf_t *wolf, player_draw_t *draw,
+    int x, sfVector2i *tex)
+{
+    int index = 0;
+    int color = 0;
+    game_t *g = wolf->game;
+
+    for (int y = draw->drawStart.y; y < draw->drawEnd.y; y++) {
+        tex->y = (y - (wolf->window_data->height / 2 - draw->sprite_height
+                / 2) - draw->offset) * TEX_PLAYER_H / draw->sprite_height;
+        color = (tex->y * TEX_PLAYER_W + tex->x) * 4;
+        index = (y * wolf->window_data->width + x) * 4;
+        if (g->wall->decor_arr[2][color + 3] < 128)
+            continue;
+        create_pixel(g->wall, color, index, g->wall->decor_arr[2]);
+    }
+}
+
+static void draw_entity(wolf_t *wolf, player_draw_t *draw, int spriteScreenX)
+{
+    sfVector2i tex;
+
+    for (int x = draw->drawStart.x; x < draw->drawEnd.x; x++) {
+        if (draw->transform.y <= 0 || x <= 0 || x >= wolf->window_data->width
+            || draw->transform.y >= wolf->game->zbuffer[x])
+            continue;
+        tex.x = (int)(256 * (x - (-draw->sprite_width / 2 + spriteScreenX))
+            * TEX_PLAYER_W / draw->sprite_width) / 256;
+        draw_player_pixel(wolf, draw, x, &tex);
+    }
 }
 
 static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
@@ -98,6 +147,7 @@ static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
         draw->sprite.y = sprite[spriteOrder[i]].y - p->y;
         get_sprite_height(wolf, draw, &dir, &spriteScreenX);
         get_sprite_width(wolf, draw, spriteScreenX);
+        draw_entity(wolf, draw, spriteScreenX);
     }
 }
 
@@ -107,6 +157,7 @@ void draw_other_entities(wolf_t *wolf, player_t *p)
     int spriteOrder[wolf->game->numSprites];
     double spriteDistance[wolf->game->numSprites];
 
+    add_entity_to_array(wolf);
     draw.num = wolf->game->numSprites;
     sort_far_to_close(wolf, p, spriteOrder, spriteDistance);
     draw_sprite(wolf, &draw, spriteOrder);

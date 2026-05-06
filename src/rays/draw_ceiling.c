@@ -27,7 +27,6 @@ static void draw_decor(wolf_t *w, decor_t *d, float wall_height, int column)
     int p = 0;
     int index = 0;
     int top = (int)((w->window_data->height - wall_height) / 2.0f);
-    int color = 0;
 
     for (int y = 0; y < top; y++) {
         p = w->window_data->height / 2 - y;
@@ -36,11 +35,11 @@ static void draw_decor(wolf_t *w, decor_t *d, float wall_height, int column)
         dist = (0.5f * w->window_data->height) / p * 1.58;
         update_position(d, dist, w, column);
         index = (y * w->window_data->width + column) * 4;
-        color = (TEX_SIZE * d->t.y + d->t.x) * 4;
-        create_pixel(w->game->wall, color, index,
+        create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4, index,
             w->game->wall->decor_arr[CEILING]);
-        index = ((w->window_data->height - y - 5) * w->window_data->width + column) * 4;
-        create_pixel(w->game->wall, color, index,
+        index = ((w->window_data->height - y - 5) *
+            w->window_data->width + column) * 4;
+        create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4, index,
             w->game->wall->decor_arr[FLOOR]);
     }
 }

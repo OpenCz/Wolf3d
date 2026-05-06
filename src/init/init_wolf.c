@@ -68,7 +68,7 @@ static int init_wolf_game_data(wolf_t *wolf)
 
 wolf_t *init_wolf(void)
 {
-    wolf_t *wolf = malloc(sizeof(wolf_t));
+    wolf_t *wolf = calloc(1, sizeof(wolf_t));
 
     if (!wolf)
         return NULL;
