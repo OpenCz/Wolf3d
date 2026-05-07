@@ -234,7 +234,7 @@ void init_graphics(wolf_t *wolf, window_t *window);
 rect_t *create_line(rect_t *data, sfVector2f *pos, sfVector2f *scale);
 void draw_line_list(wolf_t *wolf);
 int in_list_top(char *name);
-int in_list_bottom(char *name);
 void init_audio(wolf_t *wolf, window_t *window);
 void init_gameplay(wolf_t *wolf, window_t *window);
+settings_game_t *init_settings_params(void);
 #endif

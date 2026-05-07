@@ -44,7 +44,8 @@ rect_t *create_rectangles(rect_t *data, const char *texture_path,
     rect->state = data->state;
     rect->type = data->type;
     rect->always_display = data->always_display;
-    rect->texture = sfTexture_createFromFile("assets/settings_button.png", NULL);
+    rect->texture = sfTexture_createFromFile("assets/settings_button.png",
+        NULL);
     rect->click_texture
     = sfTexture_createFromFile(texture_path, NULL);
     if (!rect->name || !rect->texture || !rect->click_texture) {

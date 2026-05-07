@@ -24,7 +24,8 @@ window_t *init_window_data(wolf_t *wolf)
 
     if (!window)
         return NULL;
-    window->window = sfRenderWindow_create(wolf->settings->resolution, "Wolf3D", sfClose, NULL);
+    window->window = sfRenderWindow_create(wolf->settings->resolution,
+        "Wolf3D", sfClose, NULL);
     window->width = wolf->settings->resolution.width;
     window->height = wolf->settings->resolution.height;
     return window;
@@ -73,31 +74,6 @@ static int init_wolf_game_data(wolf_t *wolf)
     if (!wolf->game->wall->pixel || !wolf->game->zbuffer)
         return -1;
     return 0;
-}
-
-static settings_game_t *init_settings_params(void)
-{
-    settings_game_t *settings = malloc(sizeof(settings_game_t));
-
-    if (!settings)
-        return NULL;
-    settings->resolution = sfVideoMode_getDesktopMode();
-    settings->fullscreen = sfFalse;
-    settings->vsync = sfTrue;
-    settings->fov = 66;
-    settings->brightness = 50;
-    settings->max_fps = 144;
-    settings->master_volume = 80;
-    settings->music_volume = 60;
-    settings->sfx_volume = 90;
-    settings->ambient_volume = 70;
-    settings->mouse_sensitivity = 50;
-    settings->invert_mouse = sfFalse;
-    settings->show_hud = sfTrue;
-    settings->show_fps = sfFalse;
-    settings->show_minimap = sfTrue;
-    settings->crosshair = sfTrue;
-    return settings;
 }
 
 wolf_t *init_wolf(void)
