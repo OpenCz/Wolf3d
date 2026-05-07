@@ -73,7 +73,7 @@ static void create_settings_title(wolf_t *wolf, float x, float y, text_t *info)
     text = create_text(info, wolf->data->font, &pos, &(sfVector2f){3.0f, 3.0f});
     if (!text)
         return;
-    sfText_setColor(text->text, sfColor_fromRGB(255, 250, 0));
+    sfText_setColor(text->text, sfColor_fromRGB(247, 167, 3));
     push_front(&wolf->list[SETTINGS][TEXT], text);
 }
 
@@ -160,6 +160,24 @@ static void hover_button(wolf_t *wolf, sfEvent event)
     }
 }
 
+static void hover_triangle(wolf_t *wolf, sfEvent event)
+{
+    triangle_t *triangle = NULL;
+    sfFloatRect bounds;
+
+    for (list_t *c = wolf->list[SETTINGS][TRIANGLE]; c; c = c->next) {
+        triangle = (triangle_t *)c->data;
+        bounds = sfConvexShape_getGlobalBounds(triangle->shape);
+        if (sfFloatRect_contains(&bounds, event.mouseMove.x,
+                event.mouseMove.y))
+            sfConvexShape_setFillColor(triangle->shape, sfColor_fromRGBA(138,
+                    2, 0, 125));
+        else
+            sfConvexShape_setFillColor(triangle->shape, sfColor_fromRGBA(138,
+                    2, 0, 255));
+    }
+}
+
 void manage_settings(wolf_t *wolf, sfEvent event)
 {
     if (iskeypressed(sfKeyEscape, event))
@@ -171,6 +189,8 @@ void manage_settings(wolf_t *wolf, sfEvent event)
     if (event.type == sfEvtMouseButtonPressed
         && event.mouseButton.button == sfMouseLeft)
         click_button(wolf, event);
-    if (event.type == sfEvtMouseMoved)
+    if (event.type == sfEvtMouseMoved) {
         hover_button(wolf, event);
+        hover_triangle(wolf, event);
+    }
 }

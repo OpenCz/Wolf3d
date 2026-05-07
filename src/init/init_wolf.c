@@ -58,6 +58,7 @@ static void init_settings(wolf_t *wolf)
     init_graphics(wolf, wolf->window_data);
     init_audio(wolf, wolf->window_data);
     init_gameplay(wolf, wolf->window_data);
+    init_graphics_params(wolf->settings, wolf);
 }
 
 static int init_wolf_game_data(wolf_t *wolf)

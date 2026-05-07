@@ -11,12 +11,13 @@
     #define WOLF_H
     #define WALL_MIN_DISTANCE 0.15
     #define STATES 3
-    #define TO_DRAW 5
+    #define TO_DRAW 6
     #define SPRITE 0
     #define TEXT 1
     #define MONSTER 2
     #define RECT 3
     #define LINE 4
+    #define TRIANGLE 5
     #define NUM_RAYS 800
     #define TILE_SIZE 64
     #define MAP_WIDTH 8
@@ -125,6 +126,13 @@ typedef struct text_s {
     sfText *text;
     sfBool always_display;
 } text_t;
+
+typedef struct triangle_s {
+    sfConvexShape *shape;
+    char *name;
+    int state;
+    int type;
+} triangle_t;
 
 typedef struct entity_s {
     char *name;
@@ -237,4 +245,10 @@ int in_list_top(char *name);
 void init_audio(wolf_t *wolf, window_t *window);
 void init_gameplay(wolf_t *wolf, window_t *window);
 settings_game_t *init_settings_params(void);
+char *my_nbr_to_str(int nb);
+void init_graphics_params(settings_game_t *settings, wolf_t *wolf);
+triangle_t *create_triangle(triangle_t *data,
+    sfVector2f *pos, sfVector2f points[3]);
+void draw_triangle_list(wolf_t *wolf);
+void push_double_arrow(wolf_t *wolf, triangle_t **triangles);
 #endif

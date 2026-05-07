@@ -86,3 +86,17 @@ void draw_line_list(wolf_t *wolf)
             line->rect, NULL);
     }
 }
+
+void draw_triangle_list(wolf_t *wolf)
+{
+    triangle_t *triangle = NULL;
+
+    for (list_t *c = wolf->list[wolf->state][TRIANGLE]; c; c = c->next) {
+        triangle = (triangle_t *)c->data;
+        if (!(wolf->state == SETTINGS && triangle->type == TYPE_SETTINGS
+                && wolf->settings_state == triangle->state))
+            continue;
+        sfRenderWindow_drawConvexShape(wolf->window_data->window,
+            triangle->shape, NULL);
+    }
+}
