@@ -88,7 +88,6 @@ void reload_weapon(window_t *win, weapon_t *weapon)
 
 void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon)
 {
-    (void)wolf;
     if (weapon->reloading == 1)
         reload_weapon(wolf->window_data, weapon);
     else

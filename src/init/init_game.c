@@ -49,7 +49,8 @@ game_t *init_game(window_t *window_data)
 
     if (!game)
         return NULL;
-    game->clock = sfClock_create();
+    for (int i = 0; i < 2; i++)
+        game->clock[i] = sfClock_create();
     game->wall = init_wall(window_data);
     if (!game->wall)
         return NULL;

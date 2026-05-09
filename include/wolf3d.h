@@ -29,6 +29,9 @@
     #define CEILING 0
     #define FLOOR 1
     #define MAX_ENTITY 50
+
+    #define GLOBAL_CLOCK 0
+    #define MOVE_CLOCK 1
     #include <SFML/Graphics.h>
     #include <stdlib.h>
     #include <string.h>
@@ -123,7 +126,7 @@ typedef struct wall_s {
 } wall_t;
 
 typedef struct game_s {
-    sfClock *clock;
+    sfClock *clock[2];
     player_t *entities[MAX_ENTITY];
     int numSprites;
     wall_t *wall;
