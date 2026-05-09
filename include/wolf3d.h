@@ -60,6 +60,7 @@ typedef struct weapon_s {
     int damage;
     int attack_speed;
     int current_frame;
+    int reloading;
     entity_t *entity;
 } weapon_t;
 
