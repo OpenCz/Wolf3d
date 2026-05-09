@@ -75,6 +75,7 @@ typedef struct player_s {
     p_type_t type;
     weapon_t *weapon;
     sfBool alive;
+    sfBool running;
 } player_t;
 
 typedef enum {
@@ -173,6 +174,8 @@ typedef struct wolf_s {
     int nb_others;
 } wolf_t;
 
+void sprint_player(player_t *player);
+float get_speed(player_t *player, float speed, float accel);
 void is_near_monster(wolf_t *wolf, player_t *player);
 void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
@@ -208,4 +211,5 @@ extern const int map[MAP_HEIGHT][MAP_WIDTH];
 int get_map_tile(int tile_x, int tile_y);
 void push_front(list_t **list, void *data);
 void manage_menu(wolf_t *wolf, sfEvent event);
+int check_collision(wall_t *wall, float x, float y);
 #endif

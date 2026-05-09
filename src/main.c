@@ -104,6 +104,7 @@ static void network_update(wolf_t *wolf, sfClock *send_clock)
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
+    sprint_player(player);
     move_player(wolf->player, event, wolf->game);
     use_weapon(wolf->game, player->weapon);
     is_near_monster(wolf, player);
