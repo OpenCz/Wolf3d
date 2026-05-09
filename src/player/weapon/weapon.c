@@ -25,7 +25,9 @@ void damage_monster(weapon_t *weapon, window_t *win,
 
 void use_weapon(game_t *game, weapon_t *weapon)
 {
-    if (sfKeyboard_isKeyPressed(sfKeyR)) {
+    if (!weapon->reloading && sfKeyboard_isKeyPressed(sfKeyR) &&
+        sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd)) >
+        weapon->attack_speed) {
         weapon->reloading = 1;
         sfClock_restart(weapon->cd);
     }
@@ -87,10 +89,16 @@ void reload_weapon(window_t *win, weapon_t *weapon)
 
 void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon)
 {
-    (void)wolf;
-    if (weapon->reloading == 1)
+    if (weapon->reloading)
         reload_weapon(wolf->window_data, weapon);
     else
         animate_shot(weapon);
+    if (!weapon->reloading &&
+        (sfKeyboard_isKeyPressed(sfKeyQ) ^ sfKeyboard_isKeyPressed(sfKeyD) ||
+            sfKeyboard_isKeyPressed(sfKeyZ) ^ sfKeyboard_isKeyPressed(sfKeyS)))
+        animate_weapon_walk(wolf, wolf->window_data, weapon);
+    else if (!weapon->reloading)
+        sfSprite_setPosition(weapon->entity->sprite,
+            (sfVector2f){win->width / 2, win->height});
     sfRenderWindow_drawSprite(win->window, weapon->entity->sprite, NULL);
 }
