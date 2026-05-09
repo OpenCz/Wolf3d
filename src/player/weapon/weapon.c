@@ -32,7 +32,31 @@ void use_weapon(game_t *game, weapon_t *weapon)
     }
 }
 
-void draw_weapon(window_t *win, weapon_t *weapon)
+int apply_frame(weapon_t *weapon, float elapsed, float frame, int rect_left)
 {
+    if (elapsed < frame) {
+        weapon->rect.left = rect_left;
+        sfSprite_setTextureRect(weapon->entity->sprite, weapon->rect);
+        return 1;
+    }
+    return 0;
+}
+
+void animate_shot(weapon_t *weapon)
+{
+    float elapsed = sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd));
+
+    if (apply_frame(weapon, elapsed, 0.1, 400) ||
+        apply_frame(weapon, elapsed, 0.2, 800) ||
+        apply_frame(weapon, elapsed, 0.3, 1200))
+        return;
+    weapon->rect.left = 0;
+    sfSprite_setTextureRect(weapon->entity->sprite, weapon->rect);
+}
+
+void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon)
+{
+    (void)wolf;
+    animate_shot(weapon);
     sfRenderWindow_drawSprite(win->window, weapon->entity->sprite, NULL);
 }

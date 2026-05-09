@@ -22,6 +22,9 @@ static weapon_t *init_weapon(wp_type_t type, int damage,
     weapon->damage = damage;
     weapon->cd = sfClock_create();
     weapon->entity = entity;
+    weapon->rect = (sfIntRect){0, 0, 400, 600};
+    sfSprite_setTextureRect(entity->sprite, weapon->rect);
+    sfSprite_setOrigin(entity->sprite, (sfVector2f){200, 600});
     return weapon;
 }
 
@@ -40,7 +43,7 @@ player_t *init_player(window_t *win, p_type_t type)
     player->type = type;
     player->alive = sfTrue;
     player->weapon = init_weapon(GUN, 34, 30, create_entity("gun",
-            "assets/gun.png", &(sfVector2f){win->width / 2, win->height / 1.85},
+            "assets/gun.png", &(sfVector2f){win->width / 2, win->height},
             &(sfVector2f){1.7, 1.7}));
     return player;
 }
