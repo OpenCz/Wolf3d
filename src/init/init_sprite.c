@@ -20,7 +20,7 @@ entity_t *get_entity(list_t *list, char *name)
     return NULL;
 }
 
-static entity_t *create_entity(char *name,
+entity_t *create_entity(char *name,
     const char *texture_path, sfVector2f *pos, sfVector2f *scale)
 {
     entity_t *entity = malloc(sizeof(entity_t));

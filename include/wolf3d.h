@@ -35,11 +35,42 @@
     #include <stdio.h>
     #include "network.h"
 
+typedef struct entity_s {
+    char *name;
+    sfClock *clock;
+    sfSprite *sprite;
+    sfTexture *texture;
+} entity_t;
+
+typedef enum {
+    PLAYER,
+    ENNEMY,
+} p_type_t;
+
+typedef enum {
+    GUN,
+} wp_type_t;
+
+typedef struct weapon_s {
+    sfClock *cd;
+    wp_type_t type;
+    sfIntRect rect;
+    int max_ammo;
+    int current_ammo;
+    int damage;
+    int attack_speed;
+    int current_frame;
+    int reloading;
+    entity_t *entity;
+} weapon_t;
+
 typedef struct player_s {
     float x;
     float y;
     float angle;
     int hp;
+    p_type_t type;
+    weapon_t *weapon;
     sfBool alive;
 } player_t;
 
@@ -81,14 +112,6 @@ typedef struct text_s {
     sfText *text;
 } text_t;
 
-
-typedef struct entity_s {
-    char *name;
-    sfClock *clock;
-    sfSprite *sprite;
-    sfTexture *texture;
-} entity_t;
-
 typedef struct wall_s {
     sfUint8 *wall;
     int wall_index;
@@ -101,10 +124,11 @@ typedef struct wall_s {
 
 typedef struct game_s {
     sfClock *clock;
-    player_t entities[MAX_ENTITY];
+    player_t *entities[MAX_ENTITY];
     int numSprites;
     wall_t *wall;
     float *zbuffer;
+    int has_shot;
 } game_t;
 
 typedef struct window_s {
@@ -151,12 +175,14 @@ void menu(wolf_t *wolf);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
 game_t *init_game(window_t *window_data);
-player_t *init_player(void);
+player_t *init_player(window_t *win, p_type_t type);
 void init_menu_entities(wolf_t *wolf, window_t *window);
 entity_t *get_entity(list_t *list, char *name);
 void free_wolf(wolf_t *wolf);
 int is_wall(wall_t *wall, int x, int y);
-
+void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon);
+entity_t *create_entity(char *name,
+    const char *texture_path, sfVector2f *pos, sfVector2f *scale);
 void check_player_state(wolf_t *wolf);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
@@ -164,10 +190,11 @@ void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
     game_t *game);
 void render_pixels(game_t *game, window_t *win);
 void draw_other_entities(wolf_t *wolf, player_t *p);
-
+void use_weapon(game_t *game, weapon_t *weapon);
 float cast_ray(wall_t *wall, player_t *player,
     float ray_dir_x, float ray_dir_y);
-
+void damage_monster(weapon_t *weapon, window_t *win,
+    player_draw_t *draw, player_t *monster);
 void draw_ceiling(wolf_t *wolf, int column, float wall_height);
 void create_pixel(wall_t *wall, int color,
     int index, sfUint8 *pixel);

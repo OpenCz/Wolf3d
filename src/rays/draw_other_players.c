@@ -17,7 +17,7 @@ static void add_entity_to_array(wolf_t *wolf)
         player = (player_t *)curr->data;
         if (player->alive != sfTrue)
             continue;
-        wolf->game->entities[wolf->game->numSprites] = *player;
+        wolf->game->entities[wolf->game->numSprites] = player;
         wolf->game->numSprites++;
     }
 }
@@ -51,12 +51,12 @@ static void sort_far_to_close(wolf_t *wolf, player_t *p,
     int spriteOrder[], double spriteDistance[])
 {
     int num = wolf->game->numSprites;
-    player_t *sprite = wolf->game->entities;
+    player_t **sprite = wolf->game->entities;
 
     for (int i = 0; i < num; i++) {
         spriteOrder[i] = i;
-        spriteDistance[i] = ((p->x - sprite[i].x) * (p->x - sprite[i].x) +
-            (p->y - sprite[i].y) * (p->y - sprite[i].y));
+        spriteDistance[i] = ((p->x - sprite[i]->x) * (p->x - sprite[i]->x) +
+            (p->y - sprite[i]->y) * (p->y - sprite[i]->y));
     }
     sort_based_on_dist(num, spriteOrder, spriteDistance);
 }
@@ -136,19 +136,25 @@ static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
     int spriteOrder[])
 {
     player_t *p = wolf->player;
-    player_t *sprite = wolf->game->entities;
+    player_t **sprite = wolf->game->entities;
     sfVector2f dir = {cosf(p->angle), sinf(p->angle)};
     int spriteScreenX = 0;
 
     draw->plane.x = -sin(wolf->player->angle) * tan(FOV / 2.0f);
     draw->plane.y = cos(wolf->player->angle) * tan(FOV / 2.0f);;
     for (int i = 0; i < draw->num; i++) {
-        draw->sprite.x = sprite[spriteOrder[i]].x - p->x;
-        draw->sprite.y = sprite[spriteOrder[i]].y - p->y;
+        draw->sprite.x = sprite[spriteOrder[i]]->x - p->x;
+        draw->sprite.y = sprite[spriteOrder[i]]->y - p->y;
         get_sprite_height(wolf, draw, &dir, &spriteScreenX);
         get_sprite_width(wolf, draw, spriteScreenX);
+        if (wolf->game->has_shot == 1)
+            damage_monster(wolf->player->weapon, wolf->window_data,
+                draw, sprite[spriteOrder[i]]);
+        if (sprite[spriteOrder[i]]->alive == sfFalse)
+            continue;
         draw_entity(wolf, draw, spriteScreenX);
     }
+    wolf->game->has_shot = 0;
 }
 
 void draw_other_entities(wolf_t *wolf, player_t *p)
