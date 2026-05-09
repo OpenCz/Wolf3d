@@ -25,7 +25,8 @@ void damage_monster(weapon_t *weapon, window_t *win,
 
 void use_weapon(game_t *game, weapon_t *weapon)
 {
-    if (sfKeyboard_isKeyPressed(sfKeyR)) {
+    if (sfKeyboard_isKeyPressed(sfKeyR) && sfTime_asSeconds(
+            sfClock_getElapsedTime(weapon->cd)) > weapon->attack_speed) {
         weapon->reloading = 1;
         sfClock_restart(weapon->cd);
     }
