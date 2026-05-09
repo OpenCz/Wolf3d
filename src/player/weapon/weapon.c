@@ -14,8 +14,8 @@ void damage_monster(weapon_t *weapon, window_t *win,
 {
     int shot = win->width / 2;
 
-    if (monster->type != ENNEMY || shot < draw->drawStart.x ||
-        shot > draw->drawEnd.x)
+    if (monster->type != ENNEMY || draw->transform.y <= 0 ||
+        shot < draw->drawStart.x || shot > draw->drawEnd.x)
         return;
     monster->hp -= weapon->damage;
     if (monster->hp <= 0) {
@@ -27,8 +27,11 @@ void use_weapon(game_t *game, weapon_t *weapon)
 {
     if (sfMouse_isButtonPressed(sfMouseLeft) && sfTime_asSeconds(
             sfClock_getElapsedTime(weapon->cd)) > weapon->attack_speed) {
+        if (weapon->current_ammo <= 0)
+            return;
         game->has_shot = 1;
         sfClock_restart(weapon->cd);
+        weapon->current_ammo -= 1;
     }
 }
 

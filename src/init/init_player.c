@@ -42,7 +42,7 @@ player_t *init_player(window_t *win, p_type_t type)
     player->hp = 100;
     player->type = type;
     player->alive = sfTrue;
-    player->weapon = init_weapon(GUN, 34, 30, create_entity("gun",
+    player->weapon = init_weapon(GUN, 34, 9, create_entity("gun",
             "assets/gun.png", &(sfVector2f){win->width / 2, win->height},
             &(sfVector2f){1.7, 1.7}));
     return player;
