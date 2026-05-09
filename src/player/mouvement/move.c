@@ -7,15 +7,6 @@
 
 #include "../../../include/wolf3d.h"
 
-void animate_weapon_walk(window_t *win, weapon_t *weapon, float time)
-{
-    float bobX = sinf(time * 5.f) * 20.f;
-    float bobY = fabsf(sinf(time * 5.f)) * 10.f;
-
-    sfSprite_setPosition(weapon->entity->sprite,
-        (sfVector2f){win->width / 2 + bobX, win->height + bobY});
-}
-
 static void manage_angle(player_t *player, float dt)
 {
     float rotation_speed = 2.0f;

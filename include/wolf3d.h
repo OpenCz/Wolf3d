@@ -30,7 +30,7 @@
     #define FLOOR 1
     #define MAX_ENTITY 50
 
-    #define GLOBAL_CLOCK 0
+    #define GLOBAL 0
     #define MOVE_CLOCK 1
     #include <SFML/Graphics.h>
     #include <stdlib.h>
@@ -196,6 +196,7 @@ void draw_other_entities(wolf_t *wolf, player_t *p);
 void use_weapon(game_t *game, weapon_t *weapon);
 float cast_ray(wall_t *wall, player_t *player,
     float ray_dir_x, float ray_dir_y);
+void animate_weapon_walk(wolf_t *wolf, window_t *win, weapon_t *weapon);
 void damage_monster(weapon_t *weapon, window_t *win,
     player_draw_t *draw, player_t *monster);
 void draw_ceiling(wolf_t *wolf, int column, float wall_height);
