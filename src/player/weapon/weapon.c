@@ -93,9 +93,9 @@ void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon)
         reload_weapon(wolf->window_data, weapon);
     else
         animate_shot(weapon);
-    if (!weapon->reloading && (sfKeyboard_isKeyPressed(sfKeyQ) ||
-            sfKeyboard_isKeyPressed(sfKeyD) || sfKeyboard_isKeyPressed(sfKeyZ)
-            || sfKeyboard_isKeyPressed(sfKeyS)))
+    if (!weapon->reloading &&
+        (sfKeyboard_isKeyPressed(sfKeyQ) ^ sfKeyboard_isKeyPressed(sfKeyD) ||
+            sfKeyboard_isKeyPressed(sfKeyZ) ^ sfKeyboard_isKeyPressed(sfKeyS)))
         animate_weapon_walk(wolf, wolf->window_data, weapon);
     else if (!weapon->reloading)
         sfSprite_setPosition(weapon->entity->sprite,
