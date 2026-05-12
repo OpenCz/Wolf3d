@@ -103,6 +103,11 @@ typedef struct wall_s {
     sfUint8 *decor_arr[3];
 } wall_t;
 
+typedef struct crosshair_s {
+    sfVector2f pos;
+    entity_t *cursor;
+} crosshair_t;
+
 typedef struct game_s {
     sfClock *clock[2];
     player_t *entities[MAX_ENTITY];
@@ -110,6 +115,7 @@ typedef struct game_s {
     wall_t *wall;
     float *zbuffer;
     int has_shot;
+    crosshair_t crosshair;
 } game_t;
 
 typedef struct window_s {
