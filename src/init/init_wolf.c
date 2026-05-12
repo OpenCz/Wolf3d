@@ -87,6 +87,13 @@ static int init_wolf_game_data(wolf_t *wolf)
     return 0;
 }
 
+static void init_state(wolf_t *wolf)
+{
+    wolf->state = MENU;
+    wolf->menu_state = NEWGAME;
+    wolf->settings_state = GRAPHICS;
+}
+
 wolf_t *init_wolf(void)
 {
     wolf_t *wolf = calloc(1, sizeof(wolf_t));
@@ -100,9 +107,7 @@ wolf_t *init_wolf(void)
         free(wolf);
         return NULL;
     }
-    wolf->state = MENU;
-    wolf->menu_state = NEWGAME;
-    wolf->settings_state = GRAPHICS;
+    init_state(wolf);
     if (init_wolf_player_data(wolf) < 0)
         return NULL;
     wolf->state = MENU;
