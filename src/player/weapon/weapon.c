@@ -29,6 +29,8 @@ void use_weapon(game_t *game, weapon_t *weapon)
         sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd)) >
         weapon->attack_speed) {
         weapon->reloading = 1;
+        weapon->rect.left = 0;
+        sfSprite_setTextureRect(weapon->entity->sprite, weapon->rect);
         sfClock_restart(weapon->cd);
     }
     if (weapon->reloading == 1)
@@ -71,14 +73,14 @@ void reload_weapon(window_t *win, weapon_t *weapon)
     float elapsed = sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd));
     sfVector2f pos = sfSprite_getPosition(weapon->entity->sprite);
 
-    if (elapsed < 1.5f) {
+    if (elapsed < 0.8) {
         sfSprite_setPosition(weapon->entity->sprite,
             (sfVector2f){pos.x, win->height + (win->height / 2) *
-                (elapsed / 1.5f)});
-    } else if (elapsed < 3.f) {
+                (elapsed / 0.8)});
+    } else if (elapsed < 1.6f) {
         sfSprite_setPosition(weapon->entity->sprite,
             (sfVector2f){pos.x, win->height + (win->height / 2) * (1.f -
-                    (elapsed - 1.5f) / 1.5f)});
+                    (elapsed - 0.8) / 0.8)});
     } else {
         sfSprite_setPosition(weapon->entity->sprite,
             (sfVector2f){pos.x, win->height});

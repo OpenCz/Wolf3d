@@ -38,7 +38,7 @@ typedef struct weapon_s {
     int max_ammo;
     int current_ammo;
     int damage;
-    int attack_speed;
+    float attack_speed;
     int current_frame;
     int reloading;
     entity_t *entity;
