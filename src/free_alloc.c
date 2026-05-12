@@ -33,6 +33,20 @@ static void free_rectangles(wolf_t *wolf, int state)
     }
 }
 
+static void free_triangle(wolf_t *wolf, int state)
+{
+    triangle_t *triangle = NULL;
+    list_t *next = NULL;
+
+    for (list_t *curr = wolf->list[state][TRIANGLE]; curr; curr = next) {
+        next = curr->next;
+        triangle = (triangle_t *)curr->data;
+        sfConvexShape_destroy(triangle->shape);
+        free(triangle);
+        free(curr);
+    }
+}
+
 static void free_texts(wolf_t *wolf, int state)
 {
     text_t *text = NULL;
@@ -82,6 +96,7 @@ static void free_settings(wolf_t *wolf)
     free_texts(wolf, SETTINGS);
     free_entities(wolf, SETTINGS);
     free_line(wolf, SETTINGS);
+    free_triangle(wolf, SETTINGS);
 }
 
 static void free_list(wolf_t *wolf)
