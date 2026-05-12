@@ -29,8 +29,8 @@
     #define CEILING 0
     #define FLOOR 1
     #define MAX_ENTITY 50
-    #define GRAVITY 400.0
-    #define JUMP_FORCE 200.0
+    #define GRAVITY 800.0
+    #define JUMP_FORCE 500.0
     #define GLOBAL 0
     #define MOVE_CLOCK 1
     #include <SFML/Graphics.h>

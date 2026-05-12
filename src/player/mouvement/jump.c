@@ -38,6 +38,7 @@ void jump_player(wolf_t *wolf, player_t *p)
 {
     float dt = sfTime_asSeconds(sfClock_getElapsedTime(p->jump.clock));
 
+    (void)wolf;
     sfClock_restart(p->jump.clock);
     switch (p->jump.state) {
         case ON_GROUND:

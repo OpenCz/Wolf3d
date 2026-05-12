@@ -21,26 +21,33 @@ static void update_position(decor_t *d, float dist, wolf_t *w, int col)
     d->t.y = (int)(TEX_SIZE * (d->floor.y - (int)d->floor.y)) & (TEX_SIZE - 1);
 }
 
+static void draw_floor(wolf_t *w, decor_t *d, int y, int column)
+{
+    int floor_y = w->window_data->height - 1 - y + 2 * (int)w->player->z;
+
+    if (floor_y < 0 || floor_y >= w->window_data->height)
+        return;
+    create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4,
+        (floor_y * w->window_data->width + column) * 4,
+        w->game->wall->decor_arr[FLOOR]);
+}
+
 static void draw_decor(wolf_t *w, decor_t *d, float wall_height, int column)
 {
-    float dist = 0;
+    int h = w->window_data->height;
+    int top = (int)((h - wall_height) / 2.0f + w->player->z);
     int p = 0;
-    int index = 0;
-    int top = (int)((w->window_data->height - wall_height) / 2.0f) + w->player->z;
 
     for (int y = 0; y < top; y++) {
-        p = w->window_data->height / 2 - y;
+        p = h / 2 - y + (int)w->player->z;
         if (p <= 0)
             continue;
-        dist = (w->player->z / TILE_SIZE) + ((0.5) * w->window_data->height) / p * 1.58;
-        update_position(d, dist, w, column);
-        index = (y * w->window_data->width + column) * 4;
-        create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4, index,
-            w->game->wall->decor_arr[CEILING]);
-        index = ((w->window_data->height - y - 5) *
-            w->window_data->width + column) * 4;
-        create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4, index,
-            w->game->wall->decor_arr[FLOOR]);
+        update_position(d, (0.5f * h) / p * 1.58f, w, column);
+        if (y < h)
+            create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4,
+                (y * w->window_data->width + column) * 4,
+                w->game->wall->decor_arr[CEILING]);
+        draw_floor(w, d, y, column);
     }
 }
 
