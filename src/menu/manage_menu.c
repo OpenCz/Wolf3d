@@ -14,8 +14,11 @@ sfBool iskeypressed(int key, sfEvent event)
 
 void manage_menu(wolf_t *wolf, sfEvent event)
 {
-    if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == NEWGAME)
+    if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == NEWGAME) {
+        sfRenderWindow_setMouseCursorVisible(wolf->window_data->window,
+            sfFalse);
         wolf->state = GAME;
+    }
     if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == LEAVE)
         sfRenderWindow_close(wolf->window_data->window);
     if (iskeypressed(sfKeyUp, event) && wolf->menu_state > 0)
