@@ -15,6 +15,17 @@ static void set_param(text_t *text, sfVector2f *pos)
     sfText_setPosition(text->text, *pos);
 }
 
+static void setup_text_data(text_t *text, text_t *data)
+{
+    text->name = data->name;
+    text->content = data->content;
+    text->state = data->state;
+    text->type = data->type;
+    text->always_display = data->always_display;
+    text->left_triangle = data->left_triangle;
+    text->right_triangle = data->right_triangle;
+}
+
 text_t *create_text(text_t *data,
     sfFont *font, sfVector2f *pos, sfVector2f *scale)
 {
@@ -24,11 +35,7 @@ text_t *create_text(text_t *data,
     if (!text)
         return NULL;
     text->text = sfText_create();
-    text->name = data->name;
-    text->content = data->content;
-    text->state = data->state;
-    text->type = data->type;
-    text->always_display = data->always_display;
+    setup_text_data(text, data);
     sfText_setFont(text->text, font);
     sfText_setString(text->text, data->content);
     sfText_setScale(text->text, *scale);
@@ -43,22 +50,22 @@ void init_menu_text(wolf_t *wolf, window_t *window)
 {
     push_front(&wolf->list[MENU][TEXT],
         create_text(&(text_t){"ng_btn", "NEW GAME", NEWGAME, TYPE_MENU, NULL,
-                sfTrue}, wolf->data->font,
+                sfTrue, NULL, NULL}, wolf->data->font,
             &(sfVector2f){window->width / 10, window->height / 2.2},
             &(sfVector2f){1.5f, 1.5f}));
     push_front(&wolf->list[MENU][TEXT],
         create_text(&(text_t){"continue_btn", "CONTINUE", CONTINUE, TYPE_MENU,
-                NULL, sfTrue}, wolf->data->font,
+                NULL, sfTrue, NULL, NULL}, wolf->data->font,
             &(sfVector2f){window->width / 10, window->height / 2.2 + 90},
             &(sfVector2f){1.5f, 1.5f}));
     push_front(&wolf->list[MENU][TEXT],
         create_text(&(text_t){"option_btn", "OPTIONS", OPTIONS, TYPE_MENU,
-                NULL, sfTrue}, wolf->data->font,
+                NULL, sfTrue, NULL, NULL}, wolf->data->font,
             &(sfVector2f){window->width / 10, window->height / 2.2 + 90 * 2},
             &(sfVector2f){1.5f, 1.5f}));
     push_front(&wolf->list[MENU][TEXT],
         create_text(&(text_t){"option_btn", "LEAVE", LEAVE, TYPE_MENU, NULL,
-                sfTrue}, wolf->data->font,
+                sfTrue, NULL, NULL}, wolf->data->font,
             &(sfVector2f){window->width / 10, window->height / 2.2 + 90 * 3},
             &(sfVector2f){1.5f, 1.5f}));
 }
@@ -73,7 +80,8 @@ void init_graphics(wolf_t *wolf, window_t *window)
     for (int i = 0; i < 6; i++) {
         push_front(&wolf->list[SETTINGS][TEXT],
             create_text(&(text_t){names[i], contents[i], GRAPHICS,
-                    TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
+                    TYPE_SETTINGS, NULL, sfFalse, NULL, NULL},
+                wolf->data->font,
                 &(sfVector2f){window->width / 7,
                     window->height / 2.9f + 80 * i},
                 &(sfVector2f){1.1f, 1.1f}));
@@ -96,7 +104,8 @@ void init_audio(wolf_t *wolf, window_t *window)
     for (int i = 0; i < 4; i++) {
         push_front(&wolf->list[SETTINGS][TEXT],
             create_text(&(text_t){names[i], contents[i], AUDIO,
-                    TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
+                    TYPE_SETTINGS, NULL, sfFalse, NULL, NULL},
+                wolf->data->font,
                 &(sfVector2f){window->width / 7,
                     window->height / 2.9f + 80 * i},
                 &(sfVector2f){1.1f, 1.1f}));
@@ -119,7 +128,8 @@ void init_gameplay(wolf_t *wolf, window_t *window)
     for (int i = 0; i < 6; i++) {
         push_front(&wolf->list[SETTINGS][TEXT],
             create_text(&(text_t){names[i], contents[i], GAMEPLAY,
-                    TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
+                    TYPE_SETTINGS, NULL, sfFalse, NULL, NULL},
+                wolf->data->font,
                 &(sfVector2f){window->width / 7,
                     window->height / 2.9f + 80 * i},
                 &(sfVector2f){1.1f, 1.1f}));

@@ -18,18 +18,6 @@ void draw_sprite_list(wolf_t *wolf)
     }
 }
 
-int in_list_top(char *name)
-{
-    char *names[] = {"graphics", "audio", "gameplay", "controls",
-        "accessibility"};
-
-    for (int i = 0; i < 5; i++) {
-        if (strcmp(name, names[i]) == 0)
-            return 0;
-    }
-    return 84;
-}
-
 void draw_text_list(wolf_t *wolf)
 {
     text_t *text = NULL;

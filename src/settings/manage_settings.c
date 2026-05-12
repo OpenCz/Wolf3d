@@ -7,115 +7,16 @@
 
 #include "wolf3d.h"
 
-static void center_text_on_rect(sfText *text, sfRectangleShape *rect)
-{
-    sfFloatRect text_bounds = sfText_getLocalBounds(text);
-    sfFloatRect rect_bounds = sfRectangleShape_getGlobalBounds(rect);
-
-    sfText_setOrigin(text, (sfVector2f) {
-            text_bounds.left + text_bounds.width / 2.0f,
-            text_bounds.top + text_bounds.height / 2.0f});
-    sfText_setPosition(text, (sfVector2f) {
-            rect_bounds.left + rect_bounds.width / 2.0f,
-            rect_bounds.top + rect_bounds.height / 2.0f});
-}
-
-static void create_settings_action(wolf_t *wolf, float x, float y,
-    text_t *info)
-{
-    sfVector2f pos;
-    sfVector2f size;
-    rect_t *rect;
-    text_t *text;
-
-    pos = (sfVector2f){x, y};
-    size = (sfVector2f){380.0f, 70.0f};
-    rect = create_rectangles(&(rect_t){(char *)info->name, info->state, NULL,
-            NULL, NULL, TYPE_SETTINGS, sfTrue}, "assets/settings_button.png",
-        &pos, &size);
-    text = create_text(info, wolf->data->font, &pos, &(sfVector2f){1.0f, 1.0f});
-    if (!rect || !text)
-        return;
-    sfText_setCharacterSize(text->text, 28);
-    center_text_on_rect(text->text, rect->rect);
-    push_front(&wolf->list[SETTINGS][RECT], rect);
-    push_front(&wolf->list[SETTINGS][TEXT], text);
-}
-
-static void create_settings_button(wolf_t *wolf, float x, float y,
-    text_t *info)
-{
-    sfVector2f pos;
-    sfVector2f size;
-    rect_t *rect;
-    text_t *text;
-
-    pos = (sfVector2f){x, y};
-    size = (sfVector2f){280.0f, 70.0f};
-    rect = create_rectangles(&(rect_t){(char *)info->name, info->state, NULL,
-            NULL, NULL, TYPE_SETTINGS, sfTrue},
-        "assets/settings_button_click.png", &pos, &size);
-    text = create_text(info, wolf->data->font, &pos, &(sfVector2f){1.0f, 1.0f});
-    if (!rect || !text)
-        return;
-    sfText_setCharacterSize(text->text, 28);
-    center_text_on_rect(text->text, rect->rect);
-    push_front(&wolf->list[SETTINGS][RECT], rect);
-    push_front(&wolf->list[SETTINGS][TEXT], text);
-}
-
-static void create_settings_title(wolf_t *wolf, float x, float y, text_t *info)
-{
-    sfVector2f pos;
-    text_t *text;
-
-    pos = (sfVector2f){x, y};
-    text = create_text(info, wolf->data->font, &pos, &(sfVector2f){3.0f, 3.0f});
-    if (!text)
-        return;
-    sfText_setColor(text->text, sfColor_fromRGB(247, 167, 3));
-    push_front(&wolf->list[SETTINGS][TEXT], text);
-}
-
-static void create_settings(wolf_t *wolf, text_t *infos, window_t *window)
-{
-    float start_x = (window->width - (5 * 300.0f)) / 2.0f + 300.0f / 2.0f;
-    float y = window->height / 4.8f;
-    float second_y = window->height / 1.25f;
-
-    for (int i = 0; i < 9; i++) {
-        if (i == 8) {
-            create_settings_title(wolf, window->width / 2.5f,
-                window->height / 3.7f, &infos[i]);
-            continue;
-        }
-        if (i < 5)
-            create_settings_button(wolf, start_x + i * 300.0f, y, &infos[i]);
-        else
-            create_settings_action(wolf, start_x + 150.0f + (i - 5) * 450.0f,
-                second_y, &infos[i]);
-    }
-}
-
-void init_settings_buttons(wolf_t *wolf, window_t *window)
+static int in_list_top(char *name)
 {
     char *names[] = {"graphics", "audio", "gameplay", "controls",
-        "accessibility", "reset", "back", "apply", "settings"};
-    char *contents[] = {"GRAPHICS", "AUDIO", "GAMEPLAY", "CONTROLS",
-        "ACCESSIBILITY", "RESET TO DEFAULT", "BACK", "APPLY", "SETTINGS"};
-    int states[] = {GRAPHICS, AUDIO, GAMEPLAY, CONTROLS, ACCESSIBILITY};
-    text_t infos[] = {
-        {names[0], contents[0], states[0], TYPE_SETTINGS, NULL, sfTrue},
-        {names[1], contents[1], states[1], TYPE_SETTINGS, NULL, sfTrue},
-        {names[2], contents[2], states[2], TYPE_SETTINGS, NULL, sfTrue},
-        {names[3], contents[3], states[3], TYPE_SETTINGS, NULL, sfTrue},
-        {names[4], contents[4], states[4], TYPE_SETTINGS, NULL, sfTrue},
-        {names[5], contents[5], -1, TYPE_SETTINGS, NULL, sfTrue},
-        {names[6], contents[6], -1, TYPE_SETTINGS, NULL, sfTrue},
-        {names[7], contents[7], -1, TYPE_SETTINGS, NULL, sfTrue},
-        {names[8], contents[8], -1, TYPE_SETTINGS, NULL, sfTrue}};
+        "accessibility"};
 
-    create_settings(wolf, infos, window);
+    for (int i = 0; i < 5; i++) {
+        if (strcmp(name, names[i]) == 0)
+            return 0;
+    }
+    return 84;
 }
 
 static void action_button(wolf_t *wolf, char *name, int state)
@@ -160,24 +61,6 @@ static void hover_button(wolf_t *wolf, sfEvent event)
     }
 }
 
-static void hover_triangle(wolf_t *wolf, sfEvent event)
-{
-    triangle_t *triangle = NULL;
-    sfFloatRect bounds;
-
-    for (list_t *c = wolf->list[SETTINGS][TRIANGLE]; c; c = c->next) {
-        triangle = (triangle_t *)c->data;
-        bounds = sfConvexShape_getGlobalBounds(triangle->shape);
-        if (sfFloatRect_contains(&bounds, event.mouseMove.x,
-                event.mouseMove.y))
-            sfConvexShape_setFillColor(triangle->shape, sfColor_fromRGBA(138,
-                    2, 0, 125));
-        else
-            sfConvexShape_setFillColor(triangle->shape, sfColor_fromRGBA(138,
-                    2, 0, 255));
-    }
-}
-
 void manage_settings(wolf_t *wolf, sfEvent event)
 {
     if (iskeypressed(sfKeyEscape, event))
@@ -187,10 +70,11 @@ void manage_settings(wolf_t *wolf, sfEvent event)
     if (iskeypressed(sfKeyLeft, event) && wolf->settings_state > GRAPHICS)
         wolf->settings_state--;
     if (event.type == sfEvtMouseButtonPressed
-        && event.mouseButton.button == sfMouseLeft)
+        && event.mouseButton.button == sfMouseLeft
+        && click_settings_triangle(wolf, event) == sfFalse)
         click_button(wolf, event);
     if (event.type == sfEvtMouseMoved) {
         hover_button(wolf, event);
-        hover_triangle(wolf, event);
+        hover_settings_triangle(wolf, event);
     }
 }

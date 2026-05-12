@@ -9,4 +9,5 @@
 
 void settings(wolf_t *wolf)
 {
+    (void)wolf;
 }

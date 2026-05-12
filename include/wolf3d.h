@@ -102,6 +102,8 @@ typedef enum {
     TYPE_SETTINGS
 } type_t;
 
+typedef struct triangle_s triangle_t;
+
 typedef struct vertex_s {
     sfVector2f start;
     sfVector2f end;
@@ -125,14 +127,16 @@ typedef struct text_s {
     type_t type;
     sfText *text;
     sfBool always_display;
+    triangle_t *left_triangle;
+    triangle_t *right_triangle;
 } text_t;
 
-typedef struct triangle_s {
+struct triangle_s {
     sfConvexShape *shape;
     char *name;
     int state;
     int type;
-} triangle_t;
+};
 
 typedef struct entity_s {
     char *name;
@@ -231,6 +235,8 @@ void push_front(list_t **list, void *data);
 void manage_menu(wolf_t *wolf, sfEvent event);
 void settings(wolf_t *wolf);
 void manage_settings(wolf_t *wolf, sfEvent event);
+sfBool click_settings_triangle(wolf_t *wolf, sfEvent event);
+void hover_settings_triangle(wolf_t *wolf, sfEvent event);
 void init_settings_entities(wolf_t *wolf, window_t *window);
 void init_settings_buttons(wolf_t *wolf, window_t *window);
 text_t *create_text(text_t *data,
@@ -241,11 +247,13 @@ void draw_rect_list(wolf_t *wolf);
 void init_graphics(wolf_t *wolf, window_t *window);
 rect_t *create_line(rect_t *data, sfVector2f *pos, sfVector2f *scale);
 void draw_line_list(wolf_t *wolf);
-int in_list_top(char *name);
 void init_audio(wolf_t *wolf, window_t *window);
 void init_gameplay(wolf_t *wolf, window_t *window);
 settings_game_t *init_settings_params(void);
 char *my_nbr_to_str(int nb);
+void center_text_on_screen(text_t *text, window_t *window, float y);
+void create_setting_triangles(window_t *window, float y,
+    triangle_t **triangles);
 void init_graphics_params(settings_game_t *settings, wolf_t *wolf);
 triangle_t *create_triangle(triangle_t *data,
     sfVector2f *pos, sfVector2f points[3]);

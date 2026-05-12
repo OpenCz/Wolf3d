@@ -7,19 +7,6 @@
 
 #include "wolf3d.h"
 
-static void center_text_on_screen(text_t *text, window_t *window, float y)
-{
-    sfFloatRect bounds;
-
-    if (!text)
-        return;
-    bounds = sfText_getLocalBounds(text->text);
-    sfText_setOrigin(text->text, (sfVector2f){bounds.left + bounds.width / 2.0f,
-            bounds.top + bounds.height / 2.0f});
-    sfText_setPosition(text->text, (sfVector2f){window->width / 2.0f, y});
-    sfText_setColor(text->text, sfColor_fromRGB(247, 167, 3));
-}
-
 static char *return_error(char *str1, char *str2)
 {
     if (str1)
@@ -50,74 +37,57 @@ static char *get_resolution_string(sfVideoMode *mode)
     return full_resolution;
 }
 
+static void init_graphics_value(wolf_t *wolf, text_t *data, float y,
+    sfBool with_triangles)
+{
+    triangle_t *triangles[2] = {NULL, NULL};
+    text_t *text = NULL;
+
+    if (with_triangles)
+        create_setting_triangles(wolf->window_data, y, triangles);
+    text = create_text(data, wolf->data->font,
+        &(sfVector2f){wolf->window_data->width / 2.0f, y},
+        &(sfVector2f){1.1f, 1.1f});
+    if (text && with_triangles) {
+        text->left_triangle = triangles[0];
+        text->right_triangle = triangles[1];
+    }
+    center_text_on_screen(text, wolf->window_data, y);
+    if (text)
+        push_front(&wolf->list[SETTINGS][TEXT], text);
+    if (with_triangles)
+        push_double_arrow(wolf, triangles);
+}
+
 void init_resolution(wolf_t *wolf, window_t *window, sfVideoMode *mode, int y)
 {
     char *full_resolution = get_resolution_string(mode);
-    text_t *text;
-    triangle_t *triangles[2] = {
-        create_triangle(&(triangle_t){NULL, "left_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width / 2.5f, y},
-            (sfVector2f[3]){{-15, 0}, {0, 15}, {0, -15}}),
-        create_triangle(&(triangle_t){NULL, "right_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width * 0.6f, y},
-            (sfVector2f[3]){{15, 0}, {0, 15}, {0, -15}})};
+    text_t data = {"resolution_value", full_resolution, GRAPHICS,
+        TYPE_SETTINGS, NULL, sfFalse, NULL, NULL};
 
     if (!full_resolution)
         return;
-    text = create_text(&(text_t){"resolution_value", full_resolution, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
-        &(sfVector2f){window->width / 2.0f, y}, &(sfVector2f){1.1f, 1.1f});
-    center_text_on_screen(text, window, y);
-    if (text)
-        push_front(&wolf->list[SETTINGS][TEXT], text);
+    (void)window;
+    init_graphics_value(wolf, &data, y, sfTrue);
     free(full_resolution);
-    push_double_arrow(wolf, triangles);
 }
 
 static void init_fullscreen(wolf_t *wolf, window_t *window, int is_fullscreen)
 {
-    text_t *text = NULL;
-    char *fullscreen_str = is_fullscreen ? "ON" : "OFF";
     float y = window->height / 2.9f + 80;
-    triangle_t *triangles[2] = {
-        create_triangle(&(triangle_t){NULL, "left_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width / 2.5f, y},
-            (sfVector2f[3]){{-15, 0}, {0, 15}, {0, -15}}),
-        create_triangle(&(triangle_t){NULL, "right_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width * 0.6f, y},
-            (sfVector2f[3]){{15, 0}, {0, 15}, {0, -15}})};
+    text_t data = {"fullscreen_value", is_fullscreen ? "ON" : "OFF",
+        GRAPHICS, TYPE_SETTINGS, NULL, sfFalse, NULL, NULL};
 
-    text = create_text(&(text_t){"fullscreen_value", fullscreen_str, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
-        &(sfVector2f){window->width / 2.0f, y},
-        &(sfVector2f){1.1f, 1.1f});
-    center_text_on_screen(text, window, y);
-    if (text)
-        push_front(&wolf->list[SETTINGS][TEXT], text);
-    push_double_arrow(wolf, triangles);
+    init_graphics_value(wolf, &data, y, sfTrue);
 }
 
 static void init_vsync(wolf_t *wolf, window_t *window, int is_vsync)
 {
-    text_t *text = NULL;
-    char *vsync_str = is_vsync ? "ON" : "OFF";
     float y = window->height / 2.9f + 160;
-    triangle_t *triangles[2] = {
-        create_triangle(&(triangle_t){NULL, "left_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width / 2.5f, y},
-            (sfVector2f[3]){{-15, 0}, {0, 15}, {0, -15}}),
-        create_triangle(&(triangle_t){NULL, "right_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width * 0.6f, y},
-            (sfVector2f[3]){{15, 0}, {0, 15}, {0, -15}})};
+    text_t data = {"vsync_value", is_vsync ? "ON" : "OFF", GRAPHICS,
+        TYPE_SETTINGS, NULL, sfFalse, NULL, NULL};
 
-    text = create_text(&(text_t){"vsync_value", vsync_str, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
-        &(sfVector2f){window->width / 2.0f, y},
-        &(sfVector2f){1.1f, 1.1f});
-    center_text_on_screen(text, window, y);
-    if (text)
-        push_front(&wolf->list[SETTINGS][TEXT], text);
-    push_double_arrow(wolf, triangles);
+    init_graphics_value(wolf, &data, y, sfTrue);
 }
 
 static void init_fov(wolf_t *wolf, window_t *window, int fov)
@@ -129,7 +99,7 @@ static void init_fov(wolf_t *wolf, window_t *window, int fov)
     if (!fov_str)
         return;
     text = create_text(&(text_t){"fov_value", fov_str, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
+            TYPE_SETTINGS, NULL, sfFalse, NULL, NULL}, wolf->data->font,
         &(sfVector2f){window->width / 2.0f, y},
         &(sfVector2f){1.1f, 1.1f});
     center_text_on_screen(text, window, y);
@@ -147,7 +117,7 @@ static void init_brightness(wolf_t *wolf, window_t *window, int brightness)
     if (!brightness_str)
         return;
     text = create_text(&(text_t){"brightness_value", brightness_str, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
+            TYPE_SETTINGS, NULL, sfFalse, NULL, NULL}, wolf->data->font,
         &(sfVector2f){window->width / 2.0f, y},
         &(sfVector2f){1.1f, 1.1f});
     center_text_on_screen(text, window, y);
@@ -158,26 +128,15 @@ static void init_brightness(wolf_t *wolf, window_t *window, int brightness)
 
 static void init_max_fps(wolf_t *wolf, window_t *window, int max_fps, int y)
 {
-    text_t *text = NULL;
     char *max_fps_str = my_nbr_to_str(max_fps);
-    triangle_t *triangles[2] = {
-        create_triangle(&(triangle_t){NULL, "left_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width / 2.5f, y},
-            (sfVector2f[3]){{-15, 0}, {0, 15}, {0, -15}}),
-        create_triangle(&(triangle_t){NULL, "right_res", GRAPHICS,
-                TYPE_SETTINGS}, &(sfVector2f){window->width * 0.6f, y},
-            (sfVector2f[3]){{15, 0}, {0, 15}, {0, -15}})};
+    text_t data = {"max_fps_value", max_fps_str, GRAPHICS,
+        TYPE_SETTINGS, NULL, sfFalse, NULL, NULL};
 
     if (!max_fps_str)
         return;
-    text = create_text(&(text_t){"max_fps_value", max_fps_str, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse}, wolf->data->font,
-        &(sfVector2f){window->width / 2.0f, y}, &(sfVector2f){1.1f, 1.1f});
-    center_text_on_screen(text, window, y);
-    if (text)
-        push_front(&wolf->list[SETTINGS][TEXT], text);
+    (void)window;
+    init_graphics_value(wolf, &data, y, sfTrue);
     free(max_fps_str);
-    push_double_arrow(wolf, triangles);
 }
 
 void init_graphics_params(settings_game_t *settings, wolf_t *wolf)
