@@ -29,7 +29,8 @@
     #define CEILING 0
     #define FLOOR 1
     #define MAX_ENTITY 50
-
+    #define GRAVITY 400.0
+    #define JUMP_FORCE 200.0
     #define GLOBAL 0
     #define MOVE_CLOCK 1
     #include <SFML/Graphics.h>
@@ -67,15 +68,29 @@ typedef struct weapon_s {
     entity_t *entity;
 } weapon_t;
 
+typedef enum {
+    ON_GROUND,
+    JUMPING,
+    FALLING
+} jump_state_t;
+
+typedef struct jump_s {
+    sfClock *clock;
+    float jump_speed;
+    jump_state_t state;
+} jump_t;
+
 typedef struct player_s {
     float x;
     float y;
+    float z;
     float angle;
     int hp;
     p_type_t type;
     weapon_t *weapon;
     sfBool alive;
     sfBool running;
+    jump_t jump;
 } player_t;
 
 typedef enum {
@@ -178,6 +193,7 @@ void sprint_player(player_t *player);
 float get_speed(player_t *player, float speed, float accel);
 void is_near_monster(wolf_t *wolf, player_t *player);
 void menu(wolf_t *wolf);
+void jump_player(wolf_t *wolf, player_t *player);
 wolf_t *init_wolf(void);
 void init_menu_text(wolf_t *wolf, window_t *window);
 game_t *init_game(window_t *window_data);

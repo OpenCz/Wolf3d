@@ -8,13 +8,14 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
+void draw_wall(wolf_t *wolf, float wall_height, window_t *win, int column)
 {
-    float top = (win->height - wall_height) / 2.0f;
+    float top = (win->height - wall_height) / 2.0f + wolf->player->z;
     int screen_y = 0;
     int text_y = 0;
     int color = 0;
     int index = 0;
+    wall_t *wall = wolf->game->wall;
 
     for (int y = 0; y < (int)wall_height; y++) {
         screen_y = (int)top + y;
@@ -39,7 +40,7 @@ static void draw_wall_column(wolf_t *wolf,
     wall->wall_index = (wall->wall_index < 0) ? 0 : wall->wall_index;
     wall->wall_index = (wall->wall_index > TEX_SIZE - 1) ?
         TEX_SIZE - 1 : wall->wall_index;
-    draw_wall(wall, wall_height, wolf->window_data, column);
+    draw_wall(wolf, wall_height, wolf->window_data, column);
     draw_ceiling(wolf, column, wall_height);
 }
 

@@ -36,12 +36,15 @@ player_t *init_player(window_t *win, p_type_t type)
         return NULL;
     player->x = 1.5;
     player->y = 1.5;
+    player->z = 1;
     player->angle = fmodf(0.0f, 2.0f * M_PI);
     if (player->angle < 0.0f)
         player->angle += 2.0f * M_PI;
     player->hp = 100;
     player->type = type;
     player->alive = sfTrue;
+    player->jump.state = ON_GROUND;
+    player->jump.clock = sfClock_create();
     player->weapon = init_weapon(GUN, 34, 9, create_entity("gun",
             "assets/gun.png", &(sfVector2f){win->width / 2, win->height},
             &(sfVector2f){1.7, 1.7}));

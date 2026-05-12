@@ -107,6 +107,7 @@ static void stage(wolf_t *wolf, player_t *player, sfEvent event)
     sprint_player(player);
     move_player(wolf->player, event, wolf->game);
     use_weapon(wolf->game, player->weapon);
+    jump_player(wolf, player);
     is_near_monster(wolf, player);
     check_player_state(wolf);
     cast_all_rays(wolf, wolf->window_data, player, wolf->game);
