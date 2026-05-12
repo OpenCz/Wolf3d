@@ -106,7 +106,9 @@ static void draw_player_pixel(wolf_t *wolf, player_draw_t *draw,
     int index = 0;
     int color = 0;
     game_t *g = wolf->game;
+    float fog = 1.0f - (float)draw->transform.y / FOG_MAX_DIST;
 
+    fog = fog < 0.0f ? 0.0f : fog;
     for (int y = draw->drawStart.y; y < draw->drawEnd.y; y++) {
         tex->y = (y - (wolf->window_data->height / 2 - draw->sprite_height
                 / 2) - draw->offset) * TEX_PLAYER_H / draw->sprite_height;
@@ -114,7 +116,7 @@ static void draw_player_pixel(wolf_t *wolf, player_draw_t *draw,
         index = (y * wolf->window_data->width + x) * 4;
         if (g->wall->decor_arr[2][color + 3] < 128)
             continue;
-        create_pixel(g->wall, color, index, g->wall->decor_arr[2]);
+        create_fog_pixel(g->wall, color, index, g->wall->decor_arr[2], fog);
     }
 }
 

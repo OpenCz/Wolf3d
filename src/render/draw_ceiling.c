@@ -34,13 +34,15 @@ static void draw_decor(wolf_t *w, decor_t *d, float wall_height, int column)
             continue;
         dist = (0.5f * w->window_data->height) / p * 1.58;
         update_position(d, dist, w, column);
+        float fog = 1.0f - dist / FOG_MAX_DIST;
+        fog = fog < 0.0f ? 0.0f : fog;
         index = (y * w->window_data->width + column) * 4;
-        create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4, index,
-            w->game->wall->decor_arr[CEILING]);
+        create_fog_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4,
+            index, w->game->wall->decor_arr[CEILING], fog);
         index = ((w->window_data->height - y - 5) *
             w->window_data->width + column) * 4;
-        create_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4, index,
-            w->game->wall->decor_arr[FLOOR]);
+        create_fog_pixel(w->game->wall, (TEX_SIZE * d->t.y + d->t.x) * 4,
+            index, w->game->wall->decor_arr[FLOOR], fog);
     }
 }
 

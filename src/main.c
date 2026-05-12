@@ -113,6 +113,7 @@ static void stage(wolf_t *wolf, player_t *player, sfEvent event)
     draw_other_entities(wolf, player);
     render_pixels(wolf->game, wolf->window_data);
     draw_weapon(wolf, wolf->window_data, player->weapon);
+    draw_crosshair(wolf, wolf->window_data);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)
