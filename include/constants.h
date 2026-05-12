@@ -12,10 +12,13 @@
 
     #define WALL_MIN_DISTANCE 0.15
     #define STATES 3
-    #define TO_DRAW 3
+    #define TO_DRAW 6
     #define SPRITE 0
     #define TEXT 1
     #define MONSTER 2
+    #define RECT 3
+    #define LINE 4
+    #define TRIANGLE 5
     #define NUM_RAYS 800
     #define TILE_SIZE 64
     #define MAP_WIDTH 8

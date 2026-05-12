@@ -27,7 +27,7 @@ void create_cursor(window_t *win, crosshair_t *ch)
     ch->pos = pos;
 }
 
-window_t *init_window_data(void)
+window_t *init_window_data(wolf_t *wolf)
 {
     window_t *window = malloc(sizeof(window_t));
 
@@ -52,7 +52,7 @@ data_t *init_wolf_data(void)
 
 static int init_wolf_player_data(wolf_t *wolf)
 {
-    wolf->window_data = init_window_data();
+    wolf->window_data = init_window_data(wolf);
     wolf->data = init_wolf_data();
     wolf->player = init_player(wolf->window_data, PLAYER);
     if (!wolf->player || !wolf->window_data || !wolf->data)

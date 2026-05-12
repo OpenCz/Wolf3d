@@ -86,12 +86,73 @@ typedef struct list_s {
     struct list_s *next;
 } list_t;
 
+typedef enum {
+    GRAPHICS,
+    AUDIO,
+    GAMEPLAY,
+    CONTROLS,
+    ACCESSIBILITY,
+} settings_t;
+
+typedef struct settings_game_s {
+    sfVideoMode resolution;
+    sfBool fullscreen;
+    sfBool vsync;
+    int fov;
+    int brightness;
+    int max_fps;
+    int master_volume;
+    int music_volume;
+    int sfx_volume;
+    int ambient_volume;
+    int mouse_sensitivity;
+    sfBool invert_mouse;
+    sfBool show_hud;
+    sfBool show_fps;
+    sfBool show_minimap;
+    sfBool crosshair;
+} settings_game_t;
+
+typedef enum {
+    TYPE_MENU,
+    TYPE_SETTINGS
+} type_t;
+
+typedef struct triangle_s triangle_t;
+
+typedef struct vertex_s {
+    sfVector2f start;
+    sfVector2f end;
+    sfVertex vertex;
+} vertex_t;
+
+typedef struct rect_s {
+    char *name;
+    int state;
+    sfRectangleShape *rect;
+    sfTexture *texture;
+    sfTexture *click_texture;
+    type_t type;
+    sfBool always_display;
+} rect_t;
+
 typedef struct text_s {
     char *name;
     char *content;
-    menu_t state;
+    int state;
+    type_t type;
     sfText *text;
+    sfBool always_display;
+    triangle_t *left_triangle;
+    triangle_t *right_triangle;
 } text_t;
+
+struct triangle_s {
+    sfConvexShape *shape;
+    char *name;
+    int state;
+    int type;
+};
 
 typedef struct wall_s {
     sfUint8 *wall;
@@ -144,8 +205,11 @@ typedef struct ray_s {
 } ray_t;
 
 typedef struct wolf_s {
+    settings_game_t *settings;
+    settings_game_t *tmp_settings;
     state_t state;
-    menu_t menu_state;
+    int menu_state;
+    int settings_state;
     player_t *player;
     window_t *window_data;
     data_t *data;
