@@ -18,7 +18,16 @@ void push_front(list_t **list, void *data)
     *list = new_node;
 }
 
-window_t *init_window_data(wolf_t *wolf)
+void create_cursor(window_t *win, crosshair_t *ch)
+{
+    sfVector2f pos = {win->width / 2, win->height / 2};
+
+    ch->cursor = create_entity("cursor", "assets/crosshair.png",
+        &pos, &(sfVector2f){0.2, 0.2});
+    ch->pos = pos;
+}
+
+window_t *init_window_data(void)
 {
     window_t *window = malloc(sizeof(window_t));
 
@@ -43,9 +52,9 @@ data_t *init_wolf_data(void)
 
 static int init_wolf_player_data(wolf_t *wolf)
 {
-    wolf->player = init_player();
-    wolf->window_data = init_window_data(wolf);
+    wolf->window_data = init_window_data();
     wolf->data = init_wolf_data();
+    wolf->player = init_player(wolf->window_data, PLAYER);
     if (!wolf->player || !wolf->window_data || !wolf->data)
         return -1;
     return 0;
@@ -69,6 +78,7 @@ static int init_wolf_game_data(wolf_t *wolf)
     wolf->game = init_game(wolf->window_data);
     if (!wolf->game)
         return -1;
+    create_cursor(wolf->window_data, &wolf->game->crosshair);
     wolf->game->wall->pixel = malloc(wolf->window_data->height *
         wolf->window_data->width * 4);
     wolf->game->zbuffer = malloc(wolf->window_data->width * sizeof(float));
@@ -79,7 +89,7 @@ static int init_wolf_game_data(wolf_t *wolf)
 
 wolf_t *init_wolf(void)
 {
-    wolf_t *wolf = malloc(sizeof(wolf_t));
+    wolf_t *wolf = calloc(1, sizeof(wolf_t));
 
     if (!wolf)
         return NULL;
@@ -95,8 +105,10 @@ wolf_t *init_wolf(void)
     wolf->settings_state = GRAPHICS;
     if (init_wolf_player_data(wolf) < 0)
         return NULL;
+    wolf->state = MENU;
     if (init_wolf_game_data(wolf) < 0)
         return NULL;
-    push_front(&wolf->list[GAME][MONSTER], init_player());
+    push_front(&wolf->list[GAME][MONSTER],
+        init_player(wolf->window_data, ENNEMY));
     return wolf;
 }

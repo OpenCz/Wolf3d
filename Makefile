@@ -14,7 +14,7 @@ LIBS = -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-network -lm
 SRC_GAME = $(shell find ./src -type f -name "*.c" ! -name "network_*.c" ! -path "*/network/*") \
            src/network/client/client.c
 
-SRC_SERVER = src/network_server.c src/network/server/server.c \
+SRC_SERVER = src/network/network_server.c src/network/server/server.c \
 			 src/network/server/server_close.c src/network/client/client.c
 
 OBJ_GAME = $(SRC_GAME:.c=.o)

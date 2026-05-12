@@ -21,24 +21,35 @@ static void update_position(decor_t *d, float dist, wolf_t *w, int col)
     d->t.y = (int)(TEX_SIZE * (d->floor.y - (int)d->floor.y)) & (TEX_SIZE - 1);
 }
 
+void draw_fog_ceiling_floor(wolf_t *w, float dist, sfVector2i *pos, decor_t *d)
+{
+    float fog = 0;
+    int index = 0;
+
+    fog = 1.0f - dist / FOG_MAX_DIST;
+    fog = fog < 0.0f ? 0.0f : fog;
+    index = (pos->x * w->window_data->width + pos->y) * 4;
+    create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y
+                + d->t.x) * 4, index}, w->game->wall->decor_arr[CEILING], fog);
+    index = ((w->window_data->height - pos->x - 5) *
+        w->window_data->width + pos->y) * 4;
+    create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y
+                + d->t.x) * 4, index}, w->game->wall->decor_arr[FLOOR], fog);
+}
+
 static void draw_decor(wolf_t *w, decor_t *d, float wall_height, int column)
 {
     float dist = 0;
     int p = 0;
-    int index = 0;
     int top = (int)((w->window_data->height - wall_height) / 2.0f);
-    int color = 0;
 
     for (int y = 0; y < top; y++) {
         p = w->window_data->height / 2 - y;
         if (p <= 0)
             continue;
-        dist = (0.5f * w->window_data->height) / p * 1.55;
+        dist = (0.5f * w->window_data->height) / p * 1.58;
         update_position(d, dist, w, column);
-        index = (y * w->window_data->width + column) * 4;
-        color = (TEX_SIZE * d->t.y + d->t.x) * 4;
-        create_pixel(w->game->wall, color, index,
-            w->game->wall->decor_arr[CEILING]);
+        draw_fog_ceiling_floor(w, dist, &(sfVector2i){y, column}, d);
     }
 }
 

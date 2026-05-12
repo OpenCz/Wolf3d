@@ -8,25 +8,27 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-void draw_wall(wall_t *wall, float wall_height, window_t *win, int column)
+void draw_wall(wall_t *w, sfVector2f *wall, window_t *win, int column)
 {
-    float top = (win->height - wall_height) / 2.0f;
+    float top = (win->height - wall->y) / 2.0f;
+    float fog = 1.0f - wall->x / FOG_MAX_DIST;
     int screen_y = 0;
     int text_y = 0;
     int color = 0;
     int index = 0;
 
-    for (int y = 0; y < (int)wall_height; y++) {
+    fog = fog < 0.0f ? 0.0f : fog;
+    for (int y = 0; y < (int)wall->y; y++) {
         screen_y = (int)top + y;
         if (screen_y < 0 || screen_y >= win->height)
             continue;
-        text_y = (int)(((float)y / wall_height) * TEX_SIZE);
+        text_y = (int)(((float)y / wall->y) * TEX_SIZE);
         text_y = (text_y < 0) ? 0 : text_y;
         text_y = (text_y > TEX_SIZE - 1) ? TEX_SIZE - 1 : text_y;
-        color = (text_y * TEX_SIZE + wall->wall_index) * 4;
+        color = (text_y * TEX_SIZE + w->wall_index) * 4;
         index = ((int)screen_y * win->width + (int)column) * 4;
         if (!(index < 0 || index >= win->width * win->height * 4))
-            create_pixel(wall, color, index, wall->wall);
+            create_fog_pixel(w, &(sfVector2i){color, index}, w->wall, fog);
     }
 }
 
@@ -39,7 +41,8 @@ static void draw_wall_column(wolf_t *wolf,
     wall->wall_index = (wall->wall_index < 0) ? 0 : wall->wall_index;
     wall->wall_index = (wall->wall_index > TEX_SIZE - 1) ?
         TEX_SIZE - 1 : wall->wall_index;
-    draw_wall(wall, wall_height, wolf->window_data, column);
+    draw_wall(wall, &(sfVector2f){distance, wall_height},
+        wolf->window_data, column);
     draw_ceiling(wolf, column, wall_height);
 }
 

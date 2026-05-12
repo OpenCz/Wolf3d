@@ -3,3 +3,8 @@
 wolf3d
 *~
 server
+cc
+*.log
+*.nix
+Makefile
+*.pdf

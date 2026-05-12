@@ -90,12 +90,16 @@ static void network_update(wolf_t *wolf, sfClock *send_clock)
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
+    sprint_player(player);
     move_player(wolf->player, event, wolf->game);
+    use_weapon(wolf->game, player->weapon);
     is_near_monster(wolf, player);
     check_player_state(wolf);
     cast_all_rays(wolf, wolf->window_data, player, wolf->game);
-    draw_other_players(wolf);
+    draw_other_entities(wolf, player);
     render_pixels(wolf->game, wolf->window_data);
+    draw_weapon(wolf, wolf->window_data, player->weapon);
+    draw_crosshair(wolf, wolf->window_data);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)
@@ -105,6 +109,8 @@ static void check_state(wolf_t *wolf, sfEvent event)
             menu(wolf);
             break;
         case GAME:
+            sfRenderWindow_setMouseCursorVisible(wolf->window_data->window,
+                sfFalse);
             stage(wolf, wolf->player, event);
             break;
         case SETTINGS:

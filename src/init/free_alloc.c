@@ -9,7 +9,8 @@
 
 static void free_game(game_t *game)
 {
-    sfClock_destroy(game->clock);
+    for (int i = 0; i < 2; i++)
+        sfClock_destroy(game->clock[i]);
     free(game->wall->pixel);
     sfSprite_destroy(game->wall->sprite);
     sfTexture_destroy(game->wall->texture);
