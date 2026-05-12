@@ -47,6 +47,7 @@ typedef struct weapon_s {
 typedef struct player_s {
     float x;
     float y;
+    float z;
     float angle;
     int hp;
     p_type_t type;

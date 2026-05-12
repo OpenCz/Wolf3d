@@ -76,10 +76,12 @@ static void get_sprite_height(wolf_t *wolf, player_draw_t *draw,
             draw->transform.y));
     draw->sprite_height = abs((int)(h / (draw->transform.y)));
     draw->offset = draw->sprite_height / 4;
-    draw->drawStart.y = -draw->sprite_height / 2 + h / 2 + draw->offset;
+    draw->drawStart.y = -draw->sprite_height / 2 + h / 2 + draw->offset +
+        (int)wolf->player->z;
     if (draw->drawStart.y < 0)
         draw->drawStart.y = 0;
-    draw->drawEnd.y = draw->sprite_height / 2 + h / 2 + draw->offset;
+    draw->drawEnd.y = draw->sprite_height / 2 + h / 2 + draw->offset +
+        (int)wolf->player->z;
     if (draw->drawEnd.y >= h)
         draw->drawEnd.y = h - 1;
 }
@@ -106,18 +108,16 @@ static void draw_player_pixel(wolf_t *wolf, player_draw_t *draw,
     int index = 0;
     int color = 0;
     game_t *g = wolf->game;
-    float fog = 1.0f - (float)draw->transform.y / FOG_MAX_DIST;
 
-    fog = fog < 0.0f ? 0.0f : fog;
     for (int y = draw->drawStart.y; y < draw->drawEnd.y; y++) {
         tex->y = (y - (wolf->window_data->height / 2 - draw->sprite_height
-                / 2) - draw->offset) * TEX_PLAYER_H / draw->sprite_height;
+                / 2) - draw->offset - (int)wolf->player->z)
+            * TEX_PLAYER_H / draw->sprite_height;
         color = (tex->y * TEX_PLAYER_W + tex->x) * 4;
         index = (y * wolf->window_data->width + x) * 4;
         if (g->wall->decor_arr[2][color + 3] < 128)
             continue;
-        create_fog_pixel(g->wall, &(sfVector2i){color, index},
-            g->wall->decor_arr[2], fog);
+        create_pixel(g->wall, color, index, g->wall->decor_arr[2]);
     }
 }
 

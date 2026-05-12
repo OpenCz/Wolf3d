@@ -36,6 +36,7 @@ player_t *init_player(window_t *win, p_type_t type)
         return NULL;
     player->x = 1.5;
     player->y = 1.5;
+    player->z = 0.0;
     player->angle = fmodf(0.0f, 2.0f * M_PI);
     if (player->angle < 0.0f)
         player->angle += 2.0f * M_PI;

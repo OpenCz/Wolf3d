@@ -14,7 +14,11 @@ sfBool iskeypressed(int key, sfEvent event)
 
 void manage_menu(wolf_t *wolf, sfEvent event)
 {
+    window_t *win = wolf->window_data;
+
     if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == NEWGAME) {
+        sfMouse_setPositionRenderWindow((sfVector2i){win->width / 2,
+                win->height / 2}, win->window);
         sfRenderWindow_setMouseCursorVisible(wolf->window_data->window,
             sfFalse);
         wolf->state = GAME;

@@ -21,35 +21,38 @@ static void update_position(decor_t *d, float dist, wolf_t *w, int col)
     d->t.y = (int)(TEX_SIZE * (d->floor.y - (int)d->floor.y)) & (TEX_SIZE - 1);
 }
 
-void draw_fog_ceiling_floor(wolf_t *w, float dist, sfVector2i *pos, decor_t *d)
+static void draw_floor(wolf_t *w, decor_t *d, sfVector2f *data, float fog)
 {
-    float fog = 0;
-    int index = 0;
+    int floor_y = w->window_data->height - 1 - data->x + 2 * (int)w->player->z;
 
-    fog = 1.0f - dist / FOG_MAX_DIST;
-    fog = fog < 0.0f ? 0.0f : fog;
-    index = (pos->x * w->window_data->width + pos->y) * 4;
-    create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y
-                + d->t.x) * 4, index}, w->game->wall->decor_arr[CEILING], fog);
-    index = ((w->window_data->height - pos->x - 5) *
-        w->window_data->width + pos->y) * 4;
-    create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y
-                + d->t.x) * 4, index}, w->game->wall->decor_arr[FLOOR], fog);
+    if (floor_y < 0 || floor_y >= w->window_data->height)
+        return;
+    create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y + d->t.x)
+            * 4, (floor_y * w->window_data->width + data->y) * 4},
+        w->game->wall->decor_arr[FLOOR], fog);
 }
 
 static void draw_decor(wolf_t *w, decor_t *d, float wall_height, int column)
 {
+    int h = w->window_data->height;
+    int top = (int)((h - wall_height) / 2.0f + w->player->z);
     float dist = 0;
+    float fog = 0;
     int p = 0;
-    int top = (int)((w->window_data->height - wall_height) / 2.0f);
 
     for (int y = 0; y < top; y++) {
-        p = w->window_data->height / 2 - y;
+        p = h / 2 - y + (int)w->player->z;
         if (p <= 0)
             continue;
-        dist = (0.5f * w->window_data->height) / p * 1.58;
+        dist = (0.5f * h) / p * 1.58f;
         update_position(d, dist, w, column);
-        draw_fog_ceiling_floor(w, dist, &(sfVector2i){y, column}, d);
+        fog = 1.0f - dist / FOG_MAX_DIST;
+        fog = fog < 0.0f ? 0.0f : fog;
+        if (y < h)
+            create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y +
+                        d->t.x) * 4, (y * w->window_data->width + column) * 4},
+                w->game->wall->decor_arr[CEILING], fog);
+        draw_floor(w, d, &(sfVector2f){y, column}, fog);
     }
 }
 
