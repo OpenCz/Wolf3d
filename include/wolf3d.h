@@ -188,6 +188,7 @@ typedef struct ray_s {
 
 typedef struct wolf_s {
     settings_game_t *settings;
+    settings_game_t *tmp_settings;
     state_t state;
     int menu_state;
     int settings_state;
@@ -259,4 +260,5 @@ triangle_t *create_triangle(triangle_t *data,
     sfVector2f *pos, sfVector2f points[3]);
 void draw_triangle_list(wolf_t *wolf);
 void push_double_arrow(wolf_t *wolf, triangle_t **triangles);
+void apply_settings(wolf_t *wolf);
 #endif

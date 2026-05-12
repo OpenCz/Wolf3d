@@ -85,7 +85,8 @@ wolf_t *init_wolf(void)
         return NULL;
     memset(wolf->list, 0, sizeof(wolf->list));
     wolf->settings = init_settings_params();
-    if (!wolf->settings) {
+    wolf->tmp_settings = init_settings_params();
+    if (!wolf->settings || !wolf->tmp_settings) {
         free(wolf);
         return NULL;
     }

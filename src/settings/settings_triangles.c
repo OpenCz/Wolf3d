@@ -38,14 +38,23 @@ static void update_resolution_value(wolf_t *wolf, text_t *text, int direction)
     sfVideoMode resolutions[] = {{800, 600, 32}, {1280, 720, 32},
         {1600, 900, 32}, {1920, 1080, 32}};
     int idx = find_resolution_index(&wolf->settings->resolution);
-    char buffer[32];
+    char *buffer;
+    int size;
 
     idx = (idx + direction + 4) % 4;
     wolf->settings->resolution = resolutions[idx];
-    snprintf(buffer, sizeof(buffer), "%u x %u",
+    size = snprintf(NULL, 0, "%u x %u",
+        wolf->settings->resolution.width,
+        wolf->settings->resolution.height) + 1;
+    buffer = malloc(size);
+    if (!buffer)
+        return;
+    snprintf(buffer, size, "%u x %u",
         wolf->settings->resolution.width, wolf->settings->resolution.height);
     sfText_setString(text->text, buffer);
     recenter_text(text->text);
+    wolf->tmp_settings->resolution = resolutions[idx];
+    free(buffer);
 }
 
 static void update_toggle_value(text_t *text, sfBool *value)
@@ -59,7 +68,8 @@ static void update_max_fps_value(wolf_t *wolf, text_t *text, int direction)
 {
     int fps_values[] = {30, 60, 75, 120, 144, 165, 240};
     int idx = 0;
-    char buffer[16];
+    char *buffer;
+    int size;
 
     for (int i = 0; i < 7; i++)
         if (fps_values[i] == wolf->settings->max_fps)
@@ -68,9 +78,14 @@ static void update_max_fps_value(wolf_t *wolf, text_t *text, int direction)
     wolf->settings->max_fps = fps_values[idx];
     sfRenderWindow_setFramerateLimit(wolf->window_data->window,
         wolf->settings->max_fps);
-    snprintf(buffer, sizeof(buffer), "%d", wolf->settings->max_fps);
+    size = snprintf(NULL, 0, "%d", wolf->settings->max_fps) + 1;
+    buffer = malloc(size);
+    if (!buffer)
+        return;
+    snprintf(buffer, size, "%d", wolf->settings->max_fps);
     sfText_setString(text->text, buffer);
     recenter_text(text->text);
+    free(buffer);
 }
 
 static void apply_triangle_action(wolf_t *wolf, text_t *text, int direction)
