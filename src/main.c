@@ -123,6 +123,8 @@ static void check_state(wolf_t *wolf, sfEvent event)
             menu(wolf);
             break;
         case GAME:
+            sfRenderWindow_setMouseCursorVisible(wolf->window_data->window,
+                sfFalse);
             stage(wolf, wolf->player, event);
             break;
         default:

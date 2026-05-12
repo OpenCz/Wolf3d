@@ -116,7 +116,8 @@ static void draw_player_pixel(wolf_t *wolf, player_draw_t *draw,
         index = (y * wolf->window_data->width + x) * 4;
         if (g->wall->decor_arr[2][color + 3] < 128)
             continue;
-        create_fog_pixel(g->wall, color, index, g->wall->decor_arr[2], fog);
+        create_fog_pixel(g->wall, &(sfVector2i){color, index},
+            g->wall->decor_arr[2], fog);
     }
 }
 
