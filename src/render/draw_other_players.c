@@ -23,9 +23,12 @@ static void add_entity_to_array(wolf_t *wolf)
     if (!wolf->connected)
         return;
     for (int i = 0; i < wolf->nb_others; i++) {
+        if (player->alive != sfTrue)
+            continue;
         wolf->game->entities[wolf->game->numSprites] = &wolf->others[i];
         wolf->game->numSprites++;
     }
+    return;
 }
 
 static void verif_distance(int i, int num, int spriteOrder[],
@@ -169,11 +172,13 @@ static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
 void draw_other_entities(wolf_t *wolf, player_t *p)
 {
     player_draw_t draw;
-    int spriteOrder[wolf->game->numSprites];
-    double spriteDistance[wolf->game->numSprites];
+    int spriteOrder[MAX_ENTITY];
+    double spriteDistance[MAX_ENTITY];
 
     add_entity_to_array(wolf);
     draw.num = wolf->game->numSprites;
+    if (draw.num == 0)
+        return;
     sort_far_to_close(wolf, p, spriteOrder, spriteDistance);
     draw_sprite(wolf, &draw, spriteOrder);
 }
