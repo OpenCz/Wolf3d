@@ -43,7 +43,6 @@ static void draw_wall_column(wolf_t *wolf,
         TEX_SIZE - 1 : wall->wall_index;
     draw_wall(wolf, &(sfVector2f){distance, wall_height},
         wolf->window_data, column);
-    draw_ceiling(wolf, column, wall_height);
 }
 
 static void get_wall_index(wall_t *wall, player_t *player,
@@ -70,21 +69,21 @@ void cast_all_rays(wolf_t *wolf, window_t *window_data, player_t *player,
     float plane_len = tanf(FOV / 2.0f);
     float pl_x = -sinf(player->angle) * plane_len;
     float pl_y = cosf(player->angle) * plane_len;
-    float camera_x = 0;
-    float distance = 0;
-    sfVector2f raydir = {dir.x + pl_x * camera_x, dir.y + pl_y * camera_x};
+    sfVector2f data = {0, 0};
+    sfVector2f raydir = {dir.x + pl_x * data.x, dir.y + pl_y * data.x};
 
     memset(game->wall->pixel, 0, window_data->height * window_data->width * 4);
+    draw_floor_ceiling_rows(wolf);
     for (int i = 0; i < window_data->width; i++) {
-        camera_x = 2.0f * i / window_data->width - 1.0f;
-        raydir.x = dir.x + pl_x * camera_x;
-        raydir.y = dir.y + pl_y * camera_x;
-        distance = cast_ray(game->wall, player, raydir.x, raydir.y);
-        if (distance < 0.1f)
-            distance = 0.1f;
-        get_wall_index(game->wall, player, &raydir, distance);
-        draw_wall_column(wolf, i, distance, game->wall);
-        game->zbuffer[i] = distance;
+        data.x = 2.0f * i / window_data->width - 1.0f;
+        raydir.x = dir.x + pl_x * data.x;
+        raydir.y = dir.y + pl_y * data.x;
+        data.y = cast_ray(game->wall, player, raydir.x, raydir.y);
+        if (data.y < 0.1f)
+            data.y = 0.1f;
+        get_wall_index(game->wall, player, &raydir, data.y);
+        draw_wall_column(wolf, i, data.y, game->wall);
+        game->zbuffer[i] = data.y;
     }
 }
 
