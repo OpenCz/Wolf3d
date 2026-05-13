@@ -20,6 +20,12 @@ static void add_entity_to_array(wolf_t *wolf)
         wolf->game->entities[wolf->game->numSprites] = player;
         wolf->game->numSprites++;
     }
+    if (!wolf->connected)
+        return;
+    for (int i = 0; i < wolf->nb_others; i++) {
+        wolf->game->entities[wolf->game->numSprites] = &wolf->others[i];
+        wolf->game->numSprites++;
+    }
 }
 
 static void verif_distance(int i, int num, int spriteOrder[],
