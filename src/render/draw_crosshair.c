@@ -15,6 +15,11 @@ void draw_crosshair(wolf_t *wolf, window_t *win)
     sfVector2i vector = {pos.x - center.x, pos.y - center.y};
 
     wolf->player->angle += (float)(vector.x / 200.f);
+    wolf->player->z -= (float)(vector.y / 2.f);
+    if (wolf->player->z >= 500)
+        wolf->player->z = 500;
+    if (wolf->player->z <= -400)
+        wolf->player->z = -400;
     sfMouse_setPositionRenderWindow(center, win->window);
     sfRenderWindow_drawSprite(win->window, sprite, NULL);
 }
