@@ -16,7 +16,7 @@ void render_pixels(game_t *game, window_t *win);
 void draw_other_entities(wolf_t *wolf, player_t *p);
 float cast_ray(wall_t *wall, player_t *player,
     float ray_dir_x, float ray_dir_y);
-void draw_ceiling(wolf_t *wolf, int column, float wall_height);
+void draw_floor_ceiling_rows(wolf_t *w);
 void create_pixel(wall_t *wall, int color, int index, sfUint8 *pixel);
 void create_fog_pixel(wall_t *wall, sfVector2i *index, sfUint8 *pixel,
     float fog);

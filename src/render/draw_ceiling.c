@@ -8,66 +8,75 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-static void update_position(decor_t *d, float dist, wolf_t *w, int col)
+static void init_decor(decor_t *d, wolf_t *w)
 {
-    float pos_x = w->player->x;
-    float pos_y = w->player->y;
+    float dir_x = cosf(w->player->angle);
+    float dir_y = sinf(w->player->angle);
+    float plane_len = tanf(FOV / 2.0f);
+    float plane_x = -sinf(w->player->angle) * plane_len;
+    float plane_y = cosf(w->player->angle) * plane_len;
 
-    d->floorStep.x = dist * (d->rd1.x - d->rd0.x) / w->window_data->width;
-    d->floorStep.y = dist * (d->rd1.y - d->rd0.y) / w->window_data->width;
-    d->floor.x = pos_x + dist * d->rd0.x + d->floorStep.x * col;
-    d->floor.y = pos_y + dist * d->rd0.y + d->floorStep.y * col;
-    d->t.x = (int)(TEX_SIZE * (d->floor.x - (int)d->floor.x)) & (TEX_SIZE - 1);
-    d->t.y = (int)(TEX_SIZE * (d->floor.y - (int)d->floor.y)) & (TEX_SIZE - 1);
+    d->rd0.x = dir_x - plane_x;
+    d->rd0.y = dir_y - plane_y;
+    d->rd1.x = dir_x + plane_x;
+    d->rd1.y = dir_y + plane_y;
 }
 
-static void draw_floor(wolf_t *w, decor_t *d, sfVector2f *data, float fog)
+static void init_row(decor_t *d, wolf_t *w, int p, float *dist)
 {
-    int floor_y = w->window_data->height - 1 - data->x + 2 * (int)w->player->z;
+    int hw = w->window_data->width;
 
-    if (floor_y < 0 || floor_y >= w->window_data->height)
-        return;
-    create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y + d->t.x)
-            * 4, (floor_y * w->window_data->width + data->y) * 4},
-        w->game->wall->decor_arr[FLOOR], fog);
+    *dist = (0.5f * w->window_data->height) / (float)p * 1.58f;
+    d->floorStep.x = *dist * (d->rd1.x - d->rd0.x) / hw;
+    d->floorStep.y = *dist * (d->rd1.y - d->rd0.y) / hw;
+    d->floor.x = w->player->x + *dist * d->rd0.x;
+    d->floor.y = w->player->y + *dist * d->rd0.y;
 }
 
-static void draw_decor(wolf_t *w, decor_t *d, float wall_height, int column)
+static void draw_row(wolf_t *w, decor_t *d, row_t *row)
 {
-    int h = w->window_data->height;
-    int top = (int)((h - wall_height) / 2.0f + w->player->z);
-    float dist = 0;
-    float fog = 0;
-    int p = 0;
+    int hw = w->window_data->width;
+    int src = 0;
+    int dst = 0;
 
-    for (int y = 0; y < top; y++) {
-        p = h / 2 - y + (int)w->player->z;
-        if (p <= 0)
-            continue;
-        dist = (0.5f * h) / p * 1.58f;
-        update_position(d, dist, w, column);
-        fog = 1.0f - dist / FOG_MAX_DIST;
-        fog = fog < 0.0f ? 0.0f : fog;
-        if (y < h)
-            create_fog_pixel(w->game->wall, &(sfVector2i){(TEX_SIZE * d->t.y +
-                        d->t.x) * 4, (y * w->window_data->width + column) * 4},
-                w->game->wall->decor_arr[CEILING], fog);
-        draw_floor(w, d, &(sfVector2f){y, column}, fog);
+    for (int x = 0; x < hw; x++) {
+        d->t.x = (int)(TEX_SIZE * (d->floor.x - (int)d->floor.x)) &
+            (TEX_SIZE - 1);
+        d->t.y = (int)(TEX_SIZE * (d->floor.y - (int)d->floor.y)) &
+            (TEX_SIZE - 1);
+        src = (TEX_SIZE * d->t.y + d->t.x) * 4;
+        dst = (row->y * hw + x) * 4;
+        create_fog_pixel(w->game->wall, &(sfVector2i){src, dst},
+            w->game->wall->decor_arr[row->tex_idx], row->fog);
+        d->floor.x += d->floorStep.x;
+        d->floor.y += d->floorStep.y;
     }
 }
 
-void draw_ceiling(wolf_t *wolf, int column, float wall_height)
+static void fill_row(wolf_t *w, decor_t *d, row_t *row, int p)
 {
-    float dir_x = cos(wolf->player->angle);
-    float dir_y = sin(wolf->player->angle);
-    float plane_len = tan(FOV / 2.0f);
-    float plane_x = -sin(wolf->player->angle) * plane_len;
-    float plane_y = cos(wolf->player->angle) * plane_len;
-    decor_t decor;
+    float dist = 0;
 
-    decor.rd0.x = dir_x - plane_x;
-    decor.rd0.y = dir_y - plane_y;
-    decor.rd1.x = dir_x + plane_x;
-    decor.rd1.y = dir_y + plane_y;
-    draw_decor(wolf, &decor, wall_height, column);
+    init_row(d, w, p, &dist);
+    row->fog = 1.0f - dist / FOG_MAX_DIST;
+    row->fog = row->fog < 0.0f ? 0.0f : row->fog;
+    draw_row(w, d, row);
+}
+
+void draw_floor_ceiling_rows(wolf_t *w)
+{
+    decor_t d;
+    row_t row;
+    int h = w->window_data->height;
+    int horizon = h / 2 + (int)w->player->z;
+    int p = 0;
+
+    init_decor(&d, w);
+    for (row.y = 0; row.y < h; row.y++) {
+        p = (row.y > horizon) ? (row.y - horizon) : (horizon - row.y);
+        if (p == 0)
+            continue;
+        row.tex_idx = (row.y > horizon) ? FLOOR : CEILING;
+        fill_row(w, &d, &row, p);
+    }
 }

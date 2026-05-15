@@ -70,6 +70,12 @@ typedef enum {
     LEAVE,
 } menu_t;
 
+typedef struct row_s {
+    int y;
+    float fog;
+    int tex_idx;
+} row_t;
+
 typedef struct player_draw_s {
     int num;
     sfVector2f sprite;

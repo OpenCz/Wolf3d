@@ -8,7 +8,7 @@
 #include "../include/wolf3d.h"
 #include <time.h>
 
-static const char *const SERVER_IP = "10.73.190.141";
+static const char *const SERVER_IP = "10.188.179.189";
 
 int get_map_tile(int tile_x, int tile_y)
 {
@@ -51,8 +51,8 @@ static void handle_recv_packet(wolf_t *wolf, network_packet_t *pkt)
         printf("[Network] Connected as player %u\n", pkt->player_id);
         if (pkt->player_id != 1)
             return;
-        wolf->player->x = TILE_SIZE * 5.5f;
-        wolf->player->y = TILE_SIZE * 1.5f;
+        wolf->player->x = 5.5f;
+        wolf->player->y = 1.5f;
         return;
     }
     if (pkt->player_id != wolf->net.player_id)
@@ -68,6 +68,7 @@ static void handle_recv_position(wolf_t *wolf, network_packet_t *pkt)
     wolf->others[pkt->player_id].x = pkt->x;
     wolf->others[pkt->player_id].y = pkt->y;
     wolf->others[pkt->player_id].angle = pkt->angle;
+    wolf->others[pkt->player_id].alive = sfTrue;
     if ((int)pkt->player_id >= wolf->nb_others)
         wolf->nb_others = (int)pkt->player_id + 1;
 }
