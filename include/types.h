@@ -76,17 +76,25 @@ typedef struct row_s {
     int tex_idx;
 } row_t;
 
+typedef struct item_s {
+    char *name;
+    wp_type_t type;
+    void *data;
+} item_t;
+
 typedef struct slot_s {
     int index;
-    char *name;
+    item_t item;
     entity_t *entity;
     sfBool selected;
 } slot_t;
 
 typedef struct inv_s {
     sfBool open;
+    sfText *text;
     slot_t slot[8];
     sfRectangleShape *rect[10];
+    item_t item[1];
 } inv_t;
 
 typedef struct player_draw_s {

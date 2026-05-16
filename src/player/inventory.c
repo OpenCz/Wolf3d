@@ -12,17 +12,56 @@ static void manage_inventory(window_t *win, inv_t *inv)
     sfVector2i pos = sfMouse_getPositionRenderWindow(win->window);
     sfFloatRect rect;
 
+    for (int i = 0; i < 8; i++)
+        inv->slot[i].selected = sfFalse;
     for (int i = 1; i < 9; i++) {
         rect = sfRectangleShape_getGlobalBounds(inv->rect[i]);
-        if (sfFloatRect_contains(&rect, pos.x, pos.y))
-            printf("here\n");
+        if (!sfFloatRect_contains(&rect, pos.x, pos.y))
+            continue;
+        inv->slot[i - 1].selected = sfTrue;
     }
 }
 
-static void check_inventory(wolf_t *wolf, sfEvent event, inv_t *inv)
+static void equip_item(player_t *player, inv_t *inv)
+{
+    if (!sfKeyboard_isKeyPressed(sfKeySpace))
+        return;
+    for (int i = 0; i < 8; i++) {
+        if (!inv->slot[i].selected)
+            return;
+        player->weapon = (weapon_t *)inv->slot[i].item.data;
+        inv->slot[i].selected = sfFalse;
+    }
+}
+
+void check_inventory(wolf_t *wolf, sfEvent event, inv_t *inv)
 {
     if (sfMouse_isButtonPressed(sfMouseLeft))
         manage_inventory(wolf->window_data, inv);
+    equip_item(wolf->player, inv);
+    draw_selected_item(wolf->window_data, inv);
+}
+
+void draw_selected_item(window_t *win, inv_t *inv)
+{
+    char *str = NULL;
+
+    for (int i = 0; i < 8; i++) {
+        if (!inv->slot[i].selected)
+            continue;
+        str = inv->slot[i].item.name;
+    }
+    if (!str)
+        return;
+    sfText_setString(inv->text, str);
+    sfText_setCharacterSize(inv->text, 30);
+    sfText_setPosition(inv->text,
+        (sfVector2f){win->width / 3.1, win->height / 1.63});
+    sfRenderWindow_drawText(win->window, inv->text, NULL);
+    sfText_setString(inv->text, "Press space to equip");
+    sfText_setPosition(inv->text,
+        (sfVector2f){win->width / 2, win->height / 1.63});
+    sfRenderWindow_drawText(win->window, inv->text, NULL);
 }
 
 void open_inventory(wolf_t *wolf, sfEvent event, inv_t *inv)
@@ -33,6 +72,8 @@ void open_inventory(wolf_t *wolf, sfEvent event, inv_t *inv)
             inv->open ? sfTrue : sfFalse);
         sfMouse_setPositionRenderWindow((sfVector2i){wolf->window_data->width
                 / 2, wolf->window_data->height / 2}, wolf->window_data->window);
+        for (int i = 0; i < 8; i++)
+            inv->slot[i].selected = sfFalse;
     }
     if (inv->open)
         check_inventory(wolf, event, inv);

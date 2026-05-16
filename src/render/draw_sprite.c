@@ -35,4 +35,5 @@ void draw_text_list(wolf_t *wolf)
             sfText_setColor(text->text, sfRed);
         sfRenderWindow_drawText(wolf->window_data->window, text->text, NULL);
     }
+    draw_selected_item(wolf->window_data, &wolf->game->inv);
 }
