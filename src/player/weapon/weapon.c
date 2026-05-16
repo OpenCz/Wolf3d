@@ -91,6 +91,9 @@ void reload_weapon(window_t *win, weapon_t *weapon)
 
 void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon)
 {
+    if (wolf->game->inv.open)
+        return sfRenderWindow_drawSprite(win->window,
+            weapon->entity->sprite, NULL);
     if (weapon->reloading)
         reload_weapon(wolf->window_data, weapon);
     else

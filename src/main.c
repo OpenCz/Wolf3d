@@ -106,7 +106,7 @@ static void network_update(wolf_t *wolf, sfClock *send_clock)
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
-    if (wolf->game->inv.open == sfFalse) {
+    if (!wolf->game->inv.open) {
         sprint_player(player);
         move_player(wolf->player, event, wolf->game);
         use_weapon(wolf->game, player->weapon);
@@ -117,7 +117,8 @@ static void stage(wolf_t *wolf, player_t *player, sfEvent event)
     draw_other_entities(wolf, player);
     render_pixels(wolf->game, wolf->window_data);
     draw_weapon(wolf, wolf->window_data, player->weapon);
-    draw_crosshair(wolf, wolf->window_data);
+    if (!wolf->game->inv.open)
+        draw_crosshair(wolf, wolf->window_data);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)
