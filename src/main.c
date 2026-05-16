@@ -36,7 +36,7 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
             manage_menu(wolf, event);
             break;
         case GAME:
-            open_inventory(event, &wolf->game->inv);
+            open_inventory(wolf, event, &wolf->game->inv);
             break;
         default:
             break;
