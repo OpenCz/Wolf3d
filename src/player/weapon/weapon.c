@@ -25,6 +25,8 @@ void damage_monster(weapon_t *weapon, window_t *win,
 
 void use_weapon(game_t *game, weapon_t *weapon)
 {
+    if (!weapon)
+        return;
     if (!weapon->reloading && sfKeyboard_isKeyPressed(sfKeyR) &&
         sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd)) >
         weapon->attack_speed) {
@@ -91,6 +93,11 @@ void reload_weapon(window_t *win, weapon_t *weapon)
 
 void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon)
 {
+    if (!weapon)
+        return;
+    if (wolf->game->inv.open)
+        return sfRenderWindow_drawSprite(win->window,
+            weapon->entity->sprite, NULL);
     if (weapon->reloading)
         reload_weapon(wolf->window_data, weapon);
     else

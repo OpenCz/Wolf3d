@@ -76,6 +76,27 @@ typedef struct row_s {
     int tex_idx;
 } row_t;
 
+typedef struct item_s {
+    char *name;
+    wp_type_t type;
+    void *data;
+    entity_t *entity;
+} item_t;
+
+typedef struct slot_s {
+    int index;
+    item_t item;
+    sfBool selected;
+} slot_t;
+
+typedef struct inv_s {
+    sfBool open;
+    sfText *text;
+    slot_t slot[8];
+    sfRectangleShape *rect[10];
+    item_t item[1];
+} inv_t;
+
 typedef struct player_draw_s {
     int num;
     sfVector2f sprite;
@@ -122,6 +143,7 @@ typedef struct game_s {
     wall_t *wall;
     float *zbuffer;
     int has_shot;
+    inv_t inv;
     crosshair_t crosshair;
 } game_t;
 

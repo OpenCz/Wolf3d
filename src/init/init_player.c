@@ -8,7 +8,7 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-static weapon_t *init_weapon(wp_type_t type, int damage,
+weapon_t *init_weapon(wp_type_t type, int damage,
     int max_ammo, entity_t *entity)
 {
     weapon_t *weapon = calloc(1, sizeof(weapon_t));
@@ -32,6 +32,7 @@ player_t *init_player(window_t *win, p_type_t type)
 {
     player_t *player = calloc(1, sizeof(player_t));
 
+    (void)win;
     if (!player)
         return NULL;
     player->x = 1.5;
@@ -43,8 +44,6 @@ player_t *init_player(window_t *win, p_type_t type)
     player->hp = 100;
     player->type = type;
     player->alive = sfTrue;
-    player->weapon = init_weapon(GUN, 34, 9, create_entity("gun",
-            "assets/gun.png", &(sfVector2f){win->width / 2, win->height},
-            &(sfVector2f){1.7, 1.7}));
+    player->weapon = NULL;
     return player;
 }

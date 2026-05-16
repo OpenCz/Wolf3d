@@ -36,6 +36,7 @@ void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
             manage_menu(wolf, event);
             break;
         case GAME:
+            open_inventory(wolf, event, &wolf->game->inv);
             break;
         default:
             break;
@@ -105,16 +106,19 @@ static void network_update(wolf_t *wolf, sfClock *send_clock)
 
 static void stage(wolf_t *wolf, player_t *player, sfEvent event)
 {
-    sprint_player(player);
-    move_player(wolf->player, event, wolf->game);
-    use_weapon(wolf->game, player->weapon);
+    if (!wolf->game->inv.open) {
+        sprint_player(player);
+        move_player(wolf->player, event, wolf->game);
+        use_weapon(wolf->game, player->weapon);
+    }
     is_near_monster(wolf, player);
     check_player_state(wolf);
     cast_all_rays(wolf, wolf->window_data, player, wolf->game);
     draw_other_entities(wolf, player);
     render_pixels(wolf->game, wolf->window_data);
     draw_weapon(wolf, wolf->window_data, player->weapon);
-    draw_crosshair(wolf, wolf->window_data);
+    if (!wolf->game->inv.open)
+        draw_crosshair(wolf, wolf->window_data);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)
@@ -135,8 +139,6 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     sfClock *send_clock = sfClock_create();
 
-    if (!send_clock)
-        return 84;
     printf("[Network] Connecting to %s:%d...\n", SERVER_IP, PORT);
     wolf->connected = client_init(&wolf->net, SERVER_IP, PORT) == 0;
     if (!wolf->connected)
