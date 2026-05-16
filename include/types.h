@@ -80,12 +80,12 @@ typedef struct item_s {
     char *name;
     wp_type_t type;
     void *data;
+    entity_t *entity;
 } item_t;
 
 typedef struct slot_s {
     int index;
     item_t item;
-    entity_t *entity;
     sfBool selected;
 } slot_t;
 

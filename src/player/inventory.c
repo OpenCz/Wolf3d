@@ -34,12 +34,30 @@ static void equip_item(player_t *player, inv_t *inv)
     }
 }
 
-void check_inventory(wolf_t *wolf, sfEvent event, inv_t *inv)
+void check_inventory(wolf_t *wolf, inv_t *inv)
 {
     if (sfMouse_isButtonPressed(sfMouseLeft))
         manage_inventory(wolf->window_data, inv);
     equip_item(wolf->player, inv);
     draw_selected_item(wolf->window_data, inv);
+}
+
+void draw_inventory_item(window_t *win, inv_t *inv, int i)
+{
+    sfVector2f pos;
+    sfSprite *sprite;
+    sfFloatRect bounds;
+    sfVector2f origin;
+
+    if (!inv->slot[i - 1].item.data)
+        return;
+    sprite = inv->slot[i - 1].item.entity->sprite;
+    pos = sfRectangleShape_getPosition(inv->rect[i]);
+    bounds = sfSprite_getLocalBounds(sprite);
+    origin = (sfVector2f){bounds.width / 2, bounds.height / 2};
+    sfSprite_setOrigin(sprite, origin);
+    sfSprite_setPosition(sprite, (sfVector2f){pos.x, pos.y});
+    sfRenderWindow_drawSprite(win->window, sprite, NULL);
 }
 
 void draw_selected_item(window_t *win, inv_t *inv)
@@ -76,5 +94,5 @@ void open_inventory(wolf_t *wolf, sfEvent event, inv_t *inv)
             inv->slot[i].selected = sfFalse;
     }
     if (inv->open)
-        check_inventory(wolf, event, inv);
+        check_inventory(wolf, inv);
 }

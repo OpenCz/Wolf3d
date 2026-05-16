@@ -32,6 +32,7 @@ player_t *init_player(window_t *win, p_type_t type)
 {
     player_t *player = calloc(1, sizeof(player_t));
 
+    (void)win;
     if (!player)
         return NULL;
     player->x = 1.5;
