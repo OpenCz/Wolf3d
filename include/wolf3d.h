@@ -16,5 +16,6 @@
     #include "render.h"
     #include "menu.h"
     #include "entity.h"
+    #include "stage.h"
 
 #endif
