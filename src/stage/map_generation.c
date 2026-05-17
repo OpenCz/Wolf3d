@@ -8,6 +8,11 @@
 #include "../include/wolf3d.h"
 #include <time.h>
 
+static int is_limit(int y, int x)
+{
+    return (y == 0 || x == 0 || y == MAP_HEIGHT || x == MAP_WIDTH);
+}
+
 static void set_room_position(int room_count, int room[room_count],
     int length, int mod)
 {
@@ -27,9 +32,11 @@ static void set_room_position(int room_count, int room[room_count],
             room[i] = room[i] == 0 ? room[i] == 1 : room[i];
         }
     }
-    for (int i = 0; i < room_count; i++)
-        printf("%d ", room[i]);
-    printf("\n");
+}
+
+static void expand_room(int map[MAP_HEIGHT][MAP_WIDTH], int y, int x)
+{
+    map[y][x] = 0;
 }
 
 static void set_room(int map[MAP_HEIGHT][MAP_WIDTH])
@@ -40,6 +47,8 @@ static void set_room(int map[MAP_HEIGHT][MAP_WIDTH])
 
     set_room_position(room_count, room_x, MAP_WIDTH, 0);
     set_room_position(room_count, room_y, MAP_HEIGHT, 1);
+    for (int i = 0; i < room_count; i++)
+        map[room_y[i]][room_x[i]] = 1;
 }
 
 static void init_map(wall_t *wall)
