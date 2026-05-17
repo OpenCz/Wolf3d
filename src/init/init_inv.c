@@ -50,15 +50,20 @@ static void create_item(item_t *item, void *data, char *name, wp_type_t type)
     item->type = type;
 }
 
-static void init_item(window_t *win, inv_t *inv)
+static void init_item(window_t *wn, inv_t *inv)
 {
     sfVector2f p = {1, 1};
 
     create_item(&inv->item[0], init_weapon(GUN, 34, 9, create_entity("gun",
-                "assets/gun.png", &(sfVector2f){win->width / 2, win->height},
+                "assets/gun.png", &(sfVector2f){wn->width / 2, wn->height},
                 &(sfVector2f){1.7, 1.7})), "Gun", GUN);
     inv->item[0].entity = create_entity("icon", "assets/gun_icon.png", &p, &p);
     inv->slot[0].item = inv->item[0];
+    create_item(&inv->item[1], init_weapon(SHOTGUN, 50, 1, create_entity("sgun",
+                "assets/shotgun.png", &(sfVector2f){wn->width / 2, wn->height},
+                &(sfVector2f){1.f, 1.f})), "Shotgun", SHOTGUN);
+    inv->item[1].entity = create_entity("icon", "assets/sgun_icon.png", &p, &p);
+    inv->slot[1].item = inv->item[1];
 }
 
 window_t *create_inv(data_t *data, window_t *win, inv_t *inv)
@@ -68,7 +73,7 @@ window_t *create_inv(data_t *data, window_t *win, inv_t *inv)
     sfText_setCharacterSize(inv->text, 3);
     create_slot_rect(win, inv);
     for (int i = 0; i < 8; i++) {
-        inv->slot->item.data = NULL;
+        inv->slot[i].item.data = NULL;
         inv->slot[i].index = i;
         inv->slot[i].selected = sfFalse;
     }
