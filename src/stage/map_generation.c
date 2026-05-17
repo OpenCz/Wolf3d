@@ -120,4 +120,9 @@ void create_map(wall_t *wall)
 {
     init_map(wall);
     set_room(wall->map);
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++)
+            printf("%d ", wall->map[y][x]);
+        printf("\n");
+    }
 }
