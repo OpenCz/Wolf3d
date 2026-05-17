@@ -16,7 +16,7 @@ weapon_t *init_weapon(wp_type_t type, int damage,
     if (!weapon)
         return NULL;
     weapon->type = type;
-    weapon->attack_speed = 0.4;
+    weapon->attack_speed = type == GUN ? 0.4 : 1;
     weapon->current_ammo = max_ammo;
     weapon->max_ammo = max_ammo;
     weapon->damage = damage;

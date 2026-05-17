@@ -28,7 +28,7 @@ static void equip_item(player_t *player, inv_t *inv)
         return;
     for (int i = 0; i < 8; i++) {
         if (!inv->slot[i].selected)
-            return;
+            continue;
         player->weapon = (weapon_t *)inv->slot[i].item.data;
         inv->slot[i].selected = sfFalse;
     }

@@ -29,7 +29,7 @@ void use_weapon(game_t *game, weapon_t *weapon)
         return;
     if (!weapon->reloading && sfKeyboard_isKeyPressed(sfKeyR) &&
         sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd)) >
-        weapon->attack_speed) {
+        weapon->attack_speed && weapon->type != SHOTGUN) {
         weapon->reloading = 1;
         weapon->rect.left = 0;
         sfSprite_setTextureRect(weapon->entity->sprite, weapon->rect);
@@ -58,16 +58,59 @@ static int apply_frame(weapon_t *weapon,
     return 0;
 }
 
-void animate_shot(weapon_t *weapon)
+int animate_shot(weapon_t *weapon, sfVector2f *rect_1,
+    sfVector2f *rect_2, sfVector2f *rect_3)
 {
     float elapsed = sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd));
 
-    if (apply_frame(weapon, elapsed, 0.1, 400) ||
-        apply_frame(weapon, elapsed, 0.2, 800) ||
-        apply_frame(weapon, elapsed, 0.3, 1200))
-        return;
+    if (apply_frame(weapon, elapsed, rect_1->x, rect_1->y) ||
+        apply_frame(weapon, elapsed, rect_2->x, rect_2->y) ||
+        apply_frame(weapon, elapsed, rect_3->x, rect_3->y))
+        return 0;
     weapon->rect.left = 0;
     sfSprite_setTextureRect(weapon->entity->sprite, weapon->rect);
+    return 1;
+}
+
+static void shot_weapon(weapon_t *w)
+{
+    int status = animate_shot(w, &(sfVector2f){w->type == GUN ? 0.1 : 0.2, 400},
+        &(sfVector2f){w->type == GUN ? 0.2 : 0.4, 800},
+        &(sfVector2f){w->type == GUN ? 0.3 : 0.6, 1200});
+
+    if (w->type == SHOTGUN && status == 1) {
+        w->reloading = 1;
+    }
+}
+
+static void reload_gun(sfVector2f *pos, window_t *win,
+    weapon_t *weapon, float elapsed)
+{
+    if (elapsed < 0.8) {
+        sfSprite_setPosition(weapon->entity->sprite,
+            (sfVector2f){pos->x, win->height + (win->height / 2) *
+                (elapsed / 0.8)});
+    } else if (elapsed < 1.6f) {
+        sfSprite_setPosition(weapon->entity->sprite,
+            (sfVector2f){pos->x, win->height + (win->height / 2) * (1.f -
+                    (elapsed - 0.8) / 0.8)});
+    } else {
+        sfSprite_setPosition(weapon->entity->sprite,
+            (sfVector2f){pos->x, win->height});
+        weapon->reloading = 0;
+        weapon->current_ammo = weapon->max_ammo;
+    }
+}
+
+static void reload_shotgun(weapon_t *weapon, float elapsed)
+{
+    if (elapsed >= 0.6 && elapsed <= 1.6)
+        animate_shot(weapon, &(sfVector2f){0.8, 1600},
+            &(sfVector2f){1.2, 2000}, &(sfVector2f){1.4, 2400});
+    else {
+        weapon->reloading = 0;
+        weapon->current_ammo = weapon->max_ammo;
+    }
 }
 
 void reload_weapon(window_t *win, weapon_t *weapon)
@@ -75,39 +118,35 @@ void reload_weapon(window_t *win, weapon_t *weapon)
     float elapsed = sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd));
     sfVector2f pos = sfSprite_getPosition(weapon->entity->sprite);
 
-    if (elapsed < 0.8) {
-        sfSprite_setPosition(weapon->entity->sprite,
-            (sfVector2f){pos.x, win->height + (win->height / 2) *
-                (elapsed / 0.8)});
-    } else if (elapsed < 1.6f) {
-        sfSprite_setPosition(weapon->entity->sprite,
-            (sfVector2f){pos.x, win->height + (win->height / 2) * (1.f -
-                    (elapsed - 0.8) / 0.8)});
-    } else {
-        sfSprite_setPosition(weapon->entity->sprite,
-            (sfVector2f){pos.x, win->height});
-        weapon->reloading = 0;
-        weapon->current_ammo = weapon->max_ammo;
+    switch (weapon->type){
+        case GUN:
+            reload_gun(&pos, win, weapon, elapsed);
+            break;
+        case SHOTGUN:
+            reload_shotgun(weapon, elapsed);
+            break;
+        default:
+            break;
     }
 }
 
-void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *weapon)
+void draw_weapon(wolf_t *wolf, window_t *win, weapon_t *w)
 {
-    if (!weapon)
+    if (!w)
         return;
     if (wolf->game->inv.open)
         return sfRenderWindow_drawSprite(win->window,
-            weapon->entity->sprite, NULL);
-    if (weapon->reloading)
-        reload_weapon(wolf->window_data, weapon);
+            w->entity->sprite, NULL);
+    if (w->reloading)
+        reload_weapon(wolf->window_data, w);
     else
-        animate_shot(weapon);
-    if (!weapon->reloading &&
+        shot_weapon(w);
+    if (!w->reloading &&
         (sfKeyboard_isKeyPressed(sfKeyQ) ^ sfKeyboard_isKeyPressed(sfKeyD) ||
             sfKeyboard_isKeyPressed(sfKeyZ) ^ sfKeyboard_isKeyPressed(sfKeyS)))
-        animate_weapon_walk(wolf, wolf->window_data, weapon);
-    else if (!weapon->reloading)
-        sfSprite_setPosition(weapon->entity->sprite,
+        animate_weapon_walk(wolf, wolf->window_data, w);
+    else if (!w->reloading)
+        sfSprite_setPosition(w->entity->sprite,
             (sfVector2f){win->width / 2, win->height});
-    sfRenderWindow_drawSprite(win->window, weapon->entity->sprite, NULL);
+    sfRenderWindow_drawSprite(win->window, w->entity->sprite, NULL);
 }

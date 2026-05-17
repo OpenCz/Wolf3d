@@ -29,6 +29,7 @@ typedef enum {
 
 typedef enum {
     GUN,
+    SHOTGUN,
 } wp_type_t;
 
 typedef struct weapon_s {
@@ -94,7 +95,7 @@ typedef struct inv_s {
     sfText *text;
     slot_t slot[8];
     sfRectangleShape *rect[10];
-    item_t item[1];
+    item_t item[8];
 } inv_t;
 
 typedef struct player_draw_s {
