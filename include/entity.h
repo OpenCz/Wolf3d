@@ -16,6 +16,6 @@ entity_t *create_entity(char *name,
 void push_front(list_t **list, void *data);
 int is_wall(wall_t *wall, int x, int y);
 extern const int map[MAP_HEIGHT][MAP_WIDTH];
-int get_map_tile(int tile_x, int tile_y);
+int get_map_tile(wall_t *wall, int tile_x, int tile_y);
 
 #endif

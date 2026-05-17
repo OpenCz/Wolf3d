@@ -19,8 +19,8 @@ static void manage_angle(player_t *player, float dt)
 
 static void move_forward(sfVector2f *new, player_t *p, wall_t *w, float dt)
 {
-    new->x = p->x + cosf(p->angle) * (get_speed(p, 100, 50) / TILE_SIZE) * dt;
-    new->y = p->y + sinf(p->angle) * (get_speed(p, 100, 50) / TILE_SIZE) * dt;
+    new->x = p->x + cosf(p->angle) * (get_speed(p, 100, 110) / TILE_SIZE) * dt;
+    new->y = p->y + sinf(p->angle) * (get_speed(p, 100, 110) / TILE_SIZE) * dt;
     if (!check_collision(w, new->x, p->y))
         p->x = new->x;
     if (!check_collision(w, p->x, new->y))

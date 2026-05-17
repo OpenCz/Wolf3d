@@ -123,6 +123,7 @@ typedef struct text_s {
 } text_t;
 
 typedef struct wall_s {
+    int map[MAP_HEIGHT][MAP_WIDTH];
     sfUint8 *wall;
     int wall_index;
     sfTexture *texture;

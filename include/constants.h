@@ -18,8 +18,8 @@
     #define MONSTER 2
     #define NUM_RAYS 800
     #define TILE_SIZE 64
-    #define MAP_WIDTH 8
-    #define MAP_HEIGHT 8
+    #define MAP_WIDTH 24
+    #define MAP_HEIGHT 24
     #define WINDOW_WIDTH 800
     #define WINDOW_HEIGHT 600
     #define FOV (M_PI / 3)

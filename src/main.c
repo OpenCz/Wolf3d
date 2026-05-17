@@ -10,20 +10,9 @@
 
 static const char *const SERVER_IP = "10.188.179.189";
 
-int get_map_tile(int tile_x, int tile_y)
+int get_map_tile(wall_t *wall, int tile_x, int tile_y)
 {
-    static const int map_data[MAP_HEIGHT][MAP_WIDTH] = {
-        {1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 2, 0, 0, 0, 1},
-        {1, 0, 0, 2, 0, 2, 0, 1},
-        {1, 0, 0, 0, 0, 2, 0, 1},
-        {1, 0, 2, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1}
-    };
-
-    return map_data[tile_y][tile_x];
+    return wall->map[tile_y][tile_x];
 }
 
 void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
@@ -102,23 +91,6 @@ static void network_update(wolf_t *wolf, sfClock *send_clock)
     }
     if (wolf->state == GAME && wolf->net.player_id != MAX_PLAYERS)
         network_send(wolf, send_clock);
-}
-
-static void stage(wolf_t *wolf, player_t *player, sfEvent event)
-{
-    if (!wolf->game->inv.open) {
-        sprint_player(player);
-        move_player(wolf->player, event, wolf->game);
-        use_weapon(wolf->game, player->weapon);
-    }
-    is_near_monster(wolf, player);
-    check_player_state(wolf);
-    cast_all_rays(wolf, wolf->window_data, player, wolf->game);
-    draw_other_entities(wolf, player);
-    render_pixels(wolf->game, wolf->window_data);
-    draw_weapon(wolf, wolf->window_data, player->weapon);
-    if (!wolf->game->inv.open)
-        draw_crosshair(wolf, wolf->window_data);
 }
 
 static void check_state(wolf_t *wolf, sfEvent event)
