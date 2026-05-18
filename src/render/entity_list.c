@@ -8,9 +8,9 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-static void add_monster_to_array(wolf_t *wolf, player_t *player, p_type_t type)
+static void add_monster_to_array(wolf_t *wolf, player_t *player, int list_index)
 {
-    for (list_t *curr = wolf->list[GAME][type]; curr; curr = curr->next) {
+    for (list_t *curr = wolf->list[GAME][list_index]; curr; curr = curr->next) {
         player = (player_t *)curr->data;
         if (player->alive != sfTrue)
             continue;

@@ -22,7 +22,7 @@ void get_sprite_height(wolf_t *wolf, player_draw_t *draw,
     *spriteScreenX = (int)((w / 2) * (1 + draw->transform.x /
             draw->transform.y));
     draw->sprite_height = abs((int)(h / (draw->transform.y)));
-    draw->offset = draw->sprite_height / 4;
+    draw->offset = draw->sprite_height / (draw->type == GARBAGE_T ? 2 : 4);
     draw->drawStart.y = -draw->sprite_height / 2 + h / 2 + draw->offset +
         (int)wolf->player->z;
     if (draw->drawStart.y < 0)
@@ -38,9 +38,10 @@ void get_sprite_width(wolf_t *wolf,
 {
     int w = wolf->window_data->width;
     int h = wolf->window_data->height;
+    int tw = draw->type == GARBAGE_T ? TEX_GARBAGE_W : TEX_PLAYER_W;
+    int th = draw->type == GARBAGE_T ? TEX_GARBAGE_H : TEX_PLAYER_H;
 
-    draw->sprite_width = abs((int)(h / (draw->transform.y)
-            * TEX_PLAYER_W / TEX_PLAYER_H));
+    draw->sprite_width = abs((int)(h / draw->transform.y * tw / th));
     draw->drawStart.x = -draw->sprite_width / 2 + spriteScreenX;
     if (draw->drawStart.x < 0)
         draw->drawStart.x = 0;

@@ -9,7 +9,9 @@
     #define CONSTANTS_H
 
     #include <math.h>
-
+    #define TEX_GARBAGE_SHEET_W 1600
+    #define TEX_GARBAGE_W 400
+    #define TEX_GARBAGE_H 500
     #define GARBAGE 3
     #define WALL_MIN_DISTANCE 0.15
     #define STATES 3

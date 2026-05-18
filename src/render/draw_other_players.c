@@ -47,34 +47,43 @@ static void sort_far_to_close(wolf_t *wolf, player_t *p,
     sort_based_on_dist(num, spriteOrder, spriteDistance);
 }
 
-static void draw_player_pixel(wolf_t *wolf, player_draw_t *draw,
+static void get_index(player_draw_t *draw, sfVector2i *index, sfVector2i *tex)
+{
+    if (draw->type == GARBAGE_T)
+        index->y = (tex->y * TEX_GARBAGE_SHEET_W + tex->x) * 4;
+    else
+        index->y = (tex->y * TEX_PLAYER_W + tex->x) * 4;
+}
+
+static void draw_player_pixel(wolf_t *w, player_draw_t *d,
     int x, sfVector2i *tex)
 {
-    int index = 0;
-    int color = 0;
-    game_t *g = wolf->game;
+    sfVector2i index;
+    game_t *g = w->game;
+    int th = d->type == GARBAGE_T ? TEX_GARBAGE_H : TEX_PLAYER_H;
+    sfUint8 *pixels = d->type == GARBAGE_T
+        ? g->wall->decor_arr[3] : g->wall->decor_arr[2];
 
-    if (draw->sprite_height <= 0)
+    if (d->sprite_height <= 0)
         return;
-    for (int y = draw->drawStart.y; y < draw->drawEnd.y; y++) {
-        tex->y = (y - (wolf->window_data->height / 2 - draw->sprite_height
-                / 2) - draw->offset - (int)wolf->player->z)
-            * TEX_PLAYER_H / draw->sprite_height;
-        if (tex->y < 0 || tex->y >= TEX_PLAYER_H)
+    for (int y = d->drawStart.y; y < d->drawEnd.y; y++) {
+        tex->y = (y - (w->window_data->height / 2 - d->sprite_height / 2) -
+            d->offset - (int)w->player->z) * th / d->sprite_height;
+        if (tex->y < 0 || tex->y >= th)
             continue;
-        color = (tex->y * TEX_PLAYER_W + tex->x) * 4;
-        index = (y * wolf->window_data->width + x) * 4;
-        if (index >= wolf->window_data->width * wolf->window_data->height * 4)
+        get_index(d, &index, tex);
+        index.x = (y * w->window_data->width + x) * 4;
+        if (index.x >= w->window_data->width * w->window_data->height * 4
+            || pixels[index.y + 3] < 128)
             continue;
-        if (g->wall->decor_arr[2][color + 3] < 128)
-            continue;
-        create_pixel(g->wall, color, index, g->wall->decor_arr[2]);
+        create_pixel(g->wall, index.y, index.x, pixels);
     }
 }
 
 static void draw_entity(wolf_t *wolf, player_draw_t *draw, int spriteScreenX)
 {
     sfVector2i tex;
+    int tw = draw->type == GARBAGE_T ? TEX_GARBAGE_W : TEX_PLAYER_W;
 
     if (draw->transform.y <= 0.1 || draw->sprite_width <= 0)
         return;
@@ -83,8 +92,8 @@ static void draw_entity(wolf_t *wolf, player_draw_t *draw, int spriteScreenX)
             || draw->transform.y >= wolf->game->zbuffer[x])
             continue;
         tex.x = (int)(256 * (x - (-draw->sprite_width / 2 + spriteScreenX))
-            * TEX_PLAYER_W / draw->sprite_width) / 256;
-        if (tex.x < 0 || tex.x >= TEX_PLAYER_W)
+            * tw / draw->sprite_width) / 256;
+        if (tex.x < 0 || tex.x >= tw)
             continue;
         draw_player_pixel(wolf, draw, x, &tex);
     }

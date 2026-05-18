@@ -25,6 +25,7 @@ typedef struct entity_s {
 typedef enum {
     PLAYER,
     ENNEMY,
+    GARBAGE_T,
 } p_type_t;
 
 typedef enum {
@@ -131,7 +132,7 @@ typedef struct wall_s {
     sfSprite *sprite;
     sfUint8 *pixel;
     sfUint8 *text_arr[2];
-    sfUint8 *decor_arr[3];
+    sfUint8 *decor_arr[4];
 } wall_t;
 
 typedef struct crosshair_s {

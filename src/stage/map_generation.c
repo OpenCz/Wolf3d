@@ -51,12 +51,15 @@ static void expand_room(wolf_t *wolf, int map[MAP_HEIGHT][MAP_WIDTH],
     int height, int width)
 {
     sfVector2i size = {rand() % 5 + 3, rand() % 5 + 3};
+    int random = rand() % 2;
+    int list_type = random == 1 ? GARBAGE : MONSTER;
+    int type = random == 1 ? GARBAGE_T : ENNEMY;
 
     if (!is_limit(height, width))
         map[height][width] = 0;
-    push_front(&wolf->list[GAME][MONSTER],
-        init_player(wolf->window_data, ENNEMY,
-            &(sfVector2f){height, width}));
+    push_front(&wolf->list[GAME][list_type],
+        init_player(wolf->window_data, type,
+            &(sfVector2f){width + 0.5, height + 0.5}));
     for (int y = 0; y < size.y; y++)
         expand_room_width(&size, map, &(sfVector2i){height, width}, y);
 }
@@ -106,7 +109,7 @@ static void set_room(wolf_t *wolf, int map[MAP_HEIGHT][MAP_WIDTH])
             connect_room(map, &(sfVector2i){x[i], y[i]},
                 &(sfVector2i){x[i + 1], y[i + 1]});
     }
-    expand_room(wolf, map, 0, 0);
+    expand_room(wolf, map, 1, 1);
     connect_room(map, &(sfVector2i){1, 1},
         &(sfVector2i){x[0], y[0]});
 }
