@@ -47,12 +47,16 @@ static void expand_room_width(sfVector2i *size, int map[MAP_HEIGHT][MAP_WIDTH],
     }
 }
 
-static void expand_room(int map[MAP_HEIGHT][MAP_WIDTH], int height, int width)
+static void expand_room(wolf_t *wolf, int map[MAP_HEIGHT][MAP_WIDTH],
+    int height, int width)
 {
     sfVector2i size = {rand() % 5 + 3, rand() % 5 + 3};
 
     if (!is_limit(height, width))
         map[height][width] = 0;
+    push_front(&wolf->list[GAME][MONSTER],
+        init_player(wolf->window_data, ENNEMY,
+            &(sfVector2f){height, width}));
     for (int y = 0; y < size.y; y++)
         expand_room_width(&size, map, &(sfVector2i){height, width}, y);
 }
@@ -88,7 +92,7 @@ static void connect_room(int map[MAP_HEIGHT][MAP_WIDTH],
     create_path_width(map, pos1->y, pos2->y, pos2->x);
 }
 
-static void set_room(int map[MAP_HEIGHT][MAP_WIDTH])
+static void set_room(wolf_t *wolf, int map[MAP_HEIGHT][MAP_WIDTH])
 {
     int room_count = rand() % 8 + 5;
     int x[room_count];
@@ -97,12 +101,12 @@ static void set_room(int map[MAP_HEIGHT][MAP_WIDTH])
     set_room_position(room_count, x, MAP_WIDTH, 0);
     set_room_position(room_count, y, MAP_HEIGHT, 1);
     for (int i = 0; i < room_count; i++) {
-        expand_room(map, y[i], x[i]);
+        expand_room(wolf, map, y[i], x[i]);
         if (i + 1 < room_count)
             connect_room(map, &(sfVector2i){x[i], y[i]},
                 &(sfVector2i){x[i + 1], y[i + 1]});
     }
-    expand_room(map, 0, 0);
+    expand_room(wolf, map, 0, 0);
     connect_room(map, &(sfVector2i){1, 1},
         &(sfVector2i){x[0], y[0]});
 }
@@ -116,10 +120,10 @@ static void init_map(wall_t *wall)
     }
 }
 
-void create_map(wall_t *wall)
+void create_map(wolf_t *wolf, wall_t *wall)
 {
     init_map(wall);
-    set_room(wall->map);
+    set_room(wolf, wall->map);
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++)
             printf("%d ", wall->map[y][x]);

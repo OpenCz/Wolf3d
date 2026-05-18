@@ -10,9 +10,10 @@
 
     #include <math.h>
 
+    #define GARBAGE 3
     #define WALL_MIN_DISTANCE 0.15
     #define STATES 3
-    #define TO_DRAW 3
+    #define TO_DRAW 4
     #define SPRITE 0
     #define TEXT 1
     #define MONSTER 2

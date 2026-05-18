@@ -21,7 +21,7 @@ void manage_menu(wolf_t *wolf, sfEvent event)
                 win->height / 2}, win->window);
         sfRenderWindow_setMouseCursorVisible(wolf->window_data->window,
             sfFalse);
-        create_map(wolf->game->wall);
+        create_map(wolf, wolf->game->wall);
         wolf->state = GAME;
     }
     if (iskeypressed(sfKeyEnter, event) && wolf->menu_state == LEAVE)
