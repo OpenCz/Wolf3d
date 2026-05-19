@@ -102,6 +102,7 @@ typedef struct inv_s {
 typedef struct player_draw_s {
     int num;
     p_type_t type;
+    double distance;
     sfVector2f sprite;
     sfVector2f plane;
     sfVector2f transform;

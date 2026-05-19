@@ -112,7 +112,7 @@ static void set_sprite_data(wolf_t *wolf,
 }
 
 static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
-    int spriteOrder[])
+    int spriteOrder[], double dist[])
 {
     player_t **sprite = wolf->game->entities;
     int spriteScreenX = 0;
@@ -121,6 +121,7 @@ static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
     draw->plane.y = cos(wolf->player->angle) * tan(FOV / 2.0f);;
     for (int i = 0; i < draw->num; i++) {
         set_sprite_data(wolf, draw, sprite[spriteOrder[i]], &spriteScreenX);
+        draw->distance = dist[i];
         if (wolf->game->has_shot == 1)
             damage_monster(wolf->player->weapon, wolf->window_data,
                 draw, sprite[spriteOrder[i]]);
@@ -142,5 +143,5 @@ void draw_other_entities(wolf_t *wolf, player_t *p)
     if (draw.num == 0)
         return;
     sort_far_to_close(wolf, p, spriteOrder, spriteDistance);
-    draw_sprite(wolf, &draw, spriteOrder);
+    draw_sprite(wolf, &draw, spriteOrder, spriteDistance);
 }
