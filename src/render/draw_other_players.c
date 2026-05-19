@@ -8,29 +8,6 @@
 #include "../../include/wolf3d.h"
 #include <math.h>
 
-static void add_entity_to_array(wolf_t *wolf)
-{
-    player_t *player = NULL;
-
-    wolf->game->numSprites = 0;
-    for (list_t *curr = wolf->list[GAME][MONSTER]; curr; curr = curr->next) {
-        player = (player_t *)curr->data;
-        if (player->alive != sfTrue)
-            continue;
-        wolf->game->entities[wolf->game->numSprites] = player;
-        wolf->game->numSprites++;
-    }
-    if (!wolf->connected)
-        return;
-    for (int i = 0; i < wolf->nb_others; i++) {
-        if (player->alive != sfTrue)
-            continue;
-        wolf->game->entities[wolf->game->numSprites] = &wolf->others[i];
-        wolf->game->numSprites++;
-    }
-    return;
-}
-
 static void verif_distance(int i, int num, int spriteOrder[],
     double spriteDistance[])
 {
@@ -70,95 +47,80 @@ static void sort_far_to_close(wolf_t *wolf, player_t *p,
     sort_based_on_dist(num, spriteOrder, spriteDistance);
 }
 
-static void get_sprite_height(wolf_t *wolf, player_draw_t *draw,
-    sfVector2f *dir, int *spriteScreenX)
+static void get_index(player_draw_t *draw, sfVector2i *index, sfVector2i *tex)
 {
-    double i = 0;
-    int h = wolf->window_data->height;
-    int w = wolf->window_data->width;
-
-    i = 1.0 / (draw->plane.x * dir->y - dir->x * draw->plane.y);
-    draw->transform.x = i * (dir->y * draw->sprite.x - dir->x * draw->sprite.y);
-    draw->transform.y = i * (-draw->plane.y * draw->sprite.x +
-        draw->plane.x * draw->sprite.y);
-    *spriteScreenX = (int)((w / 2) * (1 + draw->transform.x /
-            draw->transform.y));
-    draw->sprite_height = abs((int)(h / (draw->transform.y)));
-    draw->offset = draw->sprite_height / 4;
-    draw->drawStart.y = -draw->sprite_height / 2 + h / 2 + draw->offset +
-        (int)wolf->player->z;
-    if (draw->drawStart.y < 0)
-        draw->drawStart.y = 0;
-    draw->drawEnd.y = draw->sprite_height / 2 + h / 2 + draw->offset +
-        (int)wolf->player->z;
-    if (draw->drawEnd.y >= h)
-        draw->drawEnd.y = h - 1;
+    if (draw->type == GARBAGE_T)
+        index->y = (tex->y * TEX_GARBAGE_SHEET_W + tex->x) * 4;
+    else
+        index->y = (tex->y * TEX_PLAYER_W + tex->x) * 4;
 }
 
-static void get_sprite_width(wolf_t *wolf,
-    player_draw_t *draw, int spriteScreenX)
-{
-    int w = wolf->window_data->width;
-    int h = wolf->window_data->height;
-
-    draw->sprite_width = abs((int)(h / (draw->transform.y)
-            * TEX_PLAYER_W / TEX_PLAYER_H));
-    draw->drawStart.x = -draw->sprite_width / 2 + spriteScreenX;
-    if (draw->drawStart.x < 0)
-        draw->drawStart.x = 0;
-    draw->drawEnd.x = draw->sprite_width / 2 + spriteScreenX;
-    if (draw->drawEnd.x >= w)
-        draw->drawEnd.x = w - 1;
-}
-
-static void draw_player_pixel(wolf_t *wolf, player_draw_t *draw,
+static void draw_player_pixel(wolf_t *w, player_draw_t *d,
     int x, sfVector2i *tex)
 {
-    int index = 0;
-    int color = 0;
-    game_t *g = wolf->game;
+    sfVector2i index;
+    game_t *g = w->game;
+    int th = d->type == GARBAGE_T ? TEX_GARBAGE_H : TEX_PLAYER_H;
+    sfUint8 *pixels = d->type == GARBAGE_T
+        ? g->wall->decor_arr[3] : g->wall->decor_arr[2];
 
-    for (int y = draw->drawStart.y; y < draw->drawEnd.y; y++) {
-        tex->y = (y - (wolf->window_data->height / 2 - draw->sprite_height
-                / 2) - draw->offset - (int)wolf->player->z)
-            * TEX_PLAYER_H / draw->sprite_height;
-        color = (tex->y * TEX_PLAYER_W + tex->x) * 4;
-        index = (y * wolf->window_data->width + x) * 4;
-        if (g->wall->decor_arr[2][color + 3] < 128)
+    if (d->sprite_height <= 0)
+        return;
+    for (int y = d->drawStart.y; y < d->drawEnd.y; y++) {
+        tex->y = (y - (w->window_data->height / 2 - d->sprite_height / 2) -
+            d->offset - (int)w->player->z) * th / d->sprite_height;
+        if (tex->y < 0 || tex->y >= th)
             continue;
-        create_pixel(g->wall, color, index, g->wall->decor_arr[2]);
+        get_index(d, &index, tex);
+        index.x = (y * w->window_data->width + x) * 4;
+        if (index.x >= w->window_data->width * w->window_data->height * 4
+            || pixels[index.y + 3] < 128)
+            continue;
+        create_pixel(g->wall, index.y, index.x, pixels);
     }
 }
 
 static void draw_entity(wolf_t *wolf, player_draw_t *draw, int spriteScreenX)
 {
     sfVector2i tex;
+    int tw = draw->type == GARBAGE_T ? TEX_GARBAGE_W : TEX_PLAYER_W;
 
+    if (draw->transform.y <= 0.1 || draw->sprite_width <= 0)
+        return;
     for (int x = draw->drawStart.x; x < draw->drawEnd.x; x++) {
         if (draw->transform.y <= 0 || x <= 0 || x >= wolf->window_data->width
             || draw->transform.y >= wolf->game->zbuffer[x])
             continue;
         tex.x = (int)(256 * (x - (-draw->sprite_width / 2 + spriteScreenX))
-            * TEX_PLAYER_W / draw->sprite_width) / 256;
+            * tw / draw->sprite_width) / 256;
+        if (tex.x < 0 || tex.x >= tw)
+            continue;
         draw_player_pixel(wolf, draw, x, &tex);
     }
+}
+
+static void set_sprite_data(wolf_t *wolf,
+    player_draw_t *draw, player_t *to_draw, int *spriteScreenX)
+{
+    sfVector2f dir = {cosf(wolf->player->angle), sinf(wolf->player->angle)};
+
+    draw->type = to_draw->type;
+    draw->sprite.x = to_draw->x - wolf->player->x;
+    draw->sprite.y = to_draw->y - wolf->player->y;
+    get_sprite_height(wolf, draw, &dir, spriteScreenX);
+    get_sprite_width(wolf, draw, *spriteScreenX);
 }
 
 static void draw_sprite(wolf_t *wolf, player_draw_t *draw,
     int spriteOrder[])
 {
-    player_t *p = wolf->player;
     player_t **sprite = wolf->game->entities;
-    sfVector2f dir = {cosf(p->angle), sinf(p->angle)};
     int spriteScreenX = 0;
 
     draw->plane.x = -sin(wolf->player->angle) * tan(FOV / 2.0f);
     draw->plane.y = cos(wolf->player->angle) * tan(FOV / 2.0f);;
     for (int i = 0; i < draw->num; i++) {
-        draw->sprite.x = sprite[spriteOrder[i]]->x - p->x;
-        draw->sprite.y = sprite[spriteOrder[i]]->y - p->y;
-        get_sprite_height(wolf, draw, &dir, &spriteScreenX);
-        get_sprite_width(wolf, draw, spriteScreenX);
+        set_sprite_data(wolf, draw, sprite[spriteOrder[i]], &spriteScreenX);
         if (wolf->game->has_shot == 1)
             damage_monster(wolf->player->weapon, wolf->window_data,
                 draw, sprite[spriteOrder[i]]);

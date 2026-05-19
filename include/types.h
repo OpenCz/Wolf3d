@@ -25,6 +25,7 @@ typedef struct entity_s {
 typedef enum {
     PLAYER,
     ENNEMY,
+    GARBAGE_T,
 } p_type_t;
 
 typedef enum {
@@ -100,6 +101,7 @@ typedef struct inv_s {
 
 typedef struct player_draw_s {
     int num;
+    p_type_t type;
     sfVector2f sprite;
     sfVector2f plane;
     sfVector2f transform;
@@ -130,7 +132,7 @@ typedef struct wall_s {
     sfSprite *sprite;
     sfUint8 *pixel;
     sfUint8 *text_arr[2];
-    sfUint8 *decor_arr[3];
+    sfUint8 *decor_arr[4];
 } wall_t;
 
 typedef struct crosshair_s {

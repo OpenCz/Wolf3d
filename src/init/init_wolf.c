@@ -54,7 +54,8 @@ static int init_wolf_player_data(wolf_t *wolf)
 {
     wolf->window_data = init_window_data();
     wolf->data = init_wolf_data();
-    wolf->player = init_player(wolf->window_data, PLAYER);
+    wolf->player = init_player(wolf->window_data, PLAYER,
+        &(sfVector2f){1.5, 1.5});
     if (!wolf->player || !wolf->window_data || !wolf->data)
         return -1;
     return 0;
@@ -88,7 +89,5 @@ wolf_t *init_wolf(void)
     if (init_wolf_game_data(wolf) < 0 ||
         !create_inv(wolf->data, wolf->window_data, &wolf->game->inv))
         return NULL;
-    push_front(&wolf->list[GAME][MONSTER],
-        init_player(wolf->window_data, ENNEMY));
     return wolf;
 }

@@ -28,15 +28,15 @@ weapon_t *init_weapon(wp_type_t type, int damage,
     return weapon;
 }
 
-player_t *init_player(window_t *win, p_type_t type)
+player_t *init_player(window_t *win, p_type_t type, sfVector2f *pos)
 {
     player_t *player = calloc(1, sizeof(player_t));
 
     (void)win;
     if (!player)
         return NULL;
-    player->x = 1.5;
-    player->y = 1.5;
+    player->x = pos->x;
+    player->y = pos->y;
     player->z = 0.0;
     player->angle = fmodf(0.0f, 2.0f * M_PI);
     if (player->angle < 0.0f)

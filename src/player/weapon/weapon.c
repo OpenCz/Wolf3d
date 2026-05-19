@@ -15,7 +15,9 @@ void damage_monster(weapon_t *weapon, window_t *win,
     int shot = win->width / 2;
 
     if (monster->type != ENNEMY || draw->transform.y <= 0 ||
-        shot < draw->drawStart.x || shot > draw->drawEnd.x)
+        draw->sprite_width <= 0 || draw->sprite_height <= 0)
+        return;
+    if (shot < draw->drawStart.x || shot > draw->drawEnd.x)
         return;
     monster->hp -= weapon->damage;
     if (monster->hp <= 0) {

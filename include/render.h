@@ -23,5 +23,9 @@ void create_fog_pixel(wall_t *wall, sfVector2i *index, sfUint8 *pixel,
 void draw_crosshair(wolf_t *wolf, window_t *win);
 void draw_sprite_list(wolf_t *wolf);
 void draw_text_list(wolf_t *wolf);
-
+void add_entity_to_array(wolf_t *wolf);
+void get_sprite_height(wolf_t *wolf, player_draw_t *draw,
+    sfVector2f *dir, int *spriteScreenX);
+void get_sprite_width(wolf_t *wolf,
+    player_draw_t *draw, int spriteScreenX);
 #endif
