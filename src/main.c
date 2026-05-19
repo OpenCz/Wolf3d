@@ -10,24 +10,6 @@
 
 static const char *const SERVER_IP = "10.73.190.141";
 
-void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
-{
-    if (event.type == sfEvtClosed || wolf->state == QUIT)
-        sfRenderWindow_close(window);
-    switch (wolf->state) {
-        case MENU:
-            manage_menu(wolf, event);
-            break;
-        case GAME:
-            break;
-        case SETTINGS:
-            manage_settings(wolf, event);
-            break;
-        default:
-            break;
-    }
-}
-
 static void handle_recv_packet(wolf_t *wolf, network_packet_t *pkt)
 {
     if (pkt->type != PKT_CONNECT)
@@ -130,6 +112,24 @@ static void manage_draw(wolf_t *wolf)
     draw_triangle_list(wolf);
 }
 
+static void run_loop(wolf_t *wolf, sfClock *send_clock)
+{
+    sfEvent event;
+    sfRenderWindow *current_window = NULL;
+
+    while (sfRenderWindow_isOpen(wolf->window_data->window)) {
+        handle_window_recreate(wolf);
+        current_window = wolf->window_data->window;
+        sfRenderWindow_clear(current_window, sfBlack);
+        while (sfRenderWindow_pollEvent(current_window, &event))
+            check_event(current_window, event, wolf);
+        network_update(wolf, send_clock);
+        check_state(wolf, event);
+        manage_draw(wolf);
+        sfRenderWindow_display(current_window);
+    }
+}
+
 int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
 {
     sfClock *send_clock = sfClock_create();
@@ -140,15 +140,9 @@ int program(sfRenderWindow *window, sfEvent event, wolf_t *wolf)
     wolf->connected = client_init(&wolf->net, SERVER_IP, PORT) == 0;
     if (!wolf->connected)
         printf("[Network] Connection failed to %s:%d\n", SERVER_IP, PORT);
-    while (sfRenderWindow_isOpen(window)) {
-        sfRenderWindow_clear(window, sfBlack);
-        while (sfRenderWindow_pollEvent(window, &event))
-            check_event(window, event, wolf);
-        network_update(wolf, send_clock);
-        check_state(wolf, event);
-        manage_draw(wolf);
-        sfRenderWindow_display(window);
-    }
+    (void)window;
+    (void)event;
+    run_loop(wolf, send_clock);
     sfClock_destroy(send_clock);
     return 0;
 }

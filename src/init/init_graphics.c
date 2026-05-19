@@ -92,37 +92,27 @@ static void init_vsync(wolf_t *wolf, window_t *window, int is_vsync)
 
 static void init_fov(wolf_t *wolf, window_t *window, int fov)
 {
-    text_t *text = NULL;
     char *fov_str = my_nbr_to_str(fov);
     float y = window->height / 2.9f + 240;
+    text_t data = {"fov_value", fov_str, GRAPHICS,
+        TYPE_SETTINGS, NULL, sfFalse, NULL, NULL};
 
     if (!fov_str)
         return;
-    text = create_text(&(text_t){"fov_value", fov_str, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse, NULL, NULL}, wolf->data->font,
-        &(sfVector2f){window->width / 2.0f, y},
-        &(sfVector2f){1.1f, 1.1f});
-    center_text_on_screen(text, window, y);
-    if (text)
-        push_front(&wolf->list[SETTINGS][TEXT], text);
+    init_graphics_value(wolf, &data, y, sfTrue);
     free(fov_str);
 }
 
 static void init_brightness(wolf_t *wolf, window_t *window, int brightness)
 {
-    text_t *text = NULL;
     char *brightness_str = my_nbr_to_str(brightness);
     float y = window->height / 2.9f + 320;
+    text_t data = {"brightness_value", brightness_str, GRAPHICS,
+        TYPE_SETTINGS, NULL, sfFalse, NULL, NULL};
 
     if (!brightness_str)
         return;
-    text = create_text(&(text_t){"brightness_value", brightness_str, GRAPHICS,
-            TYPE_SETTINGS, NULL, sfFalse, NULL, NULL}, wolf->data->font,
-        &(sfVector2f){window->width / 2.0f, y},
-        &(sfVector2f){1.1f, 1.1f});
-    center_text_on_screen(text, window, y);
-    if (text)
-        push_front(&wolf->list[SETTINGS][TEXT], text);
+    init_graphics_value(wolf, &data, y, sfTrue);
     free(brightness_str);
 }
 

@@ -14,4 +14,6 @@ char *my_nbr_to_str(int nb);
 sfBool iskeypressed(int key, sfEvent event);
 void draw_other_players(wolf_t *wolf);
 
+void check_event(sfRenderWindow *window, sfEvent event, wolf_t *wolf);
+
 #endif

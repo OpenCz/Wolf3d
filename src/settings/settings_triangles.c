@@ -7,6 +7,10 @@
 
 #include "wolf3d.h"
 
+static const int_range_t RANGE_PERCENT = {0, 100, 5};
+static const int_range_t RANGE_FOV = {40, 120, 5};
+static const int_range_t RANGE_SENS = {10, 100, 5};
+
 static void recenter_text(sfText *text)
 {
     sfFloatRect bounds;
@@ -25,8 +29,9 @@ static int find_resolution_index(const sfVideoMode *mode)
 {
     sfVideoMode resolutions[] = {{800, 600, 32}, {1280, 720, 32},
         {1600, 900, 32}, {1920, 1080, 32}};
+    int i = 0;
 
-    for (int i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++)
         if (resolutions[i].width == mode->width
             && resolutions[i].height == mode->height)
             return i;
@@ -37,23 +42,23 @@ static void update_resolution_value(wolf_t *wolf, text_t *text, int direction)
 {
     sfVideoMode resolutions[] = {{800, 600, 32}, {1280, 720, 32},
         {1600, 900, 32}, {1920, 1080, 32}};
-    int idx = find_resolution_index(&wolf->settings->resolution);
+    int idx = find_resolution_index(&wolf->tmp_settings->resolution);
     char *buffer;
     int size;
 
     idx = (idx + direction + 4) % 4;
-    wolf->settings->resolution = resolutions[idx];
+    wolf->tmp_settings->resolution = resolutions[idx];
     size = snprintf(NULL, 0, "%u x %u",
-        wolf->settings->resolution.width,
-        wolf->settings->resolution.height) + 1;
+        wolf->tmp_settings->resolution.width,
+        wolf->tmp_settings->resolution.height) + 1;
     buffer = malloc(size);
     if (!buffer)
         return;
     snprintf(buffer, size, "%u x %u",
-        wolf->settings->resolution.width, wolf->settings->resolution.height);
+        wolf->tmp_settings->resolution.width,
+        wolf->tmp_settings->resolution.height);
     sfText_setString(text->text, buffer);
     recenter_text(text->text);
-    wolf->tmp_settings->resolution = resolutions[idx];
     free(buffer);
 }
 
@@ -64,91 +69,105 @@ static void update_toggle_value(text_t *text, sfBool *value)
     recenter_text(text->text);
 }
 
+static void update_int_value(text_t *text, int *value, int direction,
+    const int_range_t *range)
+{
+    int next = *value + range->step * direction;
+    char *buffer;
+
+    if (next < range->min)
+        next = range->min;
+    if (next > range->max)
+        next = range->max;
+    *value = next;
+    buffer = my_nbr_to_str(*value);
+    if (!buffer)
+        return;
+    sfText_setString(text->text, buffer);
+    recenter_text(text->text);
+    free(buffer);
+}
+
 static void update_max_fps_value(wolf_t *wolf, text_t *text, int direction)
 {
     int fps_values[] = {30, 60, 75, 120, 144, 165, 240};
     int idx = 0;
     char *buffer;
     int size;
+    int i = 0;
 
-    for (int i = 0; i < 7; i++)
-        if (fps_values[i] == wolf->settings->max_fps)
+    for (i = 0; i < 7; i++)
+        if (fps_values[i] == wolf->tmp_settings->max_fps)
             idx = i;
     idx = (idx + direction + 7) % 7;
-    wolf->settings->max_fps = fps_values[idx];
-    sfRenderWindow_setFramerateLimit(wolf->window_data->window,
-        wolf->settings->max_fps);
-    size = snprintf(NULL, 0, "%d", wolf->settings->max_fps) + 1;
+    wolf->tmp_settings->max_fps = fps_values[idx];
+    size = snprintf(NULL, 0, "%d", wolf->tmp_settings->max_fps) + 1;
     buffer = malloc(size);
     if (!buffer)
         return;
-    snprintf(buffer, size, "%d", wolf->settings->max_fps);
+    snprintf(buffer, size, "%d", wolf->tmp_settings->max_fps);
     sfText_setString(text->text, buffer);
     recenter_text(text->text);
     free(buffer);
 }
 
-static void apply_triangle_action(wolf_t *wolf, text_t *text, int direction)
+static void apply_graphics_action(wolf_t *wolf, text_t *text, int direction)
 {
-    if (!text || text->type != TYPE_SETTINGS)
-        return;
     if (strcmp(text->name, "resolution_value") == 0)
         update_resolution_value(wolf, text, direction);
     if (strcmp(text->name, "fullscreen_value") == 0)
-        update_toggle_value(text, &wolf->settings->fullscreen);
+        update_toggle_value(text, &wolf->tmp_settings->fullscreen);
     if (strcmp(text->name, "max_fps_value") == 0)
         update_max_fps_value(wolf, text, direction);
-    if (strcmp(text->name, "vsync_value") == 0) {
-        update_toggle_value(text, &wolf->settings->vsync);
-        sfRenderWindow_setVerticalSyncEnabled(wolf->window_data->window,
-            wolf->settings->vsync);
-    }
+    if (strcmp(text->name, "vsync_value") == 0)
+        update_toggle_value(text, &wolf->tmp_settings->vsync);
+    if (strcmp(text->name, "fov_value") == 0)
+        update_int_value(text, &wolf->tmp_settings->fov, direction,
+            &RANGE_FOV);
+    if (strcmp(text->name, "brightness_value") == 0)
+        update_int_value(text, &wolf->tmp_settings->brightness, direction,
+            &RANGE_PERCENT);
 }
 
-static sfBool click_one_triangle(text_t *text, sfEvent event, int direction)
+static void apply_audio_action(wolf_t *wolf, text_t *text, int direction)
 {
-    triangle_t *triangle = direction < 0 ? text->left_triangle
-        : text->right_triangle;
-    sfFloatRect bounds = sfConvexShape_getGlobalBounds(triangle->shape);
-
-    return sfFloatRect_contains(&bounds, event.mouseButton.x,
-        event.mouseButton.y);
+    if (strcmp(text->name, "master_volume_value") == 0)
+        update_int_value(text, &wolf->tmp_settings->master_volume, direction,
+            &RANGE_PERCENT);
+    if (strcmp(text->name, "music_volume_value") == 0)
+        update_int_value(text, &wolf->tmp_settings->music_volume, direction,
+            &RANGE_PERCENT);
+    if (strcmp(text->name, "sfx_volume_value") == 0)
+        update_int_value(text, &wolf->tmp_settings->sfx_volume, direction,
+            &RANGE_PERCENT);
+    if (strcmp(text->name, "ambient_volume_value") == 0)
+        update_int_value(text, &wolf->tmp_settings->ambient_volume, direction,
+            &RANGE_PERCENT);
 }
 
-sfBool click_settings_triangle(wolf_t *wolf, sfEvent event)
+static void apply_gameplay_action(wolf_t *wolf, text_t *text, int direction)
 {
-    text_t *text = NULL;
-
-    for (list_t *c = wolf->list[SETTINGS][TEXT]; c; c = c->next) {
-        text = (text_t *)c->data;
-        if (!text || text->state != wolf->settings_state)
-            continue;
-        if (!text->left_triangle || !text->right_triangle)
-            continue;
-        if (click_one_triangle(text, event, -1)
-            || click_one_triangle(text, event, 1)) {
-            apply_triangle_action(wolf, text,
-                click_one_triangle(text, event, -1) ? -1 : 1);
-            return sfTrue;
-        }
-    }
-    return sfFalse;
+    if (strcmp(text->name, "mouse_sensitivity_value") == 0)
+        update_int_value(text, &wolf->tmp_settings->mouse_sensitivity,
+            direction, &RANGE_SENS);
+    if (strcmp(text->name, "invert_mouse_value") == 0)
+        update_toggle_value(text, &wolf->tmp_settings->invert_mouse);
+    if (strcmp(text->name, "show_hud_value") == 0)
+        update_toggle_value(text, &wolf->tmp_settings->show_hud);
+    if (strcmp(text->name, "show_fps_value") == 0)
+        update_toggle_value(text, &wolf->tmp_settings->show_fps);
+    if (strcmp(text->name, "show_minimap_value") == 0)
+        update_toggle_value(text, &wolf->tmp_settings->show_minimap);
+    if (strcmp(text->name, "crosshair_value") == 0)
+        update_toggle_value(text, &wolf->tmp_settings->crosshair);
 }
 
-void hover_settings_triangle(wolf_t *wolf, sfEvent event)
+void apply_triangle_action(wolf_t *wolf, text_t *text, int direction)
 {
-    triangle_t *triangle = NULL;
-    sfFloatRect bounds;
-
-    for (list_t *c = wolf->list[SETTINGS][TRIANGLE]; c; c = c->next) {
-        triangle = (triangle_t *)c->data;
-        bounds = sfConvexShape_getGlobalBounds(triangle->shape);
-        if (sfFloatRect_contains(&bounds, event.mouseMove.x,
-                event.mouseMove.y))
-            sfConvexShape_setFillColor(triangle->shape,
-                sfColor_fromRGBA(138, 2, 0, 125));
-        else
-            sfConvexShape_setFillColor(triangle->shape,
-                sfColor_fromRGBA(138, 2, 0, 255));
-    }
+    if (!text || text->type != TYPE_SETTINGS)
+        return;
+    apply_graphics_action(wolf, text, direction);
+    apply_audio_action(wolf, text, direction);
+    apply_gameplay_action(wolf, text, direction);
 }
+

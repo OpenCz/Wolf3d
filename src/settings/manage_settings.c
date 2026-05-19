@@ -25,6 +25,10 @@ static void action_button(wolf_t *wolf, char *name, int state)
         wolf->settings_state = state;
     if (strcmp(name, "back") == 0)
         wolf->state = MENU;
+    if (strcmp(name, "apply") == 0)
+        apply_settings(wolf);
+    if (strcmp(name, "reset") == 0)
+        reset_settings(wolf);
 }
 
 static void click_button(wolf_t *wolf, sfEvent event)

@@ -197,6 +197,27 @@ typedef struct decor_s {
     sfVector2f rd1;
 } decor_t;
 
+typedef struct int_range_s {
+    int min;
+    int max;
+    int step;
+} int_range_t;
+
+
+typedef struct resize_buffers_s {
+    sfUint8 *pixel;
+    float *zbuffer;
+    sfTexture *texture;
+} resize_buffers_t;
+
+typedef struct setting_entry_s {
+    char *name;
+    char *content;
+    char *value_name;
+    int value;
+    int index;
+} setting_entry_t;
+
 typedef struct ray_s {
     sfVector2i map;
     sfVector2f delta_dist;
@@ -219,6 +240,7 @@ typedef struct wolf_s {
     int connected;
     player_t others[MAX_PLAYERS];
     int nb_others;
+    sfBool pending_window_recreate;
 } wolf_t;
 
 #endif

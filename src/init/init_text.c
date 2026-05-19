@@ -2,48 +2,39 @@
 ** EPITECH PROJECT, 2026
 ** init
 ** File description:
-** player
+** settings text initialization
 */
 
 #include "../../include/wolf3d.h"
 
-static void set_param(text_t *text, sfVector2f *pos)
+static void create_setting_triangles_for_state(window_t *window, float y,
+    int state, triangle_t **triangles)
 {
-    sfText_setColor(text->text, sfWhite);
-    sfText_setOutlineColor(text->text, sfBlack);
-    sfText_setOutlineThickness(text->text, 1);
-    sfText_setPosition(text->text, *pos);
+    triangles[0] = create_triangle(&(triangle_t){NULL, "left_value", state,
+            TYPE_SETTINGS}, &(sfVector2f){window->width / 2.5f, y},
+        (sfVector2f[3]){{-15, 0}, {0, 15}, {0, -15}});
+    triangles[1] = create_triangle(&(triangle_t){NULL, "right_value", state,
+            TYPE_SETTINGS}, &(sfVector2f){window->width * 0.6f, y},
+        (sfVector2f[3]){{15, 0}, {0, 15}, {0, -15}});
 }
 
-static void setup_text_data(text_t *text, text_t *data)
+void init_setting_value(wolf_t *wolf, text_t *data, float y, int state)
 {
-    text->name = data->name;
-    text->content = data->content;
-    text->state = data->state;
-    text->type = data->type;
-    text->always_display = data->always_display;
-    text->left_triangle = data->left_triangle;
-    text->right_triangle = data->right_triangle;
-}
+    triangle_t *triangles[2] = {NULL, NULL};
+    text_t *text = NULL;
 
-text_t *create_text(text_t *data,
-    sfFont *font, sfVector2f *pos, sfVector2f *scale)
-{
-    text_t *text = malloc(sizeof(text_t));
-    sfFloatRect txt;
-
-    if (!text)
-        return NULL;
-    text->text = sfText_create();
-    setup_text_data(text, data);
-    sfText_setFont(text->text, font);
-    sfText_setString(text->text, data->content);
-    sfText_setScale(text->text, *scale);
-    txt = sfText_getGlobalBounds(text->text);
-    sfText_setOrigin(text->text, (sfVector2f){txt.left,
-            txt.top + txt.height / 2});
-    set_param(text, pos);
-    return text;
+    create_setting_triangles_for_state(wolf->window_data, y, state, triangles);
+    text = create_text(data, wolf->data->font,
+        &(sfVector2f){wolf->window_data->width / 2.0f, y},
+        &(sfVector2f){1.1f, 1.1f});
+    if (text) {
+        text->left_triangle = triangles[0];
+        text->right_triangle = triangles[1];
+    }
+    center_text_on_screen(text, wolf->window_data, y);
+    if (text)
+        push_front(&wolf->list[SETTINGS][TEXT], text);
+    push_double_arrow(wolf, triangles);
 }
 
 void init_menu_text(wolf_t *wolf, window_t *window)
@@ -70,74 +61,58 @@ void init_menu_text(wolf_t *wolf, window_t *window)
             &(sfVector2f){1.5f, 1.5f}));
 }
 
+static void init_graphics_entry(wolf_t *wolf, window_t *window,
+    setting_entry_t *entry)
+{
+    push_front(&wolf->list[SETTINGS][TEXT],
+        create_text(&(text_t){entry->name, entry->content, GRAPHICS,
+                TYPE_SETTINGS, NULL, sfFalse, NULL, NULL}, wolf->data->font,
+            &(sfVector2f){window->width / 7,
+                window->height / 2.9f + 80 * entry->index},
+            &(sfVector2f){1.1f, 1.1f}));
+    push_front(&wolf->list[SETTINGS][LINE],
+        create_line(&(rect_t){entry->name, GRAPHICS, NULL, NULL, NULL,
+                TYPE_SETTINGS, sfFalse},
+            &(sfVector2f){window->width / 7 - 11,
+                window->height / 2.9f + 80 * entry->index + 40},
+            &(sfVector2f){window->width / 1.5f, 1.0f}));
+}
+
 void init_graphics(wolf_t *wolf, window_t *window)
 {
-    char *names[] = {"resolution", "fullscreen", "vsync", "fov", "brightness",
-        "max_fps"};
-    char *contents[] = {"RESOLUTION", "FULLSCREEN", "V-SYNC", "FOV",
-        "BRIGHTNESS", "MAX FPS"};
+    setting_entry_t entries[] = {
+        {"resolution", "RESOLUTION", NULL, 0, 0},
+        {"fullscreen", "FULLSCREEN", NULL, 0, 1},
+        {"vsync", "V-SYNC", NULL, 0, 2},
+        {"fov", "FOV", NULL, 0, 3},
+        {"brightness", "BRIGHTNESS", NULL, 0, 4},
+        {"max_fps", "MAX FPS", NULL, 0, 5}
+    };
+    int i = 0;
 
-    for (int i = 0; i < 6; i++) {
-        push_front(&wolf->list[SETTINGS][TEXT],
-            create_text(&(text_t){names[i], contents[i], GRAPHICS,
-                    TYPE_SETTINGS, NULL, sfFalse, NULL, NULL},
-                wolf->data->font,
-                &(sfVector2f){window->width / 7,
-                    window->height / 2.9f + 80 * i},
-                &(sfVector2f){1.1f, 1.1f}));
-        push_front(&wolf->list[SETTINGS][LINE],
-            create_line(&(rect_t){names[i], GRAPHICS, NULL, NULL, NULL,
-                    TYPE_SETTINGS, sfFalse},
-                &(sfVector2f){window->width / 7 - 11,
-                    window->height / 2.9f + 80 * i + 40},
-                &(sfVector2f){window->width / 1.5f, 1.0f}));
-    }
+    for (i = 0; i < 6; i++)
+        init_graphics_entry(wolf, window, &entries[i]);
 }
 
-void init_audio(wolf_t *wolf, window_t *window)
+void init_setting_text_value(wolf_t *wolf, setting_entry_t *entry,
+    int state)
 {
-    char *names[] = {"master_volume", "music_volume", "sfx_volume",
-        "ambient_volume"};
-    char *contents[] = {"MASTER VOLUME", "MUSIC VOLUME", "SFX VOLUME",
-        "AMBIENT VOLUME"};
+    text_t data;
+    float y = wolf->window_data->height / 2.9f + 80 * entry->index;
 
-    for (int i = 0; i < 4; i++) {
-        push_front(&wolf->list[SETTINGS][TEXT],
-            create_text(&(text_t){names[i], contents[i], AUDIO,
-                    TYPE_SETTINGS, NULL, sfFalse, NULL, NULL},
-                wolf->data->font,
-                &(sfVector2f){window->width / 7,
-                    window->height / 2.9f + 80 * i},
-                &(sfVector2f){1.1f, 1.1f}));
-        push_front(&wolf->list[SETTINGS][LINE],
-            create_line(&(rect_t){names[i], AUDIO, NULL, NULL, NULL,
-                    TYPE_SETTINGS, sfFalse},
-                &(sfVector2f){window->width / 7 - 11,
-                    window->height / 2.9f + 80 * i + 40},
-                &(sfVector2f){window->width / 1.5f, 1.0f}));
-    }
+    data = (text_t){entry->value_name, entry->content, state, TYPE_SETTINGS,
+        NULL, sfFalse, NULL, NULL};
+    init_setting_value(wolf, &data, y, state);
 }
 
-void init_gameplay(wolf_t *wolf, window_t *window)
+void init_setting_number_value(wolf_t *wolf, setting_entry_t *entry,
+    int state)
 {
-    char *names[] = {"mouse_sensitivity", "invert_mouse", "show_hud",
-        "show_fps", "show_minimap", "crosshair"};
-    char *contents[] = {"MOUSE SENSITIVITY", "INVERT MOUSE", "SHOW HUD",
-        "SHOW FPS", "SHOW MINIMAP", "CROSSHAIR"};
+    char *value_str = my_nbr_to_str(entry->value);
 
-    for (int i = 0; i < 6; i++) {
-        push_front(&wolf->list[SETTINGS][TEXT],
-            create_text(&(text_t){names[i], contents[i], GAMEPLAY,
-                    TYPE_SETTINGS, NULL, sfFalse, NULL, NULL},
-                wolf->data->font,
-                &(sfVector2f){window->width / 7,
-                    window->height / 2.9f + 80 * i},
-                &(sfVector2f){1.1f, 1.1f}));
-        push_front(&wolf->list[SETTINGS][LINE],
-            create_line(&(rect_t){names[i], GAMEPLAY, NULL, NULL, NULL,
-                    TYPE_SETTINGS, sfFalse},
-                &(sfVector2f){window->width / 7 - 11,
-                    window->height / 2.9f + 80 * i + 40},
-                &(sfVector2f){window->width / 1.5f, 1.0f}));
-    }
+    if (!value_str)
+        return;
+    entry->content = value_str;
+    init_setting_text_value(wolf, entry, state);
+    free(value_str);
 }
