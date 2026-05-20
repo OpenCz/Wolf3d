@@ -80,13 +80,18 @@ int animate_shot(weapon_t *weapon, sfVector2f *rect_1,
 
 static void shot_weapon(weapon_t *w)
 {
-    int status = animate_shot(w, &(sfVector2f){w->type == GUN ? 0.1 : 0.2, 400},
+    float elapsed = sfTime_asSeconds(sfClock_getElapsedTime(w->cd));
+    float end_frame = w->type == GUN ? 0.3 : 0.6;
+
+    if (w->type == SHOTGUN || w->type == VACUUM) {
+        if (elapsed >= end_frame) {
+            w->reloading = 1;
+            return;
+        }
+    }
+    animate_shot(w, &(sfVector2f){w->type == GUN ? 0.1 : 0.2, 400},
         &(sfVector2f){w->type == GUN ? 0.2 : 0.4, 800},
         &(sfVector2f){w->type == GUN ? 0.3 : 0.6, 1200});
-
-    if ((w->type == SHOTGUN || w->type == VACUUM) && status == 1) {
-        w->reloading = 1;
-    }
 }
 
 static void reload_gun(sfVector2f *pos, window_t *win,
