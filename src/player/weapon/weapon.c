@@ -35,7 +35,7 @@ void use_weapon(game_t *game, weapon_t *weapon)
         return;
     if (!weapon->reloading && sfKeyboard_isKeyPressed(sfKeyR) &&
         sfTime_asSeconds(sfClock_getElapsedTime(weapon->cd)) >
-        weapon->attack_speed && weapon->type != SHOTGUN) {
+        weapon->attack_speed && weapon->type == GUN) {
         weapon->reloading = 1;
         weapon->rect.left = 0;
         sfSprite_setTextureRect(weapon->entity->sprite, weapon->rect);
@@ -84,7 +84,7 @@ static void shot_weapon(weapon_t *w)
         &(sfVector2f){w->type == GUN ? 0.2 : 0.4, 800},
         &(sfVector2f){w->type == GUN ? 0.3 : 0.6, 1200});
 
-    if (w->type == SHOTGUN && status == 1) {
+    if ((w->type == SHOTGUN || w->type == VACUUM) && status == 1) {
         w->reloading = 1;
     }
 }
@@ -129,6 +129,7 @@ void reload_weapon(window_t *win, weapon_t *weapon)
             reload_gun(&pos, win, weapon, elapsed);
             break;
         case SHOTGUN:
+        case VACUUM:
             reload_shotgun(weapon, elapsed);
             break;
         default:

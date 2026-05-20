@@ -64,6 +64,11 @@ static void init_item(window_t *wn, inv_t *inv)
                 &(sfVector2f){1.f, 1.f})), "Shotgun", SHOTGUN);
     inv->item[1].entity = create_entity("icon", "assets/sgun_icon.png", &p, &p);
     inv->slot[1].item = inv->item[1];
+    create_item(&inv->item[2], init_weapon(SHOTGUN, 50, 1, create_entity("vac",
+                "assets/vacuum.png", &(sfVector2f){wn->width / 2, wn->height},
+                &(sfVector2f){1.f, 1.f})), "Vacuum", VACUUM);
+    inv->item[2].entity = create_entity("icon", "assets/vac_icon.png", &p, &p);
+    inv->slot[2].item = inv->item[2];
 }
 
 window_t *create_inv(data_t *data, window_t *win, inv_t *inv)

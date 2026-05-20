@@ -31,6 +31,7 @@ typedef enum {
 typedef enum {
     GUN,
     SHOTGUN,
+    VACUUM,
 } wp_type_t;
 
 typedef struct weapon_s {
