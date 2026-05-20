@@ -19,7 +19,7 @@ static void add_monster_to_array(wolf_t *wolf, player_t *player, int list_index)
     }
 }
 
-static void add_other_player_to_array(wolf_t *wolf, player_t *player)
+static void add_other_player_to_array(wolf_t *wolf)
 {
     if (!wolf->connected)
         return;
@@ -38,5 +38,5 @@ void add_entity_to_array(wolf_t *wolf)
     wolf->game->numSprites = 0;
     add_monster_to_array(wolf, player, MONSTER);
     add_monster_to_array(wolf, player, GARBAGE);
-    add_other_player_to_array(wolf, player);
+    add_other_player_to_array(wolf);
 }

@@ -21,7 +21,8 @@ void damage_monster(weapon_t *weapon, window_t *win,
         return;
     if (weapon->type != VACUUM && monster->type != ENNEMY)
         return;
-    if (weapon->type == SHOTGUN && draw->distance > 8)
+    if ((weapon->type == SHOTGUN && draw->distance > 8) ||
+        (weapon->type == VACUUM && draw->distance > 3))
         return;
     if (shot < draw->drawStart.x || shot > draw->drawEnd.x)
         return;
