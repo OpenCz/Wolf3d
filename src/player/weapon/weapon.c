@@ -14,19 +14,20 @@ void damage_monster(weapon_t *weapon, window_t *win,
 {
     int shot = win->width / 2;
 
-    if ((monster->type != GARBAGE_T || weapon->type != GUN) &&
-        (monster->type != ENNEMY || draw->transform.y <= 0 ||
-            draw->sprite_width <= 0 || draw->sprite_height <= 0))
+    if (draw->transform.y <= 0 || draw->sprite_width <= 0
+        || draw->sprite_height <= 0)
+        return;
+    if (weapon->type == VACUUM && monster->type != GARBAGE_T)
+        return;
+    if (weapon->type != VACUUM && monster->type != ENNEMY)
+        return;
+    if (weapon->type == SHOTGUN && draw->distance > 8)
         return;
     if (shot < draw->drawStart.x || shot > draw->drawEnd.x)
         return;
-    if ((monster->type == GARBAGE_T && draw->distance > 3) ||
-        (weapon->type == SHOTGUN && draw->distance > 8))
-        return;
     monster->hp -= weapon->damage;
-    if (monster->hp <= 0) {
+    if (monster->hp <= 0)
         monster->alive = sfFalse;
-    }
 }
 
 void use_weapon(game_t *game, weapon_t *weapon)

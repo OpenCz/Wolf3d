@@ -50,7 +50,7 @@ static void sort_far_to_close(wolf_t *wolf, player_t *p,
 static float get_entity_fog(player_draw_t *d)
 {
     float fog = 1.0f - (float)d->distance /
-        (FOG_MAX_DIST * (d->type == GARBAGE_T ? 6: 3));
+        (FOG_MAX_DIST * (d->type == GARBAGE_T ? 6 : 3));
 
     return fog < 0.0f ? 0.0f : fog;
 }
