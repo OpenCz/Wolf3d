@@ -29,7 +29,12 @@ static void equip_item(player_t *player, inv_t *inv)
     for (int i = 0; i < 8; i++) {
         if (!inv->slot[i].selected)
             continue;
+        if (!inv->slot[i].item.data)
+            return;
         player->weapon = (weapon_t *)inv->slot[i].item.data;
+        player->weapon->rect.left = 0;
+        sfSprite_setTextureRect(player->weapon->entity->sprite,
+            player->weapon->rect);
         inv->slot[i].selected = sfFalse;
     }
 }
